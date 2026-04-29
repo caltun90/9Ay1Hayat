@@ -917,6 +917,58 @@
     .v-stack { display: flex; flex-direction: column; gap: 10px; }
     .h-stack { display: flex; gap: 10px; align-items: center; }
 
+    /* Profil avatar (giriş yaptığında ayar butonunun yerini alır) */
+    #home-avatar-btn.has-user {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 0;
+      box-shadow: 0 2px 6px rgba(232, 180, 184, 0.45);
+    }
+    #home-avatar-btn.has-user img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Bulut bağlı rozeti */
+    .cloud-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text);
+      background: var(--secondary-soft);
+      padding: 5px 12px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+    .cloud-badge .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+    .cloud-badge b {
+      color: var(--text);
+      font-weight: 600;
+    }
+
     .badge-week-appt {
       display: inline-block;
       font-size: 11px;
@@ -1406,8 +1458,10 @@
 <div id="screen-home" class="screen">
   <div class="screen-header">
     <h1>9 Ay 1 Hayat</h1>
-    <button onclick="navigate('settings')" aria-label="Ayarlar">⚙</button>
+    <button onclick="navigate('settings')" aria-label="Ayarlar" id="home-avatar-btn">⚙</button>
   </div>
+
+  <div id="home-cloud-badge" class="cloud-badge" style="display:none;"></div>
 
   <div class="greeting" id="home-greeting">Merhaba</div>
   <div class="greeting-name" id="home-name">—</div>
@@ -2889,6 +2943,10 @@ function renderHome() {
   document.getElementById("home-greeting").textContent = greeting + ",";
   document.getElementById("home-name").textContent = userName + " 🤍";
 
+  // Bulut bağlı: avatar + rozet
+  renderHomeAvatar();
+  renderCloudBadge();
+
   // Hafta kartı — gerçek hafta gösterilir; fruit verisi 4-40 arasıyla sınırlı
   const w = info.currentWeek;
   const dataWeek = Math.min(40, Math.max(4, w));
@@ -2991,6 +3049,37 @@ function renderBuseSummaryCard() {
     '<div class="label">🤍 Eşin bugün nasıl?</div>' +
     '<div class="text">' + escapeHtml(msg) + '</div>';
   homeWeek.parentNode.insertBefore(card, homeWeek.nextSibling);
+}
+
+function renderHomeAvatar() {
+  const btn = document.getElementById("home-avatar-btn");
+  if (!btn) return;
+  if (currentUser) {
+    btn.classList.add("has-user");
+    const photo = currentUser.photoURL;
+    const letter = (currentUser.displayName || currentUser.email || "?").trim().charAt(0).toUpperCase() || "?";
+    if (photo) {
+      btn.innerHTML = '<img src="' + photo + '" referrerpolicy="no-referrer" alt="' + escapeHtml(currentUser.displayName || currentUser.email || "") + '" onerror="this.replaceWith(document.createTextNode(\'' + letter + '\'))" />';
+    } else {
+      btn.textContent = letter;
+    }
+    btn.setAttribute("aria-label", "Hesap ve ayarlar — " + (currentUser.email || ""));
+  } else {
+    btn.classList.remove("has-user");
+    btn.innerHTML = "⚙";
+    btn.setAttribute("aria-label", "Ayarlar");
+  }
+}
+
+function renderCloudBadge() {
+  const box = document.getElementById("home-cloud-badge");
+  if (!box) return;
+  if (currentUser) {
+    box.innerHTML = '<span class="dot"></span> Bulut bağlı · <b>' + escapeHtml(currentUser.email || currentUser.displayName || "Hesap") + '</b>';
+    box.style.display = "inline-flex";
+  } else {
+    box.style.display = "none";
+  }
 }
 
 function renderNextApptCard() {
