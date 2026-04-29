@@ -1562,9 +1562,481 @@
       appearance: none;
       min-height: 48px;
     }
+
+    /* ============ SPLASH ============ */
+    #splash {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+    #splash .splash-emoji { font-size: 72px; line-height: 1; }
+    #splash .splash-title {
+      font-size: 18px; font-weight: 700;
+      color: var(--text); letter-spacing: -0.01em;
+    }
+    #splash .splash-spinner {
+      width: 28px; height: 28px;
+      border: 3px solid var(--primary-soft);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-top: 6px;
+    }
+    body.splash-hidden #splash { display: none; }
+
+    /* ============ DATE PICKER (3-kolonlu wheel) ============ */
+    .date-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 14px 16px;
+      min-height: 50px;
+      background: var(--bg-card);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 17px;
+      font-family: inherit;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color .15s;
+    }
+    .date-trigger:active { border-color: var(--primary); }
+    .date-trigger.placeholder { color: var(--text-soft); font-weight: 400; }
+    .date-trigger .arrow { color: var(--text-soft); font-size: 14px; margin-left: 10px; }
+
+    .dp-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 1000;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      animation: fadein .2s;
+    }
+    .dp-modal {
+      background: var(--bg-card);
+      width: 100%;
+      max-width: 520px;
+      border-top-left-radius: var(--radius-lg);
+      border-top-right-radius: var(--radius-lg);
+      padding: 18px 18px calc(18px + var(--safe-bottom));
+      animation: slideup .25s cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
+    .dp-header {
+      text-align: center;
+      padding: 4px 0 14px;
+    }
+    .dp-header h3 {
+      font-size: 17px; font-weight: 700; color: var(--text);
+      margin: 0;
+    }
+    .dp-wheels {
+      position: relative;
+      display: flex;
+      gap: 6px;
+      height: 200px;
+      background: var(--bg-soft);
+      border-radius: var(--radius);
+      padding: 0 6px;
+      overflow: hidden;
+    }
+    .dp-wheels::before {
+      content: "";
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      top: 80px;
+      height: 40px;
+      background: rgba(232, 180, 184, 0.22);
+      border-radius: 10px;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .dp-col {
+      flex: 1;
+      height: 100%;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding: 80px 0;
+    }
+    .dp-col::-webkit-scrollbar { display: none; }
+    .dp-row {
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      scroll-snap-align: center;
+      font-size: 17px;
+      color: var(--text-soft);
+      font-weight: 500;
+      transition: color .15s, opacity .15s;
+    }
+    .dp-row.dp-selected {
+      color: var(--text);
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .dp-row.dp-near { color: var(--text-muted); }
+    .dp-row.dp-disabled { opacity: 0.25; }
+
+    .dp-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .dp-actions .btn { flex: 1; }
+
+    /* ============ ONBOARDING — ROL ============ */
+    .onb-roles {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .onb-role-btn {
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 14px;
+      text-align: center;
+      transition: all .15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      min-height: 180px;
+    }
+    .onb-role-btn:active, .onb-role-btn.selected {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      transform: scale(1.01);
+    }
+    .onb-role-btn .role-emoji { font-size: 56px; line-height: 1; }
+    .onb-role-btn .role-label { font-size: 18px; font-weight: 700; color: var(--text); }
+    .onb-role-btn .role-sub { font-size: 12px; color: var(--text-muted); line-height: 1.3; }
+
+    .role-warning {
+      background: var(--secondary-soft);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-top: 18px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text);
+    }
+    .role-warning b { color: var(--text); }
+
+    /* ============ HOME WEEK CARD — alt bilgi satırı ============ */
+    .week-card .subline {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      margin-top: -6px;
+      margin-bottom: 12px;
+    }
+    .week-card .subline .dot { color: var(--text-soft); }
+
+    /* ============ 3-SÜTUN STAT KART (week-detail) ============ */
+    .stat-row {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 16px 12px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      align-items: center;
+    }
+    .stat-row .stat {
+      text-align: center;
+      padding: 0 6px;
+      position: relative;
+    }
+    .stat-row .stat + .stat::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 8px;
+      bottom: 8px;
+      width: 1px;
+      background: var(--border);
+    }
+    .stat-row .stat .num {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .stat-row .stat .lbl {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ============ WEEK HERO — hafta başına benzersiz görsel ============ */
+    .week-hero {
+      position: relative;
+      border-radius: var(--radius-lg);
+      padding: 28px 20px 24px;
+      text-align: center;
+      margin-bottom: 16px;
+      overflow: hidden;
+      background: var(--primary-soft);
+    }
+    .week-hero.tri-1 {
+      background:
+        radial-gradient(circle at 18% 22%, rgba(255,255,255,0.55), rgba(255,255,255,0) 55%),
+        linear-gradient(135deg, #FCE0E3 0%, var(--primary-soft) 100%);
+    }
+    .week-hero.tri-2 {
+      background:
+        radial-gradient(circle at 82% 18%, rgba(255,255,255,0.55), rgba(255,255,255,0) 55%),
+        linear-gradient(135deg, var(--secondary-soft) 0%, var(--primary-soft) 100%);
+    }
+    .week-hero.tri-3 {
+      background:
+        radial-gradient(circle at 24% 78%, rgba(255,255,255,0.6), rgba(255,255,255,0) 55%),
+        linear-gradient(135deg, #FCE4C8 0%, var(--primary-soft) 100%);
+    }
+    .week-hero .scene {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 12px;
+    }
+    .week-hero .scene .ring {
+      position: absolute;
+      inset: 16px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.55);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.65), 0 8px 24px rgba(42,45,52,0.08);
+    }
+    .week-hero .scene .ring2 {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px dashed rgba(255,255,255,0.55);
+    }
+    .week-hero .big-fruit {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 96px;
+      line-height: 1;
+      filter: drop-shadow(0 4px 8px rgba(42,45,52,0.12));
+    }
+    .week-hero .decor {
+      position: absolute;
+      font-size: 26px;
+      opacity: 0.85;
+      pointer-events: none;
+      filter: drop-shadow(0 1px 2px rgba(42,45,52,0.08));
+    }
+    .week-hero .decor.d1 { top: 6px; left: 18px; transform: rotate(-12deg); font-size: 28px; }
+    .week-hero .decor.d2 { top: 24px; right: 18px; transform: rotate(14deg); font-size: 22px; }
+    .week-hero .decor.d3 { bottom: 60px; left: 8px; font-size: 24px; }
+    .week-hero .decor.d4 { bottom: 70px; right: 8px; font-size: 26px; transform: rotate(-8deg); }
+    .week-hero .fruit-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      position: relative;
+    }
+    .week-hero .fruit-size {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      position: relative;
+    }
+    .week-hero .tri-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--primary-deep);
+      background: rgba(255,255,255,0.6);
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    /* ============ ONBOARDING CAROUSEL ============ */
+    .onb-carousel {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: var(--bg);
+      position: relative;
+    }
+    .onb-skip {
+      position: absolute;
+      top: calc(14px + var(--safe-top));
+      right: 16px;
+      z-index: 5;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      background: rgba(255,255,255,0.78);
+      border-radius: 999px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .onb-slide-area {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+    .onb-slides {
+      display: flex;
+      width: 500%;
+      height: 100%;
+      transition: transform .35s cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
+    .onb-slide {
+      width: 20%;
+      flex: 0 0 20%;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .onb-slide-top {
+      flex: 0 0 44%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .onb-slide-top.tone-pink {
+      background: linear-gradient(135deg, var(--primary-soft) 0%, var(--primary) 100%);
+    }
+    .onb-slide-top.tone-green {
+      background: linear-gradient(135deg, var(--secondary-soft) 0%, var(--secondary) 100%);
+    }
+    .onb-slide-top.tone-warm {
+      background: linear-gradient(135deg, #FCE4C8 0%, var(--warn) 100%);
+    }
+    .onb-slide-top.tone-soft {
+      background: linear-gradient(135deg, #FFF5F6 0%, var(--primary-soft) 100%);
+    }
+    .onb-slide-top .icon-mega {
+      font-size: 110px;
+      line-height: 1;
+      filter: drop-shadow(0 6px 20px rgba(42,45,52,0.18));
+    }
+    .onb-slide-top .deco {
+      position: absolute;
+      font-size: 36px;
+      opacity: 0.55;
+    }
+    .onb-slide-top .deco.dl { top: 18%; left: 14%; transform: rotate(-12deg); }
+    .onb-slide-top .deco.dr { bottom: 18%; right: 12%; transform: rotate(14deg); }
+    .onb-slide-bot {
+      flex: 1;
+      padding: 28px 26px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: var(--bg);
+    }
+    .onb-slide-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    .onb-slide-desc {
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--text-muted);
+    }
+    .onb-bullets {
+      list-style: none;
+      margin: 4px 0 0;
+      padding: 0;
+    }
+    .onb-bullets li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-top: 1px solid var(--border);
+      font-size: 15px;
+      color: var(--text);
+    }
+    .onb-bullets li:first-child { border-top: none; }
+    .onb-bullets li .check {
+      flex: 0 0 22px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--secondary-soft);
+      color: var(--secondary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      margin-top: 1px;
+    }
+    .onb-carousel-footer {
+      padding: 16px 24px calc(20px + var(--safe-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: var(--bg);
+    }
+    .onb-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+    .onb-dots .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--border);
+      transition: all .25s;
+    }
+    .onb-dots .dot.active {
+      background: var(--primary);
+      width: 24px;
+    }
   </style>
 </head>
 <body>
+
+<!-- ============ SPLASH (giriş durumu yüklenirken) ============ -->
+<div id="splash">
+  <div class="splash-emoji">🤍</div>
+  <div class="splash-title">9 Ay 1 Hayat</div>
+  <div class="splash-spinner"></div>
+</div>
 
 <!-- ============ AUTH (Google ile giriş) ============ -->
 <div id="screen-auth" class="screen" style="padding: 0;">
@@ -1586,7 +2058,7 @@
       </button>
       <div id="auth-loading" style="display:none; text-align:center; padding: 12px; color: var(--text-muted); font-size: 14px;">
         <div class="auth-spinner"></div>
-        <div style="margin-top:8px;">Google'a yönlendiriliyor, döndüğünde otomatik giriş yapılacak...</div>
+        <div style="margin-top:8px;">Giriş yapılıyor...</div>
       </div>
       <button class="btn btn-ghost" onclick="continueLocalOnly()">Bulutsuz devam et (sadece bu cihaz)</button>
       <div id="auth-error" class="small" style="color: var(--danger); text-align:center; min-height: 18px;"></div>
@@ -1597,21 +2069,131 @@
 <!-- ============ ONBOARDING ============ -->
 <div id="screen-onboarding" class="screen" style="padding: 0;">
   <div class="onboarding">
-    <div id="onb-step-welcome" class="onboarding-step">
-      <div class="onb-hero">
-        <div class="emoji">🤍</div>
-        <h1>9 Ay 1 Hayat Olsun</h1>
-        <p>Bebeğinizin yolculuğunu birlikte takip edebilmeniz için sıfırdan, ikiniz için tasarlandı.</p>
-      </div>
-      <div class="card-soft" style="margin-top: 24px;">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
-          <span style="font-size: 22px;">🌱</span>
-          <b>Önce küçük bir soru</b>
+    <div id="onb-step-welcome" class="onboarding-step" style="padding: 0; flex: 1;">
+      <div class="onb-carousel" id="onb-carousel">
+        <button class="onb-skip" onclick="onbCarouselSkip()" id="onb-skip-btn">Atla</button>
+        <div class="onb-slide-area" id="onb-slide-area">
+          <div class="onb-slides" id="onb-slides">
+            <div class="onb-slide">
+              <div class="onb-slide-top tone-pink">
+                <span class="deco dl">✨</span>
+                <span class="deco dr">🤍</span>
+                <span class="icon-mega">🤍</span>
+              </div>
+              <div class="onb-slide-bot">
+                <div class="onb-slide-title">9 Ay 1 Hayat Olsun</div>
+                <div class="onb-slide-desc">Bu yolculuğu birlikte yaşayalım. Hamilelik yolculuğunuzu eşinizle paylaşmak için tasarlandı.</div>
+                <ul class="onb-bullets">
+                  <li><span class="check">✓</span><span>Haftalık bebek gelişimi</span></li>
+                  <li><span class="check">✓</span><span>Doktor protokolü</span></li>
+                  <li><span class="check">✓</span><span>İki kişilik takip</span></li>
+                </ul>
+              </div>
+            </div>
+            <div class="onb-slide">
+              <div class="onb-slide-top tone-soft">
+                <span class="deco dl">🌱</span>
+                <span class="deco dr">💕</span>
+                <span class="icon-mega">👶</span>
+              </div>
+              <div class="onb-slide-bot">
+                <div class="onb-slide-title">Bebeğin haftalık yolculuğu</div>
+                <div class="onb-slide-desc">Her hafta bebeğin gelişimini, anneye dair olanları ve özel anları takip et.</div>
+                <ul class="onb-bullets">
+                  <li><span class="check">✓</span><span>Bebekten haftalık mektup</span></li>
+                  <li><span class="check">✓</span><span>Boyut karşılaştırması (haşhaş tohumu → karpuz)</span></li>
+                  <li><span class="check">✓</span><span>Anne semptomları ve ipuçları</span></li>
+                </ul>
+              </div>
+            </div>
+            <div class="onb-slide">
+              <div class="onb-slide-top tone-green">
+                <span class="deco dl">🩺</span>
+                <span class="deco dr">📅</span>
+                <span class="icon-mega">🏥</span>
+              </div>
+              <div class="onb-slide-bot">
+                <div class="onb-slide-title">Türkiye protokolüne uygun</div>
+                <div class="onb-slide-desc">T.C. Sağlık Bakanlığı ve TJOD kılavuzlarına göre 11 standart randevu otomatik kurulur.</div>
+                <ul class="onb-bullets">
+                  <li><span class="check">✓</span><span>11 standart randevu otomatik</span></li>
+                  <li><span class="check">✓</span><span>İkili tarama, OGTT, NST</span></li>
+                  <li><span class="check">✓</span><span>TJOD kılavuzu</span></li>
+                </ul>
+              </div>
+            </div>
+            <div class="onb-slide">
+              <div class="onb-slide-top tone-warm">
+                <span class="deco dl">📝</span>
+                <span class="deco dr">🔒</span>
+                <span class="icon-mega">👨‍👩‍👶</span>
+              </div>
+              <div class="onb-slide-bot">
+                <div class="onb-slide-title">İki kişilik felsefe</div>
+                <div class="onb-slide-desc">Notları paylaşırsınız, mahremiyet korunur. Cem için yumuşak özet, Buse için detay.</div>
+                <ul class="onb-bullets">
+                  <li><span class="check">✓</span><span>Notlar ikinizde de</span></li>
+                  <li><span class="check">✓</span><span>Buse'ye özel mahremiyet</span></li>
+                  <li><span class="check">✓</span><span>Cem için "Eşin bugün nasıl?" özeti</span></li>
+                </ul>
+              </div>
+            </div>
+            <div class="onb-slide">
+              <div class="onb-slide-top tone-pink">
+                <span class="deco dl">🌸</span>
+                <span class="deco dr">🤍</span>
+                <span class="icon-mega">✨</span>
+              </div>
+              <div class="onb-slide-bot">
+                <div class="onb-slide-title">Hadi başlayalım</div>
+                <div class="onb-slide-desc">Birkaç saniyede kuruluyor: rolünü seç ve bebeğin haftasını söyle. Hazır mısın?</div>
+                <ul class="onb-bullets">
+                  <li><span class="check">✓</span><span>Reklam yok</span></li>
+                  <li><span class="check">✓</span><span>Forum/sosyal yok — sadece ikiniz</span></li>
+                  <li><span class="check">✓</span><span>Veriler şifreli, Google hesabıyla buluta</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="small">Bebeğin haftasını ve doğum tarihini hesaplayabilmek için aşağıdakilerden birini biliyor olmamız yeterli.</div>
+        <div class="onb-carousel-footer">
+          <div class="onb-dots" id="onb-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <button class="btn btn-primary" id="onb-carousel-next" onclick="onbCarouselNext()">Devam Et →</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="onb-step-role" class="onboarding-step" style="display: none;">
+      <div class="onb-hero" style="padding-top: 12px;">
+        <div class="emoji">👨‍👩‍👶</div>
+        <h1 style="font-size: 26px;">Bu telefon kimin?</h1>
+        <p>Sen ve eşin kendi telefonlarınızdan, kendi rolünüzle giriyor olacaksınız.</p>
+      </div>
+      <div class="onb-roles">
+        <button class="onb-role-btn" data-role="father" onclick="onbSelectRole(this)">
+          <span class="role-emoji">👨</span>
+          <span class="role-label">Babasıyım</span>
+          <span class="role-sub">Cem · ben</span>
+        </button>
+        <button class="onb-role-btn" data-role="mother" onclick="onbSelectRole(this)">
+          <span class="role-emoji">🤰</span>
+          <span class="role-label">Annesiyim</span>
+          <span class="role-sub">Buse · ben</span>
+        </button>
+      </div>
+      <div class="role-warning">
+        <b>⚠ Dikkat:</b> Rol seçimi geri alınamaz. Sadece <i>Tüm verileri sıfırla</i> ile değiştirilebilir.
+        Notlar ve girdiler bu seçime göre otomatik etiketlenir.
       </div>
       <div class="onb-footer">
-        <button class="btn btn-primary" onclick="onbGoTo('lmp-choice')">Başlayalım →</button>
+        <button class="btn btn-primary" id="onb-role-continue-btn" onclick="onbRoleContinue()" disabled style="opacity:.4;">Devam et →</button>
+        <button class="btn btn-ghost" onclick="onbGoTo('welcome')">← Geri</button>
       </div>
     </div>
 
@@ -1637,12 +2219,16 @@
       </div>
 
       <div id="onb-input-lmp" class="onb-input-row" style="display: none;">
-        <label for="onb-lmp-date">Son adet tarihi</label>
-        <input type="date" id="onb-lmp-date" oninput="onbValidate()">
+        <label>Son adet tarihi</label>
+        <button type="button" class="date-trigger placeholder" id="onb-lmp-date" data-iso="" onclick="onbOpenLmpPicker()">
+          <span class="dt-text">Tarih seç</span><span class="arrow">›</span>
+        </button>
       </div>
       <div id="onb-input-edd" class="onb-input-row" style="display: none;">
-        <label for="onb-edd-date">Tahmini doğum tarihi</label>
-        <input type="date" id="onb-edd-date" oninput="onbValidate()">
+        <label>Tahmini doğum tarihi</label>
+        <button type="button" class="date-trigger placeholder" id="onb-edd-date" data-iso="" onclick="onbOpenEddPicker()">
+          <span class="dt-text">Tarih seç</span><span class="arrow">›</span>
+        </button>
       </div>
       <div id="onb-input-week" class="onb-input-row" style="display: none;">
         <label for="onb-week-num">Şu anki hafta</label>
@@ -1653,7 +2239,7 @@
 
       <div class="onb-footer">
         <button class="btn btn-primary" id="onb-continue-btn" onclick="onbFinish()" disabled style="opacity:.4;">Devam et</button>
-        <button class="btn btn-ghost" onclick="onbGoTo('welcome')">← Geri</button>
+        <button class="btn btn-ghost" onclick="onbGoTo('role')">← Geri</button>
       </div>
     </div>
   </div>
@@ -1728,6 +2314,10 @@
     <!-- içerik JS ile -->
   </div>
 
+  <div class="stat-row" id="week-stat-row">
+    <!-- içerik JS ile -->
+  </div>
+
   <div id="week-appt-banner"></div>
 
   <div class="info-section" id="week-baby">
@@ -1772,16 +2362,15 @@
   </div>
 
   <div class="editor-section">
-    <span class="editor-label">Kim yazıyor?</span>
-    <div class="author-toggle" id="editor-author-toggle">
-      <button data-author="cem" onclick="editorSetAuthor('cem')">Cem</button>
-      <button data-author="buse" onclick="editorSetAuthor('buse')">Buse</button>
-    </div>
+    <span class="editor-label">Yazar</span>
+    <div id="editor-author-display" class="card-soft" style="margin-bottom:0; padding: 12px 16px;">—</div>
   </div>
 
   <div class="editor-section">
     <span class="editor-label">Tarih</span>
-    <input type="date" class="editor-date" id="editor-date" />
+    <button type="button" class="date-trigger" id="editor-date" data-iso="" onclick="editorOpenDatePicker()">
+      <span class="dt-text">Tarih seç</span><span class="arrow">›</span>
+    </button>
     <div class="small" style="margin-top:6px;">Varsayılan: bugün. Geçmişe dönük not için değiştir.</div>
   </div>
 
@@ -1820,13 +2409,13 @@
   </div>
 
   <div class="settings-section">
-    <h3>Aktif kullanıcı</h3>
-    <div style="padding: 8px 18px 14px;">
-      <div class="user-toggle">
-        <button data-user="cem" onclick="settingsSetUser('cem')">Cem</button>
-        <button data-user="buse" onclick="settingsSetUser('buse')">Buse</button>
-      </div>
-      <div class="small" style="margin-top:8px;">v0.2 ile bulut senkronu gelince ikiniz aynı anda kendi telefonunuzdan kullanacaksınız. Şimdilik tek cihazda hangimiz açıyorsa burayı değiştiriyoruz.</div>
+    <h3>Bu telefon kimin?</h3>
+    <div class="settings-row">
+      <span class="label">Rol</span>
+      <span class="value" id="settings-role">—</span>
+    </div>
+    <div style="padding: 4px 18px 12px;">
+      <div class="small">Rol seçimi sabitti. Değiştirmek için <i>Tüm verileri sıfırla</i> gerekir.</div>
     </div>
   </div>
 
@@ -1878,7 +2467,7 @@
     <h3>Hakkında</h3>
     <div class="settings-row">
       <span class="label">Sürüm</span>
-      <span class="value">v0.6 — Auth fix + Doktor sekmesi + Daha menüsü</span>
+      <span class="value">v0.8 — Welcome carousel + benzersiz hafta görseli + stat kart</span>
     </div>
     <div class="settings-row">
       <span class="label">Yapım</span>
@@ -1936,7 +2525,9 @@
   <div class="h-stack" style="gap: 10px;">
     <div class="editor-section" style="flex: 2;">
       <span class="editor-label">Tarih</span>
-      <input type="date" class="editor-date" id="appt-date-input" />
+      <button type="button" class="date-trigger" id="appt-date-input" data-iso="" onclick="apptOpenDatePicker()">
+        <span class="dt-text">Tarih seç</span><span class="arrow">›</span>
+      </button>
     </div>
     <div class="editor-section" style="flex: 1;">
       <span class="editor-label">Saat</span>
@@ -2931,11 +3522,12 @@ const STORAGE_KEY = "9ay1hayat:v1";
 
 function defaultState() {
   return {
-    version: 1,
+    version: 2,
     setupComplete: false,
+    role: null,               // "father" | "mother" — bir kez seçilir, geri alınamaz
     lmpDate: null,            // ISO YYYY-MM-DD
     eddDate: null,            // ISO YYYY-MM-DD (computed)
-    activeUser: "cem",        // "cem" | "buse"
+    activeUser: "cem",        // role'den türetilir; ileride kaldırılabilir
     notes: [],                // [{id, createdAt, updatedAt, author, text, tags}]
     appointments: [],         // v0.3: doktor randevuları
     autoApptGenerated: false, // şablonlar bir kez üretildi mi
@@ -3117,6 +3709,37 @@ function eddToLmp(eddIso) {
   return toIso(addDays(edd, -280));
 }
 
+function getTrimester(week) {
+  // T1: 1-13, T2: 14-27, T3: 28-40
+  if (week <= 13) return 1;
+  if (week <= 27) return 2;
+  return 3;
+}
+
+// Hafta bazlı dekoratif emoji havuzu — 4 adet, tekrarlı seçim
+const DECOR_POOLS = {
+  1: ["✨","💕","🌸","🌱","🤍","🌷","💖","🌼"],
+  2: ["🌿","🌼","☀️","🦋","🌷","🍃","🌻","💐"],
+  3: ["⭐","🌟","💫","🌙","🌷","☁️","🌸","🤍"]
+};
+
+function getWeekDecorations(week) {
+  const tri = getTrimester(week);
+  const pool = DECOR_POOLS[tri];
+  // Hafta bazlı deterministic 4 farklı pozisyon — dönem içindeki 4 farklı emoji
+  const seed = week;
+  const a = pool[(seed * 1) % pool.length];
+  const b = pool[(seed * 3 + 1) % pool.length];
+  const c = pool[(seed * 5 + 2) % pool.length];
+  const d = pool[(seed * 7 + 3) % pool.length];
+  return [a, b, c, d];
+}
+
+function getTrimesterLabel(week) {
+  const t = getTrimester(week);
+  return t === 1 ? "1. trimester" : t === 2 ? "2. trimester" : "3. trimester";
+}
+
 function weekToLmp(weekNum) {
   // hafta numarası → bugünden geriye gidilecek gün
   const today = startOfDay(new Date());
@@ -3132,6 +3755,14 @@ function navigate(name, params) {
   // Auth ekranı her zaman erişilebilir
   if (name !== "auth" && !state.setupComplete && name !== "onboarding") {
     name = "onboarding";
+  }
+  // Eski sürümden gelmiş kullanıcı: setupComplete olsa bile rol yoksa onboarding'e döndür
+  if (name !== "auth" && name !== "onboarding" && !state.role) {
+    name = "onboarding";
+  }
+  // Baba rolünde anneye özel ekranlar → home'a yönlendir
+  if (state.role === "father" && (name === "daily-log" || name === "measurements")) {
+    name = "home";
   }
 
   SCREENS.forEach(s => {
@@ -3172,11 +3803,134 @@ function navigate(name, params) {
 
 /* ---------- 5) ONBOARDING ---------- */
 
-let onbState = { mode: null, value: null };
+let onbState = { mode: null, value: null, roleSelected: null };
+let onbCarouselIndex = 0;
+const ONB_CAROUSEL_LAST = 4;
 
 function onbGoTo(step) {
   document.getElementById("onb-step-welcome").style.display = (step === "welcome") ? "flex" : "none";
+  const roleStep = document.getElementById("onb-step-role");
+  if (roleStep) roleStep.style.display = (step === "role") ? "flex" : "none";
   document.getElementById("onb-step-lmp-choice").style.display = (step === "lmp-choice") ? "flex" : "none";
+  if (step === "welcome") {
+    onbCarouselGoTo(0);
+  }
+}
+
+function onbCarouselGoTo(idx) {
+  onbCarouselIndex = Math.max(0, Math.min(ONB_CAROUSEL_LAST, idx));
+  const slides = document.getElementById("onb-slides");
+  if (slides) slides.style.transform = "translateX(-" + (onbCarouselIndex * 20) + "%)";
+  // Dots
+  const dots = document.querySelectorAll("#onb-dots .dot");
+  dots.forEach((d, i) => d.classList.toggle("active", i === onbCarouselIndex));
+  // Buton
+  const btn = document.getElementById("onb-carousel-next");
+  if (btn) btn.textContent = (onbCarouselIndex === ONB_CAROUSEL_LAST) ? "Başlat →" : "Devam Et →";
+  // Skip butonu son sayfada gizli
+  const skipBtn = document.getElementById("onb-skip-btn");
+  if (skipBtn) skipBtn.style.display = (onbCarouselIndex === ONB_CAROUSEL_LAST) ? "none" : "";
+}
+
+function onbCarouselNext() {
+  if (onbCarouselIndex >= ONB_CAROUSEL_LAST) {
+    onbGoTo("role");
+    return;
+  }
+  onbCarouselGoTo(onbCarouselIndex + 1);
+}
+
+function onbCarouselSkip() {
+  onbGoTo("role");
+}
+
+// Carousel için touch swipe
+let _onbTouchX = null;
+document.addEventListener("touchstart", (e) => {
+  const slideArea = document.getElementById("onb-slide-area");
+  const welcomeStep = document.getElementById("onb-step-welcome");
+  if (!slideArea || !welcomeStep || welcomeStep.style.display === "none") return;
+  if (!slideArea.contains(e.target)) return;
+  _onbTouchX = e.touches[0].clientX;
+}, { passive: true });
+document.addEventListener("touchend", (e) => {
+  if (_onbTouchX === null) return;
+  const dx = e.changedTouches[0].clientX - _onbTouchX;
+  _onbTouchX = null;
+  if (Math.abs(dx) < 60) return;
+  if (dx > 0) onbCarouselGoTo(onbCarouselIndex - 1);
+  else onbCarouselGoTo(onbCarouselIndex + 1);
+}, { passive: true });
+
+function onbSelectRole(btn) {
+  const role = btn.dataset.role;
+  onbState.roleSelected = role;
+  document.querySelectorAll(".onb-role-btn").forEach(o => o.classList.remove("selected"));
+  btn.classList.add("selected");
+  const cont = document.getElementById("onb-role-continue-btn");
+  if (cont) {
+    cont.disabled = false;
+    cont.style.opacity = "1";
+  }
+}
+
+function onbRoleContinue() {
+  if (!onbState.roleSelected) return;
+  state.role = onbState.roleSelected;
+  state.activeUser = state.role === "father" ? "cem" : "buse";
+  saveState();
+  // Eski sürümden upgrade: LMP zaten varsa direkt home'a
+  if (state.setupComplete && state.lmpDate) {
+    navigate("home");
+    return;
+  }
+  onbGoTo("lmp-choice");
+}
+
+function onbDateText(id, iso) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.dataset.iso = iso || "";
+  const txt = el.querySelector(".dt-text");
+  if (iso) {
+    if (txt) txt.textContent = fmtDate(iso);
+    el.classList.remove("placeholder");
+  } else {
+    if (txt) txt.textContent = "Tarih seç";
+    el.classList.add("placeholder");
+  }
+}
+
+function onbOpenLmpPicker() {
+  const cur = document.getElementById("onb-lmp-date").dataset.iso;
+  const todayIso = toIso(new Date());
+  const minIso = toIso(addDays(new Date(), -320));
+  openDatePicker({
+    value: cur || todayIso,
+    minDate: minIso,
+    maxDate: todayIso,
+    title: "Son adet tarihi",
+    onSelect: (iso) => {
+      onbDateText("onb-lmp-date", iso);
+      onbValidate();
+    }
+  });
+}
+
+function onbOpenEddPicker() {
+  const cur = document.getElementById("onb-edd-date").dataset.iso;
+  const todayIso = toIso(new Date());
+  const maxIso = toIso(addDays(new Date(), 280));
+  openDatePicker({
+    value: cur || todayIso,
+    minDate: todayIso,
+    maxDate: maxIso,
+    title: "Tahmini doğum tarihi",
+    onSelect: (iso) => {
+      onbDateText("onb-edd-date", iso);
+      onbValidate();
+    }
+  });
 }
 
 function onbSelectMode(btn) {
@@ -3189,15 +3943,6 @@ function onbSelectMode(btn) {
   document.getElementById("onb-input-edd").style.display = (mode === "edd") ? "block" : "none";
   document.getElementById("onb-input-week").style.display = (mode === "week") ? "block" : "none";
 
-  // Default değerler
-  const today = toIso(new Date());
-  if (mode === "lmp" && !document.getElementById("onb-lmp-date").value) {
-    document.getElementById("onb-lmp-date").max = today;
-  }
-  if (mode === "edd" && !document.getElementById("onb-edd-date").value) {
-    document.getElementById("onb-edd-date").min = today;
-  }
-
   onbValidate();
 }
 
@@ -3207,9 +3952,9 @@ function onbValidate() {
   let lmpIso = null;
 
   if (onbState.mode === "lmp") {
-    lmpIso = document.getElementById("onb-lmp-date").value || null;
+    lmpIso = document.getElementById("onb-lmp-date").dataset.iso || null;
   } else if (onbState.mode === "edd") {
-    const edd = document.getElementById("onb-edd-date").value;
+    const edd = document.getElementById("onb-edd-date").dataset.iso;
     if (edd) lmpIso = eddToLmp(edd);
   } else if (onbState.mode === "week") {
     const w = parseInt(document.getElementById("onb-week-num").value, 10);
@@ -3323,8 +4068,16 @@ function renderHome() {
   const info = getPregnancyInfo();
   if (!info) { navigate("onboarding"); return; }
 
-  // Selamlama
-  const userName = state.activeUser === "cem" ? "Cem" : "Buse";
+  // Rol bazlı quick-grid filtreleme: baba için Bugün/Ölçümler gizli
+  const isFather = state.role === "father";
+  document.querySelectorAll("#screen-home .quick-grid .quick-btn").forEach(btn => {
+    const onclick = btn.getAttribute("onclick") || "";
+    const isMomOnly = onclick.includes("daily-log") || onclick.includes("measurements");
+    btn.style.display = (isFather && isMomOnly) ? "none" : "";
+  });
+
+  // Selamlama — role'den türet
+  const userName = state.role === "mother" ? "Buse" : "Cem";
   const hour = new Date().getHours();
   let greeting = "Merhaba";
   if (hour < 6) greeting = "İyi geceler";
@@ -3348,6 +4101,7 @@ function renderHome() {
   card.innerHTML =
     '<div class="week-num">' + w + '</div>' +
     '<div class="week-label">HAFTA' + (info.dayInWeek > 0 ? ' · ' + info.dayInWeek + '. GÜN' : '') + '</div>' +
+    '<div class="subline">' + info.days + ' günlük <span class="dot">·</span> ' + getTrimesterLabel(w) + '</div>' +
     '<div class="fruit-row"><span class="fruit-emoji">' + data.emoji + '</span><span>' + data.fruit + ' büyüklüğünde</span></div>' +
     '<div class="size">' + data.size + '</div>' +
     '<div class="countdown">Doğuma <b>' + info.daysToBirth + ' gün</b> kaldı</div>';
@@ -3373,11 +4127,11 @@ function renderHome() {
 }
 
 function renderBuseSummaryCard() {
-  // Cem aktif kullanıcı değilse kartı gösterme
+  // Sadece baba rolündeyken göster
   const existing = document.getElementById("buse-summary-card");
   if (existing) existing.remove();
 
-  if (state.activeUser !== "cem") return;
+  if (state.role !== "father") return;
 
   // Son 3 günün loglarını topla, paylaşılmış olanları analiz et
   const today = new Date();
@@ -3545,10 +4299,36 @@ function renderWeekDetail(params) {
   document.getElementById("week-next").disabled = viewingWeek >= 40;
 
   const data = WEEK_DATA[viewingWeek];
-  document.getElementById("week-hero").innerHTML =
-    '<div class="big-fruit">' + data.emoji + '</div>' +
+  const tri = getTrimester(viewingWeek);
+  const decor = getWeekDecorations(viewingWeek);
+  const heroEl = document.getElementById("week-hero");
+  heroEl.classList.remove("tri-1", "tri-2", "tri-3");
+  heroEl.classList.add("tri-" + tri);
+  heroEl.innerHTML =
+    '<div class="tri-tag">' + getTrimesterLabel(viewingWeek).toUpperCase() + '</div>' +
+    '<div class="scene">' +
+      '<div class="ring2"></div>' +
+      '<div class="ring"></div>' +
+      '<div class="big-fruit">' + data.emoji + '</div>' +
+      '<span class="decor d1">' + decor[0] + '</span>' +
+      '<span class="decor d2">' + decor[1] + '</span>' +
+      '<span class="decor d3">' + decor[2] + '</span>' +
+      '<span class="decor d4">' + decor[3] + '</span>' +
+    '</div>' +
     '<div class="fruit-name">' + data.fruit + ' boyutunda</div>' +
     '<div class="fruit-size">' + data.size + '</div>';
+
+  // 3-sütunlu stat-row: bu haftaya özel günlük + trimester + kaldı
+  const statRow = document.getElementById("week-stat-row");
+  if (statRow) {
+    // viewingWeek'e özel bilgileri hesapla — ileri-geri gezerken doğru göstersin
+    const viewingDays = (viewingWeek - 1) * 7 + (viewingWeek === info.currentWeek ? info.dayInWeek : 0);
+    const viewingRemaining = Math.max(0, 280 - viewingDays);
+    statRow.innerHTML =
+      '<div class="stat"><div class="num">' + viewingDays + '</div><div class="lbl">günlük</div></div>' +
+      '<div class="stat"><div class="num">' + tri + '.</div><div class="lbl">trimester</div></div>' +
+      '<div class="stat"><div class="num">' + viewingRemaining + '</div><div class="lbl">gün kaldı</div></div>';
+  }
 
   // Randevu uyarısı
   const apptBox = document.getElementById("week-appt-banner");
@@ -3660,28 +4440,28 @@ function closeNoteEditor() {
 function renderNoteEditor(params) {
   const id = (params && params.id) || null;
   const todayIso = toIso(new Date());
+  const defaultAuthor = state.role === "mother" ? "buse" : "cem";
 
   if (id) {
     const note = state.notes.find(n => n.id === id);
     if (!note) {
-      editorState = { id: null, author: state.activeUser, text: "", tags: [], date: todayIso };
+      editorState = { id: null, author: defaultAuthor, text: "", tags: [], date: todayIso };
     } else {
       editorState = {
         id: note.id,
-        author: note.author,
+        author: note.author || defaultAuthor,
         text: note.text,
         tags: [...(note.tags || [])],
         date: (note.createdAt || "").slice(0, 10) || todayIso
       };
     }
   } else {
-    editorState = { id: null, author: state.activeUser, text: "", tags: [], date: todayIso };
+    editorState = { id: null, author: defaultAuthor, text: "", tags: [], date: todayIso };
   }
 
   document.getElementById("editor-title").textContent = id ? "Notu düzenle" : "Yeni not";
   document.getElementById("editor-text").value = editorState.text;
-  document.getElementById("editor-date").value = editorState.date;
-  document.getElementById("editor-date").max = todayIso;
+  setDateTriggerValue("editor-date", editorState.date);
   document.getElementById("editor-delete-btn").style.display = id ? "flex" : "none";
   editorRenderAuthor();
   editorRenderTags();
@@ -3690,15 +4470,32 @@ function renderNoteEditor(params) {
   }, 200);
 }
 
-function editorSetAuthor(a) {
-  editorState.author = a;
-  editorRenderAuthor();
+function editorOpenDatePicker() {
+  const cur = document.getElementById("editor-date").dataset.iso || toIso(new Date());
+  const todayIso = toIso(new Date());
+  const minIso = state.lmpDate || toIso(addDays(new Date(), -400));
+  openDatePicker({
+    value: cur,
+    minDate: minIso,
+    maxDate: todayIso,
+    title: "Not tarihi",
+    onSelect: (iso) => {
+      editorState.date = iso;
+      setDateTriggerValue("editor-date", iso);
+    }
+  });
 }
 
 function editorRenderAuthor() {
-  document.querySelectorAll("#editor-author-toggle button").forEach(b => {
-    b.classList.toggle("active", b.dataset.author === editorState.author);
-  });
+  const display = document.getElementById("editor-author-display");
+  if (display) {
+    const name = editorState.author === "cem" ? "Cem" : "Buse";
+    const emoji = editorState.author === "cem" ? "👨" : "🤰";
+    display.innerHTML = '<div style="display:flex; align-items:center; gap:10px;">' +
+      '<span style="font-size:22px;">' + emoji + '</span>' +
+      '<div><b>' + name + '</b><div class="small">Rol seçiminden otomatik atandı</div></div>' +
+      '</div>';
+  }
 }
 
 function editorAddTag(t) {
@@ -3755,16 +4552,18 @@ function saveNote() {
     alert("Not boş olamaz.");
     return;
   }
-  const dateVal = document.getElementById("editor-date").value || toIso(new Date());
+  const dateVal = document.getElementById("editor-date").dataset.iso || toIso(new Date());
   const [y, m, d] = dateVal.split("-").map(Number);
   const nowDate = new Date();
   const updatedAt = nowDate.toISOString();
+  // Yazar her zaman role'den türetilir (toggle kaldırıldı)
+  const author = state.role === "mother" ? "buse" : "cem";
 
   if (editorState.id) {
     const n = state.notes.find(x => x.id === editorState.id);
     if (n) {
       n.text = text;
-      n.author = editorState.author;
+      n.author = author;
       n.tags = editorState.tags;
       // Tarih değişmişse: yeni tarihe orijinal saat-dakikayı koru;
       // Tarih aynı ise: createdAt değişmez.
@@ -3783,7 +4582,7 @@ function saveNote() {
       id: "n_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
       createdAt: created.toISOString(),
       updatedAt: updatedAt,
-      author: editorState.author,
+      author: author,
       text: text,
       tags: editorState.tags
     });
@@ -3806,10 +4605,13 @@ function deleteNote() {
 function renderSettings() {
   const info = getPregnancyInfo();
 
-  // Aktif kullanıcı
-  document.querySelectorAll("#screen-settings .user-toggle button").forEach(b => {
-    b.classList.toggle("active", b.dataset.user === state.activeUser);
-  });
+  // Rol
+  const roleEl = document.getElementById("settings-role");
+  if (roleEl) {
+    if (state.role === "father") roleEl.textContent = "👨 Cem · baba";
+    else if (state.role === "mother") roleEl.textContent = "🤰 Buse · anne";
+    else roleEl.textContent = "—";
+  }
 
   // Tarihler
   document.getElementById("settings-lmp").textContent = fmtDate(state.lmpDate);
@@ -3847,15 +4649,16 @@ function renderSettings() {
   }
 }
 
-function settingsSetUser(u) {
-  state.activeUser = u;
-  saveState();
-  renderSettings();
-}
-
 
 function renderMore() {
   const info = getPregnancyInfo();
+  const isFather = state.role === "father";
+  // Rol bazlı: baba için Bugün/Ölçümler gizli
+  document.querySelectorAll("#screen-more .more-grid .more-item").forEach(btn => {
+    const onclick = btn.getAttribute("onclick") || "";
+    const isMomOnly = onclick.includes("daily-log") || onclick.includes("measurements");
+    btn.style.display = (isFather && isMomOnly) ? "none" : "";
+  });
   const kicksBtn = document.getElementById("more-kicks-btn");
   if (kicksBtn && info) {
     kicksBtn.style.display = info.currentWeek >= 28 ? "" : "none";
@@ -4001,7 +4804,7 @@ function renderApptDetail(params) {
   }
 
   document.getElementById("appt-title-input").value = apt.title || "";
-  document.getElementById("appt-date-input").value = apt.scheduledDate || "";
+  setDateTriggerValue("appt-date-input", apt.scheduledDate || "");
   document.getElementById("appt-time-input").value = apt.scheduledTime || "";
   document.getElementById("appt-doctor-input").value = apt.doctor || "";
   document.getElementById("appt-hospital-input").value = apt.hospital || "";
@@ -4065,11 +4868,24 @@ function apptRenderQuestions() {
   }).join("");
 }
 
+function apptOpenDatePicker() {
+  const cur = document.getElementById("appt-date-input").dataset.iso || toIso(new Date());
+  const minIso = state.lmpDate || toIso(addDays(new Date(), -60));
+  const maxIso = state.eddDate ? toIso(addDays(parseDate(state.eddDate), 30)) : toIso(addDays(new Date(), 365));
+  openDatePicker({
+    value: cur,
+    minDate: minIso,
+    maxDate: maxIso,
+    title: "Randevu tarihi",
+    onSelect: (iso) => setDateTriggerValue("appt-date-input", iso)
+  });
+}
+
 function apptSave() {
   if (!apptDraft) return;
   // Form alanlarını draft'a aktar
   apptDraft.title = document.getElementById("appt-title-input").value.trim() || apptDraft.title;
-  apptDraft.scheduledDate = document.getElementById("appt-date-input").value || "";
+  apptDraft.scheduledDate = document.getElementById("appt-date-input").dataset.iso || "";
   apptDraft.scheduledTime = document.getElementById("appt-time-input").value || "";
   apptDraft.doctor = document.getElementById("appt-doctor-input").value.trim();
   apptDraft.hospital = document.getElementById("appt-hospital-input").value.trim();
@@ -4232,7 +5048,7 @@ function nameAdd() {
   state.babyNames.push({
     id: "n_" + Date.now() + "_" + Math.random().toString(36).slice(2,5),
     name: name,
-    addedBy: state.activeUser,
+    addedBy: state.role === "mother" ? "buse" : "cem",
     votes: { cem: null, buse: null },
     createdAt: new Date().toISOString()
   });
@@ -4383,18 +5199,20 @@ function dailyLogToggleShare() {
 }
 
 function dailyLogChangeDate() {
-  showPrompt(
-    "Hangi gün?",
-    "Geçmişe dönük düzenleme için tarih seç.",
-    "date",
-    dailyLogDate,
-    (val) => {
+  const todayIso = toIso(new Date());
+  const minIso = state.lmpDate || toIso(addDays(new Date(), -320));
+  openDatePicker({
+    value: dailyLogDate || todayIso,
+    minDate: minIso,
+    maxDate: todayIso,
+    title: "Hangi gün?",
+    onSelect: (val) => {
       if (val) {
         dailyLogDate = val;
         renderDailyLog({ date: val });
       }
     }
-  );
+  });
 }
 
 /* ---------- 9d) ÖLÇÜMLER (KİLO + TANSİYON) ---------- */
@@ -4569,12 +5387,14 @@ function kickStop() {
 }
 
 function settingsEditLmp() {
-  showPrompt(
-    "Son adet tarihi (LMP)",
-    "Tahmini doğum tarihi otomatik yeniden hesaplanır.",
-    "date",
-    state.lmpDate,
-    (val) => {
+  const todayIso = toIso(new Date());
+  const minIso = toIso(addDays(new Date(), -320));
+  openDatePicker({
+    value: state.lmpDate || todayIso,
+    minDate: minIso,
+    maxDate: todayIso,
+    title: "Son adet tarihi (LMP)",
+    onSelect: (val) => {
       if (!val) return;
       const d = parseDate(val);
       const today = startOfDay(new Date());
@@ -4588,7 +5408,7 @@ function settingsEditLmp() {
       saveState();
       renderSettings();
     }
-  );
+  });
 }
 
 /* ---------- 10) VERİ YEDEK / GERİ YÜKLEME / SIFIRLAMA ---------- */
@@ -4651,7 +5471,7 @@ function resetAllPrompt() {
         } catch (err) { console.warn(err); }
       }
       state = defaultState();
-      onbState = { mode: null, value: null };
+      onbState = { mode: null, value: null, roleSelected: null };
       if (currentUser) {
         navigate("onboarding");
         onbGoTo("welcome");
@@ -4831,6 +5651,7 @@ function rerenderCurrentScreen() {
 async function signInWithGoogle() {
   const btn = document.getElementById("auth-signin-btn");
   const errBox = document.getElementById("auth-error");
+  const loading = document.getElementById("auth-loading");
   errBox.textContent = "";
   if (!window.fb) {
     errBox.textContent = "Firebase henüz yüklenmedi, sayfayı yenile lütfen.";
@@ -4838,42 +5659,68 @@ async function signInWithGoogle() {
   }
   btn.disabled = true;
   btn.textContent = "Açılıyor...";
-  // Loading göster
-  const loading = document.getElementById("auth-loading");
-  try {
-    const provider = new window.fb.GoogleAuthProvider();
-    const isStandalone = window.navigator.standalone === true;
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || "");
-    if (isStandalone || isMobile) {
-      // Mobil: redirect öncesi loading göster
-      if (loading) loading.style.display = "block";
-      btn.style.display = "none";
-      await window.fb.signInWithRedirect(window.fb.auth, provider);
-      return;
-    }
 
-    // Masaüstü tarayıcı: popup
+  const provider = new window.fb.GoogleAuthProvider();
+  const isStandalone = window.navigator.standalone === true ||
+    (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+
+  try {
+    // Önce popup dene — iPhone Safari (normal mod) + masaüstü için en güvenilir yol
     const result = await window.fb.signInWithPopup(window.fb.auth, provider);
     if (!result || !result.user) {
       throw new Error("Giriş tamamlanmadı");
     }
-    // Başarılı — anlık olarak ilerle (onAuthStateChanged'i beklemeden)
+    // Başarılı — onAuthStateChanged eninde sonunda fire edecek ve kalan setup'ı yapacak
     btn.textContent = "Yükleniyor...";
-    currentUser = result.user;
-    try { localStorage.removeItem("9ay1hayat:declinedCloud"); } catch(e) {}
-    try {
-      await loadFamilyState(result.user.uid);
-      startStateListener(result.user.uid);
-    } catch (e) { console.warn(e); }
-    navigateToHomeOrOnboarding();
+    const signInName = result.user.email || result.user.displayName || "";
+    window.__justSignedIn = signInName;
+    // onAuthStateChanged tetiklenmezse diye burada da elle ilerle
+    if (!currentUser) {
+      currentUser = result.user;
+      try { localStorage.removeItem("9ay1hayat:declinedCloud"); } catch(e) {}
+      try {
+        await loadFamilyState(result.user.uid);
+        startStateListener(result.user.uid);
+      } catch (e) { console.warn(e); }
+      hideSplash();
+      navigateToHomeOrOnboarding();
+    }
+    // Toast: onAuthStateChanged henüz fire etmediyse __justSignedIn dolu, sonra orada gösterilir.
+    // Fire ettiyse ama toast gösterilmediyse burada elle göster.
+    if (window.__justSignedIn) {
+      showWelcomeToast(window.__justSignedIn);
+      window.__justSignedIn = null;
+    }
     btn.disabled = false;
     btn.textContent = "🔐  Google ile giriş yap";
   } catch (err) {
-    console.error(err);
-    if (err.code === "auth/popup-closed-by-user" || err.code === "auth/cancelled-popup-request") {
+    console.error("Popup auth err", err);
+    const popupBlocked =
+      err.code === "auth/popup-blocked" ||
+      err.code === "auth/operation-not-supported-in-this-environment" ||
+      err.code === "auth/cancelled-popup-request" ||
+      (isStandalone && err.code === "auth/popup-closed-by-user");
+
+    if (popupBlocked) {
+      // Standalone PWA veya popup engellendi → redirect fallback
+      try {
+        if (loading) loading.style.display = "block";
+        btn.style.display = "none";
+        await window.fb.signInWithRedirect(window.fb.auth, provider);
+        return; // sayfa yönlenecek
+      } catch (err2) {
+        console.error("Redirect auth err", err2);
+        errBox.textContent = "Giriş başarısız: " + (err2.message || err2.code || "bilinmeyen hata");
+        btn.disabled = false;
+        btn.style.display = "";
+        btn.textContent = "🔐  Google ile giriş yap";
+        if (loading) loading.style.display = "none";
+        return;
+      }
+    }
+
+    if (err.code === "auth/popup-closed-by-user") {
       errBox.textContent = "Popup kapatıldı, tekrar dene.";
-    } else if (err.code === "auth/popup-blocked") {
-      errBox.textContent = "Tarayıcı popup'ı engelledi — popup'a izin ver ve tekrar dene.";
     } else {
       errBox.textContent = "Giriş başarısız: " + (err.message || err.code || "bilinmeyen hata");
     }
@@ -4906,7 +5753,13 @@ function continueLocalOnly() {
 }
 
 function navigateToHomeOrOnboarding() {
-  if (state.setupComplete && state.lmpDate) {
+  // Eski sürümden gelmiş ama rol seçmemişse → role onboarding adımına götür
+  if (state.setupComplete && state.lmpDate && !state.role) {
+    navigate("onboarding");
+    onbGoTo("role");
+    return;
+  }
+  if (state.setupComplete && state.lmpDate && state.role) {
     if (!state.autoApptGenerated) {
       maybeGenerateAppointments();
       saveState();
@@ -4927,7 +5780,226 @@ function showWelcomeToast(emailOrName) {
   setTimeout(() => { t.remove(); }, 3000);
 }
 
-/* ---------- 14) BAŞLATMA ---------- */
+/* ---------- 14) DATE PICKER (iOS-tarzı 3 kolonlu wheel) ---------- */
+
+const TR_MONTHS_LONG = [
+  "Ocak","Şubat","Mart","Nisan","Mayıs","Haziran",
+  "Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"
+];
+
+function setDateTriggerValue(id, iso) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.dataset.iso = iso || "";
+  const txt = el.querySelector(".dt-text");
+  if (iso) {
+    if (txt) txt.textContent = fmtDate(iso);
+    else el.textContent = fmtDate(iso);
+    el.classList.remove("placeholder");
+  } else {
+    if (txt) txt.textContent = "Tarih seç";
+    else el.textContent = "Tarih seç";
+    el.classList.add("placeholder");
+  }
+}
+
+function _daysInMonth(year, month1) {
+  // month1: 1-12
+  return new Date(year, month1, 0).getDate();
+}
+
+function openDatePicker(opts) {
+  // opts: { value (ISO YYYY-MM-DD), minDate, maxDate, title, onSelect }
+  const todayIso = toIso(new Date());
+  const initialIso = (opts && opts.value) || todayIso;
+  const [iy, im, idd] = initialIso.split("-").map(Number);
+
+  const minIso = (opts && opts.minDate) || "1900-01-01";
+  const maxIso = (opts && opts.maxDate) || "2100-12-31";
+  const minD = parseDate(minIso);
+  const maxD = parseDate(maxIso);
+  const minYear = minD.getFullYear();
+  const maxYear = maxD.getFullYear();
+
+  // İlk seçili değerleri klamla
+  let selDay = idd;
+  let selMonth = im;
+  let selYear = Math.max(minYear, Math.min(maxYear, iy));
+
+  const root = document.getElementById("modal-root");
+  root.innerHTML =
+    '<div class="dp-backdrop" id="dp-backdrop">' +
+      '<div class="dp-modal" onclick="event.stopPropagation()">' +
+        '<div class="dp-header"><h3>' + escapeHtml((opts && opts.title) || "Tarih seç") + '</h3></div>' +
+        '<div class="dp-wheels">' +
+          '<div class="dp-col" id="dp-col-day"></div>' +
+          '<div class="dp-col" id="dp-col-month"></div>' +
+          '<div class="dp-col" id="dp-col-year"></div>' +
+        '</div>' +
+        '<div class="dp-actions">' +
+          '<button class="btn btn-secondary" id="dp-cancel">İptal</button>' +
+          '<button class="btn btn-primary" id="dp-confirm">Seç</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  const dayCol = document.getElementById("dp-col-day");
+  const monthCol = document.getElementById("dp-col-month");
+  const yearCol = document.getElementById("dp-col-year");
+
+  function renderYears() {
+    let html = "";
+    for (let y = minYear; y <= maxYear; y++) {
+      html += '<div class="dp-row" data-val="' + y + '">' + y + '</div>';
+    }
+    yearCol.innerHTML = html;
+  }
+  function renderMonths() {
+    let html = "";
+    for (let m = 1; m <= 12; m++) {
+      html += '<div class="dp-row" data-val="' + m + '">' + TR_MONTHS_LONG[m-1] + '</div>';
+    }
+    monthCol.innerHTML = html;
+  }
+  function renderDays() {
+    const dim = _daysInMonth(selYear, selMonth);
+    let html = "";
+    for (let d = 1; d <= dim; d++) {
+      html += '<div class="dp-row" data-val="' + d + '">' + d + '</div>';
+    }
+    dayCol.innerHTML = html;
+    if (selDay > dim) selDay = dim;
+  }
+
+  renderYears();
+  renderMonths();
+  renderDays();
+
+  function clampToBounds() {
+    // Seçili tarihin min-max içinde olduğundan emin ol
+    let cur = new Date(selYear, selMonth - 1, selDay);
+    if (cur < minD) {
+      selYear = minD.getFullYear();
+      selMonth = minD.getMonth() + 1;
+      selDay = minD.getDate();
+    } else if (cur > maxD) {
+      selYear = maxD.getFullYear();
+      selMonth = maxD.getMonth() + 1;
+      selDay = maxD.getDate();
+    }
+  }
+
+  function highlightSelected(col, value) {
+    col.querySelectorAll(".dp-row").forEach(row => {
+      const v = parseInt(row.dataset.val, 10);
+      const diff = Math.abs(v - value);
+      row.classList.toggle("dp-selected", v === value);
+      row.classList.toggle("dp-near", diff === 1);
+    });
+  }
+
+  function scrollToValue(col, value, smooth) {
+    const row = col.querySelector('.dp-row[data-val="' + value + '"]');
+    if (!row) return;
+    const target = row.offsetTop - 80; // padding-top
+    col.scrollTo({ top: target, behavior: smooth ? "smooth" : "auto" });
+    highlightSelected(col, value);
+  }
+
+  function onColScroll(col, onValue) {
+    let timer = null;
+    col.addEventListener("scroll", () => {
+      const idx = Math.round(col.scrollTop / 40);
+      const row = col.querySelectorAll(".dp-row")[idx];
+      if (!row) return;
+      const v = parseInt(row.dataset.val, 10);
+      if (!isNaN(v)) {
+        // Anlık highlight
+        col.querySelectorAll(".dp-row").forEach(r => {
+          const rv = parseInt(r.dataset.val, 10);
+          const dist = Math.abs(rv - v);
+          r.classList.toggle("dp-selected", rv === v);
+          r.classList.toggle("dp-near", dist === 1);
+        });
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => onValue(v), 50);
+      }
+    }, { passive: true });
+  }
+
+  // Click ile satıra atla (mouse / klavye olmayan ortamlar için)
+  function onColClick(col, onValue) {
+    col.addEventListener("click", (e) => {
+      const r = e.target.closest(".dp-row");
+      if (!r) return;
+      const v = parseInt(r.dataset.val, 10);
+      if (!isNaN(v)) {
+        scrollToValue(col, v, true);
+        onValue(v);
+      }
+    });
+  }
+
+  onColScroll(dayCol, (v) => { selDay = v; });
+  onColScroll(monthCol, (v) => {
+    selMonth = v;
+    renderDays();
+    scrollToValue(dayCol, Math.min(selDay, _daysInMonth(selYear, selMonth)), false);
+    selDay = Math.min(selDay, _daysInMonth(selYear, selMonth));
+  });
+  onColScroll(yearCol, (v) => {
+    selYear = v;
+    renderDays();
+    scrollToValue(dayCol, Math.min(selDay, _daysInMonth(selYear, selMonth)), false);
+    selDay = Math.min(selDay, _daysInMonth(selYear, selMonth));
+  });
+
+  onColClick(dayCol, (v) => { selDay = v; });
+  onColClick(monthCol, (v) => {
+    selMonth = v;
+    renderDays();
+    selDay = Math.min(selDay, _daysInMonth(selYear, selMonth));
+    scrollToValue(dayCol, selDay, true);
+  });
+  onColClick(yearCol, (v) => {
+    selYear = v;
+    renderDays();
+    selDay = Math.min(selDay, _daysInMonth(selYear, selMonth));
+    scrollToValue(dayCol, selDay, true);
+  });
+
+  // Initial scroll positions
+  setTimeout(() => {
+    scrollToValue(yearCol, selYear, false);
+    scrollToValue(monthCol, selMonth, false);
+    scrollToValue(dayCol, selDay, false);
+  }, 30);
+
+  document.getElementById("dp-backdrop").onclick = () => {
+    document.getElementById("modal-root").innerHTML = "";
+  };
+  document.getElementById("dp-cancel").onclick = (e) => {
+    e.stopPropagation();
+    document.getElementById("modal-root").innerHTML = "";
+  };
+  document.getElementById("dp-confirm").onclick = (e) => {
+    e.stopPropagation();
+    clampToBounds();
+    const m = String(selMonth).padStart(2, "0");
+    const d = String(selDay).padStart(2, "0");
+    const iso = selYear + "-" + m + "-" + d;
+    document.getElementById("modal-root").innerHTML = "";
+    if (opts && typeof opts.onSelect === "function") opts.onSelect(iso);
+  };
+}
+
+/* ---------- 15) BAŞLATMA ---------- */
+
+function hideSplash() {
+  document.body.classList.add("splash-hidden");
+}
+
+let __authListenerAttached = false;
 
 function init() {
   // Firebase hazır değilse bekle
@@ -4935,6 +6007,10 @@ function init() {
     window.addEventListener("fb-ready", init, { once: true });
     return;
   }
+
+  // Auth listener'ı sadece bir kere kur
+  if (__authListenerAttached) return;
+  __authListenerAttached = true;
 
   // Auth state'i izle (ilk fire'da mevcut state ile gelir)
   window.fb.onAuthStateChanged(window.fb.auth, async (user) => {
@@ -4947,6 +6023,7 @@ function init() {
       } catch (err) {
         console.warn(err);
       }
+      hideSplash();
       navigateToHomeOrOnboarding();
       // Yeni giriş yaptıysa welcome toast göster
       if (window.__justSignedIn) {
@@ -4956,6 +6033,7 @@ function init() {
     } else {
       // Hesap girişli değil
       const declined = localStorage.getItem("9ay1hayat:declinedCloud") === "1";
+      hideSplash();
       if (declined && state.setupComplete && state.lmpDate) {
         // Önce "bulutsuz devam et" demiş + lokal hazır — direkt home'a
         navigateToHomeOrOnboarding();
@@ -4964,6 +6042,19 @@ function init() {
       }
     }
   });
+
+  // Güvenlik ağı: 6sn içinde auth state belirlenmezse splash'ı kapat ve auth'a düş
+  setTimeout(() => {
+    if (!document.body.classList.contains("splash-hidden")) {
+      hideSplash();
+      const declined = localStorage.getItem("9ay1hayat:declinedCloud") === "1";
+      if (declined && state.setupComplete && state.lmpDate) {
+        navigateToHomeOrOnboarding();
+      } else {
+        navigate("auth");
+      }
+    }
+  }, 6000);
 }
 
 init();
