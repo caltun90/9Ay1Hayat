@@ -4245,16 +4245,39 @@ async function signInWithGoogle() {
   btn.textContent = "Açılıyor...";
   try {
     const provider = new window.fb.GoogleAuthProvider();
-    // Önce popup dene (masaüstü için), iOS standalone'da redirect
     const isStandalone = window.navigator.standalone === true;
     if (isStandalone) {
+      // iOS standalone PWA: yönlendirme yöntemi
       await window.fb.signInWithRedirect(window.fb.auth, provider);
-    } else {
-      await window.fb.signInWithPopup(window.fb.auth, provider);
+      // Sayfa yönlenir, dönünce init() devreye girer
+      return;
     }
+
+    // Masaüstü ve normal mobil tarayıcı: popup
+    const result = await window.fb.signInWithPopup(window.fb.auth, provider);
+    if (!result || !result.user) {
+      throw new Error("Giriş tamamlanmadı");
+    }
+    // Başarılı — anlık olarak ilerle (onAuthStateChanged'i beklemeden)
+    btn.textContent = "Yükleniyor...";
+    currentUser = result.user;
+    try { localStorage.removeItem("9ay1hayat:declinedCloud"); } catch(e) {}
+    try {
+      await loadFamilyState(result.user.uid);
+      startStateListener(result.user.uid);
+    } catch (e) { console.warn(e); }
+    navigateToHomeOrOnboarding();
+    btn.disabled = false;
+    btn.textContent = "🔐  Google ile giriş yap";
   } catch (err) {
     console.error(err);
-    errBox.textContent = "Giriş başarısız: " + (err.message || err.code || "bilinmeyen hata");
+    if (err.code === "auth/popup-closed-by-user" || err.code === "auth/cancelled-popup-request") {
+      errBox.textContent = "Popup kapatıldı, tekrar dene.";
+    } else if (err.code === "auth/popup-blocked") {
+      errBox.textContent = "Tarayıcı popup'ı engelledi — popup'a izin ver ve tekrar dene.";
+    } else {
+      errBox.textContent = "Giriş başarısız: " + (err.message || err.code || "bilinmeyen hata");
+    }
     btn.disabled = false;
     btn.textContent = "🔐  Google ile giriş yap";
   }
