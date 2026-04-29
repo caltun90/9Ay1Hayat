@@ -13,7 +13,7 @@
   <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, onSnapshot, enableIndexedDbPersistence, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -29,20 +29,31 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Çevrimdışı destek (multi-tab varsa sessizce başarısız olur)
     enableIndexedDbPersistence(db).catch(() => {});
 
-    // Yönlendirme akışı sonrası dönüşü yakalamak için
-    getRedirectResult(auth).catch((err) => console.warn("Redirect result error:", err));
+    // Auth fix: persistence açıkça localStorage olsun + redirect result AWAIT et
+    (async () => {
+      try {
+        await setPersistence(auth, browserLocalPersistence);
+      } catch(e) { console.warn("Persistence err:", e); }
 
-    window.fb = {
-      auth, db,
-      GoogleAuthProvider,
-      signInWithPopup, signInWithRedirect,
-      onAuthStateChanged, signOut,
-      doc, setDoc, getDoc, onSnapshot, serverTimestamp
-    };
-    window.dispatchEvent(new Event("fb-ready"));
+      // Redirect dönüş varsa burada yakala — onAuthStateChanged'den önce çalışır
+      try {
+        const r = await getRedirectResult(auth);
+        if (r && r.user) {
+          window.__justSignedIn = r.user.email || r.user.displayName || "";
+        }
+      } catch(e) { console.warn("Redirect result err:", e); }
+
+      window.fb = {
+        auth, db,
+        GoogleAuthProvider,
+        signInWithPopup, signInWithRedirect,
+        onAuthStateChanged, signOut,
+        doc, setDoc, getDoc, onSnapshot, serverTimestamp
+      };
+      window.dispatchEvent(new Event("fb-ready"));
+    })();
   </script>
 
   <style>
@@ -896,8 +907,41 @@
     .v-stack { display: flex; flex-direction: column; gap: 10px; }
     .h-stack { display: flex; gap: 10px; align-items: center; }
 
-    /* Profil avatar (giriş yaptığında ayar butonunun yerini alır) */
-    #home-avatar-btn.has-user {
+    
+    .auth-spinner {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      border: 3px solid var(--primary-soft);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .welcome-toast {
+      position: fixed;
+      top: calc(20px + var(--safe-top));
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-card);
+      border-radius: 999px;
+      padding: 10px 18px;
+      box-shadow: var(--shadow-lg);
+      z-index: 9999;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: toastIn .3s ease-out, toastOut .3s ease-in 2.7s forwards;
+    }
+    .welcome-toast .ico { font-size: 18px; }
+    @keyframes toastIn { from { opacity:0; transform: translate(-50%, -20px); } }
+    @keyframes toastOut { to { opacity:0; transform: translate(-50%, -20px); } }
+
+    /* Profil avatar */
+    #home-avatar-btn.has-user, #more-avatar-btn.has-user {
       width: 40px;
       height: 40px;
       border-radius: 50%;
@@ -912,7 +956,7 @@
       padding: 0;
       box-shadow: 0 2px 6px rgba(232, 180, 184, 0.45);
     }
-    #home-avatar-btn.has-user img {
+    #home-avatar-btn.has-user img, #more-avatar-btn.has-user img {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -1205,6 +1249,29 @@
       font-size: 16px;
       padding: 0 4px;
     }
+
+
+    /* Daha (sub-menü) */
+    .more-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .more-item {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 18px 14px;
+      box-shadow: var(--shadow);
+      text-align: left;
+      transition: transform .1s;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .more-item:active { transform: scale(0.98); }
+    .more-item .ico { font-size: 26px; line-height: 1; margin-bottom: 6px; }
+    .more-item .lbl { font-size: 15px; font-weight: 600; color: var(--text); }
+    .more-item .sub { font-size: 12px; color: var(--text-muted); line-height: 1.3; }
 
     /* ============ ANNE MODU ============ */
     .mood-row {
@@ -1517,6 +1584,10 @@
       <button class="btn btn-primary" onclick="signInWithGoogle()" id="auth-signin-btn">
         🔐  Google ile giriş yap
       </button>
+      <div id="auth-loading" style="display:none; text-align:center; padding: 12px; color: var(--text-muted); font-size: 14px;">
+        <div class="auth-spinner"></div>
+        <div style="margin-top:8px;">Google'a yönlendiriliyor, döndüğünde otomatik giriş yapılacak...</div>
+      </div>
       <button class="btn btn-ghost" onclick="continueLocalOnly()">Bulutsuz devam et (sadece bu cihaz)</button>
       <div id="auth-error" class="small" style="color: var(--danger); text-align:center; min-height: 18px;"></div>
     </div>
@@ -1625,24 +1696,7 @@
     </button>
   </div>
 
-  <div class="quick-grid" id="home-extras">
-    <button class="quick-btn" onclick="navigate('measurements')">
-      <span class="icon">⚖️</span>
-      <span class="label">Ölçümler</span>
-    </button>
-    <button class="quick-btn" id="home-kicks-btn" onclick="navigate('kicks')">
-      <span class="icon">👶</span>
-      <span class="label">Tekme</span>
-    </button>
-    <button class="quick-btn" onclick="navigate('hospital-bag')">
-      <span class="icon">🎒</span>
-      <span class="label">Hastane Çantası</span>
-    </button>
-    <button class="quick-btn" onclick="navigate('names')">
-      <span class="icon">📛</span>
-      <span class="label">İsim Listesi</span>
-    </button>
-  </div>
+  <!-- Ek modüller artık alt nav'taki "Daha" sekmesinde -->
 
   <div class="last-note" id="home-last-note">
     <!-- içerik JS ile -->
@@ -1824,7 +1878,7 @@
     <h3>Hakkında</h3>
     <div class="settings-row">
       <span class="label">Sürüm</span>
-      <span class="value">v0.5 — Bebekten mektup, hastane çantası, isim oylaması</span>
+      <span class="value">v0.6 — Auth fix + Doktor sekmesi + Daha menüsü</span>
     </div>
     <div class="settings-row">
       <span class="label">Yapım</span>
@@ -2105,7 +2159,51 @@
   <div id="names-list"></div>
 </div>
 
-<!-- ============ ALT NAVİGASYON ============ -->
+
+<!-- ============ DAHA (sub-menü) ============ -->
+<div id="screen-more" class="screen">
+  <div class="screen-header">
+    <h1>Daha</h1>
+    <button onclick="navigate('settings')" id="more-avatar-btn" aria-label="Ayarlar">⚙</button>
+  </div>
+  <div class="card-soft" style="font-size: 13px; margin-bottom: 14px;">
+    Bugün, ölçümler, tekme sayacı, hastane çantası, isim listesi, ayarlar — hepsi burada.
+  </div>
+  <div class="more-grid">
+    <button class="more-item" onclick="navigate('daily-log')">
+      <span class="ico">🤰</span>
+      <div class="lbl">Bugün</div>
+      <div class="sub">Ruh hali · semptom · su · vitamin</div>
+    </button>
+    <button class="more-item" onclick="navigate('measurements')">
+      <span class="ico">⚖️</span>
+      <div class="lbl">Ölçümler</div>
+      <div class="sub">Kilo · tansiyon</div>
+    </button>
+    <button class="more-item" id="more-kicks-btn" onclick="navigate('kicks')">
+      <span class="ico">👶</span>
+      <div class="lbl">Tekme sayacı</div>
+      <div class="sub">28+ hafta için</div>
+    </button>
+    <button class="more-item" onclick="navigate('hospital-bag')">
+      <span class="ico">🎒</span>
+      <div class="lbl">Hastane çantası</div>
+      <div class="sub">Anne · bebek · baba</div>
+    </button>
+    <button class="more-item" onclick="navigate('names')">
+      <span class="ico">📛</span>
+      <div class="lbl">İsim listesi</div>
+      <div class="sub">İkili oylama</div>
+    </button>
+    <button class="more-item" onclick="navigate('settings')">
+      <span class="ico">⚙️</span>
+      <div class="lbl">Ayarlar</div>
+      <div class="sub">Hesap · veri · sürüm</div>
+    </button>
+  </div>
+</div>
+
+<!-- ============ ALT NAVİGASYON (5 sekme — mockup'taki gibi) ============ -->
 <nav class="bottom-nav" id="bottom-nav" style="display: none;">
   <button class="nav-btn" data-screen="home" onclick="navigate('home')">
     <span class="ico">🏠</span><span>Ana</span>
@@ -2116,8 +2214,11 @@
   <button class="nav-btn" data-screen="notes" onclick="navigate('notes')">
     <span class="ico">📝</span><span>Notlar</span>
   </button>
-  <button class="nav-btn" data-screen="settings" onclick="navigate('settings')">
-    <span class="ico">⚙</span><span>Ayar</span>
+  <button class="nav-btn" data-screen="appointments" onclick="navigate('appointments')">
+    <span class="ico">🩺</span><span>Doktor</span>
+  </button>
+  <button class="nav-btn" data-screen="more" onclick="navigate('more')">
+    <span class="ico">⋯</span><span>Daha</span>
   </button>
 </nav>
 
@@ -3025,7 +3126,7 @@ function weekToLmp(weekNum) {
 
 /* ---------- 4) NAVİGASYON ---------- */
 
-const SCREENS = ["auth", "onboarding", "home", "week-detail", "notes", "note-editor", "settings", "appointments", "appointment-detail", "daily-log", "measurements", "kicks", "hospital-bag", "names"];
+const SCREENS = ["auth", "onboarding", "home", "week-detail", "notes", "note-editor", "settings", "appointments", "appointment-detail", "daily-log", "measurements", "kicks", "hospital-bag", "names", "more"];
 
 function navigate(name, params) {
   // Auth ekranı her zaman erişilebilir
@@ -3063,6 +3164,7 @@ function navigate(name, params) {
     case "kicks": renderKicks(); break;
     case "hospital-bag": renderHospitalBag(); break;
     case "names": renderNames(); break;
+    case "more": renderMore(); break;
   }
 
   window.scrollTo(0, 0);
@@ -3749,6 +3851,29 @@ function settingsSetUser(u) {
   state.activeUser = u;
   saveState();
   renderSettings();
+}
+
+
+function renderMore() {
+  const info = getPregnancyInfo();
+  const kicksBtn = document.getElementById("more-kicks-btn");
+  if (kicksBtn && info) {
+    kicksBtn.style.display = info.currentWeek >= 28 ? "" : "none";
+  }
+  // avatar button
+  const avb = document.getElementById("more-avatar-btn");
+  if (avb && currentUser) {
+    avb.classList.add("has-user");
+    const letter = (currentUser.displayName || currentUser.email || "?").trim().charAt(0).toUpperCase();
+    if (currentUser.photoURL) {
+      avb.innerHTML = '<img src="' + currentUser.photoURL + '" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode(\'' + letter + '\'))" />';
+    } else {
+      avb.textContent = letter;
+    }
+  } else if (avb) {
+    avb.classList.remove("has-user");
+    avb.textContent = "⚙";
+  }
 }
 
 /* ---------- 9b) RANDEVULAR ---------- */
@@ -4713,12 +4838,16 @@ async function signInWithGoogle() {
   }
   btn.disabled = true;
   btn.textContent = "Açılıyor...";
+  // Loading göster
+  const loading = document.getElementById("auth-loading");
   try {
     const provider = new window.fb.GoogleAuthProvider();
     const isStandalone = window.navigator.standalone === true;
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || "");
     if (isStandalone || isMobile) {
-      // Mobil cihazlarda popup güvenilir değil — redirect kullan
+      // Mobil: redirect öncesi loading göster
+      if (loading) loading.style.display = "block";
+      btn.style.display = "none";
       await window.fb.signInWithRedirect(window.fb.auth, provider);
       return;
     }
@@ -4789,6 +4918,15 @@ function navigateToHomeOrOnboarding() {
   }
 }
 
+
+function showWelcomeToast(emailOrName) {
+  const t = document.createElement("div");
+  t.className = "welcome-toast";
+  t.innerHTML = '<span class="ico">🤍</span><span>Giriş başarılı · ' + escapeHtml(emailOrName || "Hoş geldin") + '</span>';
+  document.body.appendChild(t);
+  setTimeout(() => { t.remove(); }, 3000);
+}
+
 /* ---------- 14) BAŞLATMA ---------- */
 
 function init() {
@@ -4802,7 +4940,6 @@ function init() {
   window.fb.onAuthStateChanged(window.fb.auth, async (user) => {
     currentUser = user;
     if (user) {
-      // Hesap girişli — bulutsuz tercihini temizle
       try { localStorage.removeItem("9ay1hayat:declinedCloud"); } catch(e) {}
       try {
         await loadFamilyState(user.uid);
@@ -4811,6 +4948,11 @@ function init() {
         console.warn(err);
       }
       navigateToHomeOrOnboarding();
+      // Yeni giriş yaptıysa welcome toast göster
+      if (window.__justSignedIn) {
+        showWelcomeToast(window.__justSignedIn);
+        window.__justSignedIn = null;
+      }
     } else {
       // Hesap girişli değil
       const declined = localStorage.getItem("9ay1hayat:declinedCloud") === "1";
