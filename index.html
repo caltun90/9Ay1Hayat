@@ -72,24 +72,7 @@
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #1B2330;
-        --bg-card: #242C3A;
-        --bg-soft: #2D3645;
-        --primary: #E8B4B8;
-        --primary-deep: #D49497;
-        --primary-soft: #3A2E36;
-        --secondary: #A8B89E;
-        --secondary-soft: #2E3A36;
-        --text: #F2EFE9;
-        --text-muted: #9BA3B0;
-        --text-soft: #5C6478;
-        --border: #2F3848;
-        --shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
-        --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.40);
-      }
-    }
+    /* Dark mode kaldırıldı — hep aydınlık tema. Cem tercihi. */
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
@@ -855,11 +838,7 @@
       justify-content: space-around;
       z-index: 100;
     }
-    @media (prefers-color-scheme: dark) {
-      .bottom-nav {
-        background: rgba(36, 44, 58, 0.92);
-      }
-    }
+    /* (Dark mode override kaldırıldı) */
     .nav-btn {
       flex: 1;
       display: flex;
@@ -1070,6 +1049,161 @@
     .next-appt-card.overdue {
       background: linear-gradient(135deg, #E8A8A8 0%, #F2C4C4 100%);
       color: #6B2A2A;
+    }
+
+
+    /* Hastane çantası */
+    .hb-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-soft);
+      padding: 4px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+    .hb-tab {
+      flex: 1;
+      padding: 10px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .hb-tab.active {
+      background: var(--bg-card);
+      color: var(--text);
+      box-shadow: var(--shadow);
+    }
+    .hb-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .hb-item .check {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: transparent;
+      transition: all .15s;
+    }
+    .hb-item .check.checked {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+    .hb-item .label {
+      flex: 1;
+      font-size: 15px;
+      color: var(--text);
+    }
+    .hb-item.checked .label {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+    .hb-item .del {
+      color: var(--text-soft);
+      font-size: 18px;
+      padding: 0 4px;
+    }
+
+    /* Bebekten mektup kartı */
+    .baby-letter {
+      background: linear-gradient(135deg, #FFF5F6 0%, #F5DCDE 100%);
+      border-radius: var(--radius-lg);
+      padding: 22px 22px;
+      margin-bottom: 14px;
+      position: relative;
+      box-shadow: var(--shadow);
+    }
+    .baby-letter::before {
+      content: '"';
+      position: absolute;
+      top: 4px; left: 16px;
+      font-size: 60px;
+      color: var(--primary);
+      opacity: 0.35;
+      font-family: Georgia, serif;
+      line-height: 1;
+    }
+    .baby-letter .label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--primary-deep);
+      margin-bottom: 8px;
+    }
+    .baby-letter .text {
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--text);
+      font-style: italic;
+    }
+    .baby-letter .signature {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    /* İsim listesi */
+    .name-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 8px;
+    }
+    .name-row.both-loved {
+      background: linear-gradient(135deg, var(--primary-soft) 0%, var(--secondary-soft) 100%);
+    }
+    .name-row .name {
+      flex: 1;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .name-row .vote-pair {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .name-row .voter {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .name-row .vote-btn {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--bg-soft);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: transform .1s;
+    }
+    .name-row .vote-btn:active { transform: scale(0.92); }
+    .name-row .vote-btn.active-love { background: #FFE0E5; transform: scale(1.1); }
+    .name-row .vote-btn.active-like { background: #FFEDC9; transform: scale(1.1); }
+    .name-row .vote-btn.active-dislike { background: #E5E5E5; opacity: 0.7; }
+    .name-row .del {
+      color: var(--text-soft);
+      font-size: 16px;
+      padding: 0 4px;
     }
 
     /* ============ ANNE MODU ============ */
@@ -1500,6 +1634,14 @@
       <span class="icon">👶</span>
       <span class="label">Tekme</span>
     </button>
+    <button class="quick-btn" onclick="navigate('hospital-bag')">
+      <span class="icon">🎒</span>
+      <span class="label">Hastane Çantası</span>
+    </button>
+    <button class="quick-btn" onclick="navigate('names')">
+      <span class="icon">📛</span>
+      <span class="label">İsim Listesi</span>
+    </button>
   </div>
 
   <div class="last-note" id="home-last-note">
@@ -1548,6 +1690,8 @@
     <div class="tip-label">Bu hafta için ipucu</div>
     <div class="tip-text"></div>
   </div>
+
+  <div id="week-baby-letter"></div>
 </div>
 
 <!-- ============ NOTLAR LİSTE ============ -->
@@ -1680,7 +1824,7 @@
     <h3>Hakkında</h3>
     <div class="settings-row">
       <span class="label">Sürüm</span>
-      <span class="value">v0.2 + v0.3 + v0.4 (bulut + doktor + anne modu)</span>
+      <span class="value">v0.5 — Bebekten mektup, hastane çantası, isim oylaması</span>
     </div>
     <div class="settings-row">
       <span class="label">Yapım</span>
@@ -1902,6 +2046,65 @@
   <div id="kick-history"></div>
 </div>
 
+
+<!-- ============ HASTANE ÇANTASI ============ -->
+<div id="screen-hospital-bag" class="screen">
+  <div class="screen-header">
+    <button onclick="navigate('home')" aria-label="Geri">←</button>
+    <h1>Hastane Çantası</h1>
+    <span style="width: 40px;"></span>
+  </div>
+
+  <div class="card-soft" style="font-size: 13px;">
+    <b>🎒 Türk hastanelerine özel liste</b><br/>
+    36. hafta civarında hazırlamak için. Listeden çıkarabilir, kendine ait şeyler ekleyebilirsin.
+  </div>
+
+  <div class="hb-tabs">
+    <button class="hb-tab active" data-cat="mom" onclick="hbSetCat('mom')">👩 Anne</button>
+    <button class="hb-tab" data-cat="baby" onclick="hbSetCat('baby')">👶 Bebek</button>
+    <button class="hb-tab" data-cat="dad" onclick="hbSetCat('dad')">👨 Baba</button>
+  </div>
+
+  <div id="hb-progress" class="card" style="padding: 12px 16px;"></div>
+
+  <div id="hb-list"></div>
+
+  <div class="card" style="padding: 12px;">
+    <div class="h-stack" style="gap: 8px;">
+      <input type="text" id="hb-add-input" placeholder="Yeni eşya ekle"
+        style="flex:1; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 999px; outline: none; background: var(--bg-card); color: var(--text);"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();hbAddItem();}" />
+      <button class="btn-ghost" onclick="hbAddItem()" style="padding: 10px 18px; color: var(--primary-deep); font-weight: 600;">Ekle</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ BEBEK İSİM OYLAMASI ============ -->
+<div id="screen-names" class="screen">
+  <div class="screen-header">
+    <button onclick="navigate('home')" aria-label="Geri">←</button>
+    <h1>İsim Listesi</h1>
+    <span style="width: 40px;"></span>
+  </div>
+
+  <div class="card-soft" style="font-size: 13px;">
+    <b>👶 İsim oylaması</b><br/>
+    İkiniz de isim ekleyin, ❤ 👍 👎 ile oylayın. İkinizin de ❤ verdiği isimler en üstte.
+  </div>
+
+  <div class="card" style="padding: 12px;">
+    <div class="h-stack" style="gap: 8px;">
+      <input type="text" id="name-add-input" placeholder="Yeni isim ekle"
+        style="flex:1; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 999px; outline: none; background: var(--bg-card); color: var(--text);"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();nameAdd();}" />
+      <button class="btn-ghost" onclick="nameAdd()" style="padding: 10px 18px; color: var(--primary-deep); font-weight: 600;">Ekle</button>
+    </div>
+  </div>
+
+  <div id="names-list"></div>
+</div>
+
 <!-- ============ ALT NAVİGASYON ============ -->
 <nav class="bottom-nav" id="bottom-nav" style="display: none;">
   <button class="nav-btn" data-screen="home" onclick="navigate('home')">
@@ -1944,7 +2147,8 @@ const WEEK_DATA = {
       "Hormon değişimi nedeniyle ruh hali dalgalı"
     ],
     tip: "Folik asit önemli — eğer doktor önerisiyle başlamadıysan, hemen başlat. Nöral tüp gelişimi için kritik dönem.",
-    appt: "İlk doktor randevusunu al"
+    appt: "İlk doktor randevusunu al",
+    babyLetter: "Selam anne 🤍 Daha çok küçüğüm ama buradayım. Bu hafta seni hissetmeye başladım — kalbinin sesini."
   },
   5: {
     fruit: "Susam tohumu", emoji: "🌾", size: "≈ 5 mm · <1 g",
@@ -1959,7 +2163,8 @@ const WEEK_DATA = {
       "Sık idrara çıkma"
     ],
     tip: "Sabah kalkmadan önce küçük bir kraker yemek mide bulantısını hafifletebilir.",
-    appt: ""
+    appt: "",
+    babyLetter: "Anne, kalbim bu hafta ilk defa attı! Çok küçük ama atıyor. Sen de hissediyor musun bu sıcaklığı?"
   },
   6: {
     fruit: "Mercimek", emoji: "🫘", size: "≈ 6 mm · 1 g",
@@ -1974,7 +2179,8 @@ const WEEK_DATA = {
       "Kokulara aşırı duyarlılık"
     ],
     tip: "Bu hafta ilk muayene zamanı (6-8). Beta HCG ve gebelik teyidi yapılır.",
-    appt: "İlk muayene + Beta HCG"
+    appt: "İlk muayene + Beta HCG",
+    babyLetter: "Şu an mercimek kadarım ama her gün büyüyorum. Senden çok şey alıyorum, çok teşekkür ederim."
   },
   7: {
     fruit: "Yaban mersini", emoji: "🫐", size: "≈ 1 cm · 1 g",
@@ -1989,7 +2195,8 @@ const WEEK_DATA = {
       "Tükürük artışı olabilir"
     ],
     tip: "Bol su iç. Günde 2-2.5 litre hedefle — dehidrasyon mide bulantısını ve baş ağrısını artırır.",
-    appt: ""
+    appt: "",
+    babyLetter: "Kollarım ve bacaklarım belirginleşmeye başladı. Yakında tekme atmaya başlayacağım, sabırlı ol 😊"
   },
   8: {
     fruit: "Ahududu", emoji: "🍓", size: "≈ 1.6 cm · 1 g",
@@ -2004,7 +2211,8 @@ const WEEK_DATA = {
       "Duygusal dalgalanmalar — ağlama nöbetleri normaldir"
     ],
     tip: "Eşin yorgunsa onu zorlamayın — ev işlerini paylaşmanın iyi bir zamanı.",
-    appt: ""
+    appt: "",
+    babyLetter: "Anne, bu hafta parmak izlerim oluştu — tıpkı seninkiler gibi eşsiz olacaklar."
   },
   9: {
     fruit: "Kiraz", emoji: "🍒", size: "≈ 2.3 cm · 2 g",
@@ -2019,7 +2227,8 @@ const WEEK_DATA = {
       "Mide bulantısı bazılarında hafifliyor"
     ],
     tip: "Eşin halsiz — bu çok normal. Hafif bir yürüyüş enerji verir; siz de eşlik edin.",
-    appt: ""
+    appt: "",
+    babyLetter: "Resmen 'fetus' oldum bugün. Ama hâlâ senin küçük bebeğinim. Sevgilerimle."
   },
   10: {
     fruit: "Çilek", emoji: "🍓", size: "≈ 3.1 cm · 4 g",
@@ -2034,7 +2243,8 @@ const WEEK_DATA = {
       "Karın çevresinde belirginleşme"
     ],
     tip: "İstersen NIPT (kromozom taraması) testini doktorla konuş — 10. haftadan itibaren yapılabilir.",
-    appt: "NIPT (opsiyonel, 10+)"
+    appt: "NIPT (opsiyonel, 10+)",
+    babyLetter: "Tırnaklarım çıkmaya başladı! Daha tırnak makasıyla tanışmadım ama yakında 😄"
   },
   11: {
     fruit: "İncir", emoji: "🍐", size: "≈ 4.1 cm · 7 g",
@@ -2049,7 +2259,8 @@ const WEEK_DATA = {
       "Karın daha belirgin şişmeye başlıyor"
     ],
     tip: "11-14 hafta arası ikili tarama (Down sendromu taraması) zamanı. Randevu al.",
-    appt: "İkili tarama + Ense kalınlığı (11-14)"
+    appt: "İkili tarama + Ense kalınlığı (11-14)",
+    babyLetter: "Düşük riski azaldı bu hafta — birlikte daha güvendeyiz artık. Rahat nefes al anne."
   },
   12: {
     fruit: "Misket limonu", emoji: "🍋", size: "≈ 5.4 cm · 14 g",
@@ -2064,7 +2275,8 @@ const WEEK_DATA = {
       "Cilt ve saçlar parlak görünebilir"
     ],
     tip: "İlk trimesteri tamamladığınız için tebrikler 🎉 — bu kritik dönemi geride bıraktınız.",
-    appt: ""
+    appt: "",
+    babyLetter: "Kalbim doppler ile duyulabiliyor şimdi. Babamla beraber dinleyin, çok güzel ses çıkarıyorum."
   },
   13: {
     fruit: "Bezelye kabuğu", emoji: "🟢", size: "≈ 7.4 cm · 23 g",
@@ -2079,7 +2291,8 @@ const WEEK_DATA = {
       "Cinsel istek değişebilir (artabilir)"
     ],
     tip: "Bebek artık ses duyuyor — birlikte ona şarkı söyleyin, ad araştırın, kitap okuyun.",
-    appt: ""
+    appt: "",
+    babyLetter: "İkinci trimester! Senin için en rahat dönem geliyor. Ben de seni dinliyorum, sesini tanıyorum."
   },
   14: {
     fruit: "Limon", emoji: "🍋", size: "≈ 8.7 cm · 43 g",
@@ -2094,7 +2307,8 @@ const WEEK_DATA = {
       "Burun tıkanıklığı normaldir"
     ],
     tip: "Hamilelik özelinde nemlendirici (badem yağı, kakao yağı) karın cildinde çatlakları azaltır.",
-    appt: ""
+    appt: "",
+    babyLetter: "Bu hafta gülümsemeyi öğrendim. Sen de gülümse, ikimiz birlikte gülelim."
   },
   15: {
     fruit: "Elma", emoji: "🍎", size: "≈ 10 cm · 70 g",
@@ -2109,7 +2323,8 @@ const WEEK_DATA = {
       "Saç gürleşip parlayabilir"
     ],
     tip: "Yeterince protein (et, balık, baklagil) ve demir (kırmızı et, ıspanak) tüket — bebek hızla büyüyor.",
-    appt: "Dörtlü tarama (eğer ikili yapılmadıysa, 15-18)"
+    appt: "Dörtlü tarama (eğer ikili yapılmadıysa, 15-18)",
+    babyLetter: "Işığı algılayabiliyorum bu hafta. Karnına ışık tutarsan, ben de yöneliyorum sana doğru."
   },
   16: {
     fruit: "Avokado", emoji: "🥑", size: "≈ 11.6 cm · 100 g",
@@ -2124,7 +2339,8 @@ const WEEK_DATA = {
       "Genel iyilik hissi — '2. trimester rahatlığı'"
     ],
     tip: "Eşin ilk tekmeleri hissedince hemen sana söyleyecek — keyifli bir an, beraber heyecanlanın.",
-    appt: ""
+    appt: "",
+    babyLetter: "Ses tellerimi kullanmaya başladım. Daha bağıramıyorum ama yakında 😉"
   },
   17: {
     fruit: "Şalgam", emoji: "🥔", size: "≈ 13 cm · 140 g",
@@ -2139,7 +2355,8 @@ const WEEK_DATA = {
       "Saç ve tırnaklar daha hızlı uzar"
     ],
     tip: "Sol tarafa yatarak uyumak kan dolaşımı için en iyi pozisyon.",
-    appt: ""
+    appt: "",
+    babyLetter: "Anne, hıçkırığa başladım! Karnında küçük titremeler hissedebilirsin — o benim."
   },
   18: {
     fruit: "Dolmalık biber", emoji: "🫑", size: "≈ 14.2 cm · 190 g",
@@ -2154,7 +2371,8 @@ const WEEK_DATA = {
       "Çoğu kadın için en güzel dönem 🤍"
     ],
     tip: "18-22 hafta arası detaylı ultrason (anomali taraması) yaptırılmalı. Kritik bir test.",
-    appt: "Detaylı (anomali) ultrason (18-22)"
+    appt: "Detaylı (anomali) ultrason (18-22)",
+    babyLetter: "Detaylı ultrason zamanı yaklaşıyor. Beni iyice göreceksin, hazır mısın? Ben hazırım."
   },
   19: {
     fruit: "Domates", emoji: "🍅", size: "≈ 15.3 cm · 240 g",
@@ -2169,7 +2387,8 @@ const WEEK_DATA = {
       "Bazı annelerde 'maske' (yüzde koyulaşma) başlar"
     ],
     tip: "2025'ten beri Tdap aşısı ücretsiz; 18-24 hafta arası önerilir. Boğmacaya karşı bebeği korur.",
-    appt: "Tdap aşısı (18-24, ücretsiz)"
+    appt: "Tdap aşısı (18-24, ücretsiz)",
+    babyLetter: "Vücudumu beyaz, koruyucu bir tabaka kapladı bu hafta. Cilt cildim hassas, dış dünyaya hazırlanıyorum."
   },
   20: {
     fruit: "Muz", emoji: "🍌", size: "≈ 16.4 cm · 300 g",
@@ -2184,7 +2403,8 @@ const WEEK_DATA = {
       "Doğum tarihinin yarısındasın 🤍"
     ],
     tip: "Bu özel anı kutlayın — bir anı fotoğrafı çekin, tarihe geçirin.",
-    appt: ""
+    appt: "",
+    babyLetter: "Yarı yoldayız anne 🎉 Bu güzel yolculuğun ortasındayız. Birlikte ne kadar büyüdük!"
   },
   21: {
     fruit: "Havuç", emoji: "🥕", size: "≈ 26.7 cm · 360 g (artık baş-topuk)",
@@ -2199,7 +2419,8 @@ const WEEK_DATA = {
       "Ödem ayaklarda hafif başlayabilir"
     ],
     tip: "Akşam yemeği erken ve hafif olsun — yatakta mide yanması sıkıntı yaratır.",
-    appt: ""
+    appt: "",
+    babyLetter: "Artık günü gecesi var benim de. Sen uyurken ben uyanık olabilirim — kusura bakma 😅"
   },
   22: {
     fruit: "Spagetti kabağı", emoji: "🎃", size: "≈ 27.8 cm · 430 g",
@@ -2214,7 +2435,8 @@ const WEEK_DATA = {
       "Cilt çatlaklarına dikkat"
     ],
     tip: "Eşinin karnına elini koy — bebeğin tekmesini hissedebilirsin. Üçüncü kalp ortak başladı 🤍",
-    appt: ""
+    appt: "",
+    babyLetter: "Babam karnına elini koyduğunda hissediyorum. Tekme atıp ona da merhaba deyim mi?"
   },
   23: {
     fruit: "Greyfurt", emoji: "🍊", size: "≈ 28.9 cm · 500 g",
@@ -2229,7 +2451,8 @@ const WEEK_DATA = {
       "Karın gerilmesi nedeniyle mide yanmaları artabilir"
     ],
     tip: "Babanın sesi bebek için çok önemli — düzenli olarak konuş, oku, şarkı söyle.",
-    appt: ""
+    appt: "",
+    babyLetter: "Babamın sesini tanıyorum şimdi. Ona söyle, daha çok konuşsun benimle."
   },
   24: {
     fruit: "Mısır", emoji: "🌽", size: "≈ 30 cm · 600 g",
@@ -2244,7 +2467,8 @@ const WEEK_DATA = {
       "İlk gerçek tekmeleri hissetmek için en güzel dönem"
     ],
     tip: "Şeker yükleme testi (OGTT) yakında. 24-28 hafta arası yaptırılmalı.",
-    appt: "Şeker yükleme testi — OGTT (24-28)"
+    appt: "Şeker yükleme testi — OGTT (24-28)",
+    babyLetter: "30 cm oldum, mısır kadarım. Akciğerlerim olgunlaşıyor, dış dünyaya hazırlanıyorum."
   },
   25: {
     fruit: "Karnabahar", emoji: "🥦", size: "≈ 34.6 cm · 660 g",
@@ -2259,7 +2483,8 @@ const WEEK_DATA = {
       "Uyku pozisyonu sol yan en iyisi"
     ],
     tip: "Ayaklarını yüksekte tutmaya çalış — ödemi azaltır.",
-    appt: ""
+    appt: "",
+    babyLetter: "Anne, bugün el sıkmayı denedim — parmaklarım kapanıp açılıyor. Yakında senin parmağını sıkacağım."
   },
   26: {
     fruit: "Marul", emoji: "🥬", size: "≈ 35.6 cm · 760 g",
@@ -2274,7 +2499,8 @@ const WEEK_DATA = {
       "Sıkıntılı uyku — yan yatışla yastık desteği işe yarar"
     ],
     tip: "Tekme sayma alışkanlığı bu hafta başlatılabilir — günün belli saatinde 1 saatte 10 tekme normaldir.",
-    appt: ""
+    appt: "",
+    babyLetter: "Gözlerimi açtım! Karanlıkta hâlâ ama ışığa tepki veriyorum. Senin sesin benim güneşim."
   },
   27: {
     fruit: "Kıvırcık marul", emoji: "🥬", size: "≈ 36.6 cm · 875 g",
@@ -2289,7 +2515,8 @@ const WEEK_DATA = {
       "Sırt için yastık şart"
     ],
     tip: "Hastane çantası listesi yapmaya başlamak için iyi bir zaman — acele etmeden yavaş yavaş hazırla.",
-    appt: ""
+    appt: "",
+    babyLetter: "Hıçkırığım çok belirgin. Karnında küçük 'pıt pıt'lar hissedersen ben şarap içiyor değilim, hıçkırıyorum 🤣"
   },
   28: {
     fruit: "Patlıcan", emoji: "🍆", size: "≈ 37.6 cm · 1 kg",
@@ -2304,7 +2531,8 @@ const WEEK_DATA = {
       "Mide yanması, kabızlık daha sık"
     ],
     tip: "Rh negatifsen Anti-D iğnesi bu hafta yapılır. Doktorla teyit et.",
-    appt: "Anti-D (Rh negatifse, 28)"
+    appt: "Anti-D (Rh negatifse, 28)",
+    babyLetter: "Üçüncü trimester! Şu anda doğsam yaşarım — ama ben tam zamanında gelmek istiyorum, sabret."
   },
   29: {
     fruit: "Kabak", emoji: "🎃", size: "≈ 38.6 cm · 1.15 kg",
@@ -2319,7 +2547,8 @@ const WEEK_DATA = {
       "Nabız artmış olabilir (kalp daha çok çalışıyor)"
     ],
     tip: "Kalsiyum kaynaklarını artır: süt, yoğurt, peynir, susam, kuru meyveler. Doktor önerirse takviye al.",
-    appt: ""
+    appt: "",
+    babyLetter: "Beynim çok hızlı gelişiyor. Anne, sen ne kadar dinleniyorsan ben o kadar daha akıllı oluyorum 😄"
   },
   30: {
     fruit: "Lahana", emoji: "🥬", size: "≈ 39.9 cm · 1.32 kg",
@@ -2334,7 +2563,8 @@ const WEEK_DATA = {
       "Ayak/el ödemine dikkat"
     ],
     tip: "Doğum dersi/hazırlık kursu kayıtlarını araştırın — birlikte hazırlanmak çok önemli.",
-    appt: ""
+    appt: "",
+    babyLetter: "Anne, sen çok yorgunsun biliyorum. Ben de uyumayı çok seviyorum. Beraber dinlenelim."
   },
   31: {
     fruit: "Hindistan cevizi", emoji: "🥥", size: "≈ 41.1 cm · 1.5 kg",
@@ -2349,7 +2579,8 @@ const WEEK_DATA = {
       "Mide yanması belki hayatın bir parçası oldu"
     ],
     tip: "Balık (haftada 2 porsiyon, civa düşük olanlar) ya da omega-3 takviyesi al — beyin gelişimi için.",
-    appt: ""
+    appt: "",
+    babyLetter: "Boy uzamasından çok yağ topluyorum şimdi — yumuşak ve yuvarlak olacağım."
   },
   32: {
     fruit: "Spagetti kabağı", emoji: "🎃", size: "≈ 42.4 cm · 1.7 kg",
@@ -2364,7 +2595,8 @@ const WEEK_DATA = {
       "Beyaz akıntı artabilir (sıvı kaçağıyla karıştırma)"
     ],
     tip: "Doğum çantası listesini hazırla; isim listesini de bitirmek için son haftalar.",
-    appt: "Kontrol ultrason (32)"
+    appt: "Kontrol ultrason (32)",
+    babyLetter: "32. hafta kontrol! Doktor amca beni ölçecek, ne kadar büyüdüm görecek. Heyecanlıyım."
   },
   33: {
     fruit: "Ananas", emoji: "🍍", size: "≈ 43.7 cm · 1.9 kg",
@@ -2379,7 +2611,8 @@ const WEEK_DATA = {
       "Doğum sancısı/yalancı sancı farkını araştır"
     ],
     tip: "Pelvik tabanı güçlendiren Kegel egzersizlerini günde birkaç kez yap — doğuma yardımcı olur.",
-    appt: ""
+    appt: "",
+    babyLetter: "Bağışıklığını alıyorum senden — beni hastalıklardan koruyacak antikorlar geliyor. Teşekkür ederim anne."
   },
   34: {
     fruit: "Kavun", emoji: "🍈", size: "≈ 45 cm · 2.15 kg",
@@ -2394,7 +2627,8 @@ const WEEK_DATA = {
       "Hastane çantası tamamlanmalı"
     ],
     tip: "Hastane çantasını birlikte gözden geçirin; eksikleri bu hafta tamamla.",
-    appt: ""
+    appt: "",
+    babyLetter: "Akciğerlerim neredeyse tamam. Birkaç hafta daha sabret, sonra dış dünyada birlikteyiz."
   },
   35: {
     fruit: "Bal kabağı", emoji: "🎃", size: "≈ 46.2 cm · 2.4 kg",
@@ -2409,7 +2643,8 @@ const WEEK_DATA = {
       "Sancı belirtilerine dikkat — gerçek sancı dengeli ve artan ritimde olur"
     ],
     tip: "Hastaneye nasıl gideceğinizi konuşun — saat, yol, kim arabaya binecek, kim çağrılacak.",
-    appt: "GBS taraması (35-37)"
+    appt: "GBS taraması (35-37)",
+    babyLetter: "Daracık oldu burası! Tekme atmak zorlaşıyor ama hâlâ her gün sana selam veriyorum."
   },
   36: {
     fruit: "Marul başı", emoji: "🥬", size: "≈ 47.4 cm · 2.6 kg",
@@ -2424,7 +2659,8 @@ const WEEK_DATA = {
       "Hastane çantası kapıda hazır olmalı"
     ],
     tip: "Doğum sırasında ne yapacağınızı planlayın: kim ne yapar, eşin yanında kalacak mı, doula var mı?",
-    appt: "Haftalık NST (36+)"
+    appt: "Haftalık NST (36+)",
+    babyLetter: "Tam-dönem yaklaşıyor. Hastane çantasını hazırla anne, her an kapına gelebilirim 😊"
   },
   37: {
     fruit: "Pazı", emoji: "🥬", size: "≈ 48.6 cm · 2.86 kg",
@@ -2439,7 +2675,8 @@ const WEEK_DATA = {
       "'Kontraksiyon sayma' zamanı yakın"
     ],
     tip: "5-1-1 kuralı: 5 dakikada bir, 1 dakika süren, 1 saattir devam eden kasılmalar varsa hastaneye.",
-    appt: ""
+    appt: "",
+    babyLetter: "Pelvise indim! Nefesin biraz rahatladı mı? Ben aşağı doğru pozisyon alıyorum."
   },
   38: {
     fruit: "Pırasa", emoji: "🌿", size: "≈ 49.8 cm · 3.08 kg",
@@ -2454,7 +2691,8 @@ const WEEK_DATA = {
       "Sabırlı ol — bebek kendi zamanını biliyor"
     ],
     tip: "Eşinin yanında olabilmek için programını esnet; her an arama gelebilir.",
-    appt: ""
+    appt: "",
+    babyLetter: "Her an gelebilirim artık. Yorulma anne, dinlen — son düzlükteyiz birlikte."
   },
   39: {
     fruit: "Kavun (büyük)", emoji: "🍈", size: "≈ 50.7 cm · 3.3 kg",
@@ -2469,7 +2707,8 @@ const WEEK_DATA = {
       "Hastane numarasını telefona kısayol koy"
     ],
     tip: "Telefonun şarjını sürekli dolu tut; eşinin telefonu da. Hastane çantası kapıda.",
-    appt: ""
+    appt: "",
+    babyLetter: "Çıkmaya hazırım. Beni nasıl karşılayacaksın? Ben seni nasıl tanıyacağım? Sabırsızlanıyorum."
   },
   40: {
     fruit: "Karpuz", emoji: "🍉", size: "≈ 51.2 cm · 3.5 kg",
@@ -2484,7 +2723,8 @@ const WEEK_DATA = {
       "Bu yolculuğun en güzel anı yaklaşıyor"
     ],
     tip: "Tebrikler — bu özel anı yaşamaya hazır olun. Birbirinize sıkı sarılın 🤍",
-    appt: ""
+    appt: "",
+    babyLetter: "Anne, yolum açık. Seninle yüz yüze görüşeceğimiz an çok yakın. Seni tanımak için sabırsızım 🤍"
   }
 };
 
@@ -2538,6 +2778,52 @@ const APPT_TEMPLATES = [
     description: "Doğuma kadar haftalık. Bebeğin kalp atışı ve hareketleri takip edilir.", optional: false }
 ];
 
+
+const HOSPITAL_BAG_DEFAULTS = {
+  mom: [
+    "Sabahlık (önden açılır, emzirmeye uygun)",
+    "Terlik (yıkanabilir)",
+    "Emzirme sutyeni (2-3 adet)",
+    "Hijyenik ped (lochia için, bol miktarda)",
+    "İç çamaşırı (5-6 adet, yüksek bel)",
+    "Diş fırçası, macun, şampuan",
+    "Saç tokası, lastik",
+    "Yüz havlusu",
+    "Su şişesi",
+    "Şarj aleti (uzun kablolu)",
+    "Doktor raporları, kimlik, sigorta",
+    "Kuru atıştırmalık (kraker, meyve)",
+    "Krem, dudak balsamı",
+    "Kalın çorap"
+  ],
+  baby: [
+    "0-3 ay zıbın (4-5 adet)",
+    "Bebek tulumu (2-3 adet)",
+    "Bebek alt bezi (yenidoğan, 1 paket)",
+    "Bebek pamuk (göbek bakımı için)",
+    "Kundak / pamuklu battaniye",
+    "Bebek bere (ince)",
+    "Bebek çorabı (2-3 çift)",
+    "Eldiven (yumuşak)",
+    "Biberon ve süt tulum (eğer planlıyorsanız)",
+    "Bebek sabunu, şampuanı",
+    "Bebek kremi",
+    "Yumuşak yüz mendili"
+  ],
+  dad: [
+    "Şarj aleti (uzun kablolu)",
+    "Yedek tişört, iç çamaşır",
+    "Diş fırçası, macun",
+    "Atıştırmalık (uzun bekleme için)",
+    "Kamera / fotoğraf makinesi",
+    "Para (hastane otoparkı, kafeterya)",
+    "Cüzdan, kimlik",
+    "Jaket / hırka (klima için)",
+    "Yastık (şezlongda uyumak için)",
+    "Müzik / kulaklık"
+  ]
+};
+
 /* ---------- 2) STATE & PERSISTENCE ---------- */
 
 const STORAGE_KEY = "9ay1hayat:v1";
@@ -2552,12 +2838,15 @@ function defaultState() {
     notes: [],                // [{id, createdAt, updatedAt, author, text, tags}]
     appointments: [],         // v0.3: doktor randevuları
     autoApptGenerated: false, // şablonlar bir kez üretildi mi
-    // v0.4 — Anne modu
+    // v0.2 final — bulut + doktor + anne modu
     dailyLogs: {},            // { "YYYY-MM-DD": { mood, symptoms[], waterGlasses, vitamins[], note, sharedWithCem } }
     weights: [],              // [{id, date, kg, sharedWithCem}]
     bps: [],                  // [{id, date, sys, dia, sharedWithCem}]
     kickSessions: [],         // [{id, startTime, endTime, count}]
     activeKickSession: null,  // o anda aktif sayım
+    // v0.5
+    hospitalBag: { mom: null, baby: null, dad: null }, // null = henüz inisiyalize edilmemiş
+    babyNames: [],            // [{id, name, addedBy, votes: {cem, buse}}]
     createdAt: new Date().toISOString()
   };
 }
@@ -2736,7 +3025,7 @@ function weekToLmp(weekNum) {
 
 /* ---------- 4) NAVİGASYON ---------- */
 
-const SCREENS = ["auth", "onboarding", "home", "week-detail", "notes", "note-editor", "settings", "appointments", "appointment-detail", "daily-log", "measurements", "kicks"];
+const SCREENS = ["auth", "onboarding", "home", "week-detail", "notes", "note-editor", "settings", "appointments", "appointment-detail", "daily-log", "measurements", "kicks", "hospital-bag", "names"];
 
 function navigate(name, params) {
   // Auth ekranı her zaman erişilebilir
@@ -2772,6 +3061,8 @@ function navigate(name, params) {
     case "daily-log": renderDailyLog(params); break;
     case "measurements": renderMeasurements(); break;
     case "kicks": renderKicks(); break;
+    case "hospital-bag": renderHospitalBag(); break;
+    case "names": renderNames(); break;
   }
 
   window.scrollTo(0, 0);
@@ -3174,6 +3465,22 @@ function renderWeekDetail(params) {
   document.getElementById("week-mom").querySelector("ul").innerHTML =
     data.mom.map(b => "<li>" + escapeHtml(b) + "</li>").join("");
   document.getElementById("week-tip").querySelector(".tip-text").textContent = data.tip;
+
+  // Bebekten mektup
+  const letterBox = document.getElementById("week-baby-letter");
+  if (letterBox) {
+    if (data.babyLetter) {
+      letterBox.innerHTML =
+        '<div class="baby-letter">' +
+          '<div class="label">🤍 Bebekten anneye</div>' +
+          '<div class="text">' + escapeHtml(data.babyLetter) + '</div>' +
+          '<div class="signature">— bebeğin, ' + viewingWeek + '. hafta</div>' +
+        '</div>';
+      letterBox.style.display = "block";
+    } else {
+      letterBox.style.display = "none";
+    }
+  }
 }
 
 function weekChange(delta) {
@@ -3662,6 +3969,169 @@ function apptDelete() {
     navigate("appointments");
   });
 }
+
+
+/* ---------- 9f) HASTANE ÇANTASI ---------- */
+
+let hbCurrentCat = "mom";
+
+function hbInit() {
+  if (!state.hospitalBag) state.hospitalBag = {};
+  ["mom","baby","dad"].forEach(cat => {
+    if (!state.hospitalBag[cat]) {
+      state.hospitalBag[cat] = HOSPITAL_BAG_DEFAULTS[cat].map((label, i) => ({
+        id: "hb_" + cat + "_" + i + "_" + Date.now(),
+        label: label,
+        checked: false
+      }));
+    }
+  });
+}
+
+function renderHospitalBag() {
+  hbInit();
+  // Tab'ları işaretle
+  document.querySelectorAll(".hb-tab").forEach(t => {
+    t.classList.toggle("active", t.dataset.cat === hbCurrentCat);
+  });
+
+  const list = state.hospitalBag[hbCurrentCat] || [];
+  const total = list.length;
+  const done = list.filter(i => i.checked).length;
+  const pct = total > 0 ? Math.round(done/total*100) : 0;
+  
+  document.getElementById("hb-progress").innerHTML = 
+    '<div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:14px;">' +
+      '<span style="color:var(--text-muted);">' + done + ' / ' + total + ' tamamlandı</span>' +
+      '<span style="font-weight:600;">' + pct + '%</span>' +
+    '</div>' +
+    '<div class="kick-progress" style="height:6px;"><div class="kick-progress-fill" style="width:' + pct + '%;background:var(--primary);"></div></div>';
+
+  document.getElementById("hb-list").innerHTML = list.map(item =>
+    '<div class="hb-item ' + (item.checked ? "checked" : "") + '" onclick="hbToggle(\'' + item.id + '\')">' +
+      '<div class="check' + (item.checked ? " checked" : "") + '">✓</div>' +
+      '<div class="label">' + escapeHtml(item.label) + '</div>' +
+      '<button class="del" onclick="event.stopPropagation();hbDelete(\'' + item.id + '\')" aria-label="Sil">×</button>' +
+    '</div>'
+  ).join("");
+  document.getElementById("hb-add-input").value = "";
+}
+
+function hbSetCat(cat) {
+  hbCurrentCat = cat;
+  renderHospitalBag();
+}
+
+function hbToggle(id) {
+  const list = state.hospitalBag[hbCurrentCat];
+  const item = list.find(i => i.id === id);
+  if (item) {
+    item.checked = !item.checked;
+    saveState();
+    renderHospitalBag();
+  }
+}
+
+function hbDelete(id) {
+  state.hospitalBag[hbCurrentCat] = state.hospitalBag[hbCurrentCat].filter(i => i.id !== id);
+  saveState();
+  renderHospitalBag();
+}
+
+function hbAddItem() {
+  const inp = document.getElementById("hb-add-input");
+  const text = (inp.value || "").trim();
+  if (!text) return;
+  state.hospitalBag[hbCurrentCat].push({
+    id: "hb_" + hbCurrentCat + "_" + Date.now() + "_" + Math.random().toString(36).slice(2,5),
+    label: text,
+    checked: false
+  });
+  inp.value = "";
+  saveState();
+  renderHospitalBag();
+}
+
+/* ---------- 9g) İSİM OYLAMASI ---------- */
+
+function renderNames() {
+  const list = state.babyNames || [];
+
+  // Sıralama: 
+  // 1. İkisi de ❤ -> en üstte
+  // 2. Tek ❤ + diğer 👍 (veya null)
+  // 3. ❤ olmayanlar
+  // 4. ikisi de 👎 en altta
+  const score = (n) => {
+    const cv = n.votes?.cem;
+    const bv = n.votes?.buse;
+    let s = 0;
+    [cv, bv].forEach(v => {
+      if (v === "love") s += 3;
+      else if (v === "like") s += 1;
+      else if (v === "dislike") s -= 2;
+    });
+    return s;
+  };
+  const sorted = [...list].sort((a, b) => score(b) - score(a));
+
+  document.getElementById("names-list").innerHTML = sorted.length === 0
+    ? '<div class="notes-empty"><div class="icon">👶</div><div style="font-size:18px; font-weight:600; color:var(--text); margin-bottom:6px;">Henüz isim yok</div><div>İlk ismi yaz, oylamaya başla 🤍</div></div>'
+    : sorted.map(n => {
+        const cv = n.votes?.cem || null;
+        const bv = n.votes?.buse || null;
+        const bothLoved = cv === "love" && bv === "love";
+        const renderVote = (voter, current) => {
+          const opt = (val, emoji) => 
+            '<button class="vote-btn ' + (current === val ? ("active-" + val) : "") + 
+            '" onclick="nameVote(\'' + n.id + '\',\'' + voter + '\',\'' + val + '\')">' + emoji + '</button>';
+          return '<div class="vote-pair">' +
+            '<span class="voter">' + (voter === "cem" ? "C:" : "B:") + '</span>' +
+            opt("love", "❤") + opt("like", "👍") + opt("dislike", "👎") +
+          '</div>';
+        };
+        return '<div class="name-row ' + (bothLoved ? "both-loved" : "") + '">' +
+          '<div class="name">' + escapeHtml(n.name) + (bothLoved ? " 🤍" : "") + '</div>' +
+          renderVote("cem", cv) +
+          renderVote("buse", bv) +
+          '<button class="del" onclick="nameDelete(\'' + n.id + '\')">×</button>' +
+        '</div>';
+      }).join("");
+}
+
+function nameAdd() {
+  const inp = document.getElementById("name-add-input");
+  const name = (inp.value || "").trim();
+  if (!name) return;
+  if (!state.babyNames) state.babyNames = [];
+  state.babyNames.push({
+    id: "n_" + Date.now() + "_" + Math.random().toString(36).slice(2,5),
+    name: name,
+    addedBy: state.activeUser,
+    votes: { cem: null, buse: null },
+    createdAt: new Date().toISOString()
+  });
+  inp.value = "";
+  saveState();
+  renderNames();
+}
+
+function nameVote(id, voter, vote) {
+  const n = (state.babyNames || []).find(x => x.id === id);
+  if (!n) return;
+  if (!n.votes) n.votes = {};
+  // Aynı oya tekrar tıklayınca temizle
+  n.votes[voter] = (n.votes[voter] === vote) ? null : vote;
+  saveState();
+  renderNames();
+}
+
+function nameDelete(id) {
+  state.babyNames = (state.babyNames || []).filter(x => x.id !== id);
+  saveState();
+  renderNames();
+}
+
 
 /* ---------- 9c) ANNE MODU — GÜNLÜK GİRDİ ---------- */
 
@@ -4246,14 +4716,14 @@ async function signInWithGoogle() {
   try {
     const provider = new window.fb.GoogleAuthProvider();
     const isStandalone = window.navigator.standalone === true;
-    if (isStandalone) {
-      // iOS standalone PWA: yönlendirme yöntemi
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || "");
+    if (isStandalone || isMobile) {
+      // Mobil cihazlarda popup güvenilir değil — redirect kullan
       await window.fb.signInWithRedirect(window.fb.auth, provider);
-      // Sayfa yönlenir, dönünce init() devreye girer
       return;
     }
 
-    // Masaüstü ve normal mobil tarayıcı: popup
+    // Masaüstü tarayıcı: popup
     const result = await window.fb.signInWithPopup(window.fb.auth, provider);
     if (!result || !result.user) {
       throw new Error("Giriş tamamlanmadı");
