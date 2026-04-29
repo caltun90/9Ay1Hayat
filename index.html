@@ -104,6 +104,8 @@
       overscroll-behavior-y: none;
       min-height: 100vh;
       min-height: 100dvh;
+      overflow-x: hidden;
+      max-width: 100vw;
     }
 
     body { padding-bottom: calc(80px + var(--safe-bottom)); }
@@ -492,6 +494,10 @@
       margin-bottom: 12px;
       cursor: pointer;
       transition: transform .1s;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
     }
     .note-item:active { transform: scale(0.99); }
     .note-item .meta-row {
@@ -501,6 +507,7 @@
       margin-bottom: 8px;
       font-size: 12px;
       color: var(--text-muted);
+      flex-wrap: wrap;
     }
     .note-item .text {
       color: var(--text);
@@ -508,10 +515,16 @@
       line-height: 1.55;
       white-space: pre-wrap;
       display: -webkit-box;
-      -webkit-line-clamp: 4;
+      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
+      max-width: 100%;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      word-break: break-word;
+      hyphens: auto;
     }
+    #notes-list { overflow-x: hidden; max-width: 100%; }
     .note-item .tags {
       display: flex;
       flex-wrap: wrap;
@@ -1932,6 +1945,12 @@
       -webkit-line-clamp: unset;
       display: block;
       overflow: visible;
+      max-width: 100%;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      word-break: break-word;
+      white-space: pre-wrap;
+      hyphens: auto;
     }
     .note-expand-btn {
       background: transparent;
@@ -2026,6 +2045,21 @@
     }
     .measure-input:focus { border-color: var(--primary); }
     .measure-input::placeholder { color: var(--text-soft); }
+
+    /* "Büyük, net" — Ölçüm ekranında geniş tek-satır input */
+    .measure-input-big {
+      font-size: 28px !important;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      text-align: center;
+      min-height: 64px !important;
+      padding: 12px 16px !important;
+    }
+    .measure-input-big::placeholder {
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
 
     /* ============ KİLO grafiği ============ */
     .weight-chart {
@@ -2909,7 +2943,7 @@
     <h3>Hakkında</h3>
     <div class="settings-row">
       <span class="label">Sürüm</span>
-      <span class="value">v1.2 — Su (15 cap) · özel vitamin/ilaç listesi · İçtim butonu · scroll fix · input fallback</span>
+      <span class="value">v1.2.3 — Notlar word-break + horizontal scroll fix + 3-satır clamp</span>
     </div>
     <div class="settings-row">
       <span class="label">Yapım</span>
@@ -3047,9 +3081,9 @@
       <span style="font-size: 18px;">💧</span> Su <span class="small" style="font-weight:400;">(hedef ~8 bardak)</span>
     </h3>
     <div class="water-row">
-      <button class="water-btn" id="water-minus-btn" onclick="dailyLogWaterChange(-1)" aria-label="Eksilt">−</button>
+      <button class="water-btn" id="water-minus-btn" onclick="event.stopPropagation();dailyLogWaterChange(-1)" aria-label="Eksilt">−</button>
       <div class="water-display"><span id="water-count">0</span><span class="small">/8</span></div>
-      <button class="water-btn primary" id="water-plus-btn" onclick="dailyLogWaterChange(1)" aria-label="Arttır">+</button>
+      <button class="water-btn primary" id="water-plus-btn" onclick="event.stopPropagation();dailyLogWaterChange(1)" aria-label="Arttır">+</button>
     </div>
     <div class="water-glasses" id="water-glasses"></div>
     <div id="water-extra"></div>
@@ -3101,22 +3135,20 @@
 
   <div class="card">
     <h3 style="font-size: 14px; color: var(--primary-deep); margin-bottom: 12px;">⚖️ Kilo</h3>
-    <div class="h-stack" style="gap: 10px;">
-      <input type="number" inputmode="decimal" step="0.1" min="40" max="200" id="weight-input" placeholder="Bugünkü kilo (kg)" class="measure-input" style="color:#2A2D34; -webkit-appearance:none; appearance:none; background:#FFFFFF;" />
-      <button class="btn btn-primary" onclick="saveWeight()" style="min-width: 90px; min-height: 50px; flex: 0 0 auto;">Ekle</button>
-    </div>
+    <input type="number" inputmode="decimal" step="0.1" min="40" max="200" id="weight-input" placeholder="Bugünkü kilo (kg)" class="measure-input measure-input-big" style="color:#2A2D34; -webkit-appearance:none; appearance:none; background:#FFFFFF; width:100%; margin-bottom: 10px;" />
+    <button class="btn btn-primary" onclick="saveWeight()" style="width:100%; min-height: 52px;">Ekle</button>
     <div id="weight-chart-box"></div>
     <div id="weight-history" style="margin-top: 14px;"></div>
   </div>
 
   <div class="card">
     <h3 style="font-size: 14px; color: var(--primary-deep); margin-bottom: 12px;">❤️ Tansiyon</h3>
-    <div class="h-stack" style="gap: 8px;">
-      <input type="number" inputmode="numeric" min="60" max="200" id="bp-sys" placeholder="Büyük (sis)" class="measure-input" style="color:#2A2D34; -webkit-appearance:none; appearance:none; background:#FFFFFF;" />
-      <span class="small" style="flex: 0 0 auto;">/</span>
-      <input type="number" inputmode="numeric" min="40" max="120" id="bp-dia" placeholder="Küçük (dia)" class="measure-input" style="color:#2A2D34; -webkit-appearance:none; appearance:none; background:#FFFFFF;" />
-      <button class="btn btn-primary" onclick="saveBP()" style="min-width: 80px; min-height: 50px; flex: 0 0 auto;">Ekle</button>
+    <div class="h-stack" style="gap: 8px; margin-bottom: 10px;">
+      <input type="number" inputmode="numeric" min="60" max="200" id="bp-sys" placeholder="Büyük (sis)" class="measure-input measure-input-big" style="color:#2A2D34; -webkit-appearance:none; appearance:none; background:#FFFFFF;" />
+      <span class="small" style="flex: 0 0 auto; font-size: 22px; font-weight: 700; color: var(--text-soft);">/</span>
+      <input type="number" inputmode="numeric" min="40" max="120" id="bp-dia" placeholder="Küçük (dia)" class="measure-input measure-input-big" style="color:#2A2D34; -webkit-appearance:none; appearance:none; background:#FFFFFF;" />
     </div>
+    <button class="btn btn-primary" onclick="saveBP()" style="width:100%; min-height: 52px;">Ekle</button>
     <div id="bp-history" style="margin-top: 14px;"></div>
   </div>
 </div>
@@ -5679,7 +5711,7 @@ function renderDailyLog(params) {
   const moodRow = document.getElementById("mood-row");
   moodRow.innerHTML = MOOD_LEVELS.map(m => {
     const active = log.mood === m.level;
-    return '<button class="mood-btn' + (active ? ' active' : '') + '" data-mood-level="' + m.level + '" onclick="dailyLogSetMood(' + m.level + ')">' +
+    return '<button class="mood-btn' + (active ? ' active' : '') + '" data-level="' + m.level + '" onclick="event.stopPropagation();dailyLogSetMood(' + m.level + ')">' +
       '<span class="emoji">' + m.emoji + '</span>' +
       '<span class="lbl">' + m.label + '</span>' +
     '</button>';
@@ -5689,7 +5721,7 @@ function renderDailyLog(params) {
   const symptomGrid = document.getElementById("symptom-grid");
   symptomGrid.innerHTML = SYMPTOM_LIST.map(s => {
     const active = log.symptoms.includes(s.id);
-    return '<button class="symptom-chip' + (active ? ' active' : '') + '" data-sym-id="' + s.id + '" onclick="dailyLogToggleSymptom(\'' + s.id + '\')">' +
+    return '<button class="symptom-chip' + (active ? ' active' : '') + '" data-id="' + s.id + '" onclick="event.stopPropagation();dailyLogToggleSymptom(\'' + s.id + '\')">' +
       '<span class="icon">' + s.icon + '</span>' +
       '<span>' + s.label + '</span>' +
     '</button>';
@@ -5705,12 +5737,12 @@ function renderDailyLog(params) {
     ? '<div class="small" style="text-align:center; padding: 12px;">Listede aktif vitamin/ilaç yok. <b>✏ Listeyi düzenle</b> ile ekle.</div>'
     : rel.map(v => {
       const taken = log.vitamins.includes(v.id);
-      return '<div class="vitamin-row" data-vit-id="' + v.id + '">' +
+      return '<div class="vitamin-row" data-id="' + v.id + '">' +
         '<div class="vit-info">' +
           '<div class="name">' + escapeHtml(v.label) + '</div>' +
           '<div class="hint">' + escapeHtml(v.hint || "") + '</div>' +
         '</div>' +
-        '<button type="button" class="vitamin-take-btn' + (taken ? ' taken' : '') + '" onclick="dailyLogToggleVitamin(\'' + v.id + '\')">' +
+        '<button type="button" class="vitamin-take-btn' + (taken ? ' taken' : '') + '" onclick="event.stopPropagation();dailyLogToggleVitamin(\'' + v.id + '\')">' +
           (taken ? '✓ İçildi' : '✓ İçtim') +
         '</button>' +
       '</div>';
@@ -5771,13 +5803,13 @@ function renderWaterDisplay() {
 
 function dailyLogSetMood(level) {
   const log = getDailyLog(dailyLogDate);
-  log.mood = log.mood === level ? null : level; // ikinci dokunuş = temizle
+  log.mood = (log.mood === level) ? null : level; // ikinci dokunuş = temizle
   dailyLogMarkDirty();
   saveState();
   // Kısmi DOM güncellemesi — full re-render YAPMA (scroll korunur)
   const newMood = log.mood;
   document.querySelectorAll("#mood-row .mood-btn").forEach(btn => {
-    const lvl = parseInt(btn.dataset.moodLevel, 10);
+    const lvl = parseInt(btn.dataset.level, 10);
     btn.classList.toggle("active", lvl === newMood);
   });
 }
@@ -5790,7 +5822,7 @@ function dailyLogToggleSymptom(id) {
   dailyLogMarkDirty();
   saveState();
   // Kısmi DOM güncellemesi — sadece bu chip'in active class'ı (scroll korunur)
-  const chip = document.querySelector('#symptom-grid .symptom-chip[data-sym-id="' + id + '"]');
+  const chip = document.querySelector('#symptom-grid .symptom-chip[data-id="' + id + '"]');
   if (chip) chip.classList.toggle("active", log.symptoms.includes(id));
 }
 
@@ -5813,7 +5845,7 @@ function dailyLogToggleVitamin(id) {
   dailyLogMarkDirty();
   saveState();
   // Kısmi DOM güncellemesi — sadece bu satırın butonu (scroll korunur)
-  const row = document.querySelector('#vitamin-list .vitamin-row[data-vit-id="' + id + '"]');
+  const row = document.querySelector('#vitamin-list .vitamin-row[data-id="' + id + '"]');
   if (row) {
     const btn = row.querySelector(".vitamin-take-btn");
     if (btn) {
