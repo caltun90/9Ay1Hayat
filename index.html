@@ -1843,6 +1843,19 @@
       line-height: 1;
       filter: drop-shadow(0 4px 8px rgba(42,45,52,0.12));
     }
+    .week-hero .big-fruit svg,
+    .week-hero .big-fruit > span > svg {
+      width: 1em;
+      height: 1em;
+      display: block;
+    }
+    .week-card .fruit-emoji svg,
+    .week-card .fruit-emoji > span > svg {
+      width: 1em;
+      height: 1em;
+      vertical-align: middle;
+      display: inline-block;
+    }
     .week-hero .decor {
       position: absolute;
       font-size: 26px;
@@ -2825,6 +2838,25 @@
 
 /* ---------- 1) HAFTA HAFTA VERİ (4-40) ---------- */
 
+/* SVG meyve/sebze görselleri — emojide karşılığı olmayan veya tekrar eden meyveler için.
+   Her biri viewBox 100x100, width/height 1em (font-size'a uyar). */
+const SVG_FRUITS = {
+  ahududu: '<svg viewBox="0 0 100 100" width="1em" height="1em"><path d="M50 22 L42 12 L50 18 L58 12 L50 22 Z" fill="#7FB069"/><g fill="#D49497" stroke="#A85759" stroke-width="1"><circle cx="42" cy="42" r="8"/><circle cx="58" cy="42" r="8"/><circle cx="36" cy="55" r="8"/><circle cx="50" cy="55" r="8"/><circle cx="64" cy="55" r="8"/><circle cx="40" cy="68" r="8"/><circle cx="56" cy="68" r="8"/><circle cx="48" cy="80" r="8"/></g></svg>',
+  incir: '<svg viewBox="0 0 100 100" width="1em" height="1em"><path d="M50 18 L50 12" stroke="#4F6244" stroke-width="2" fill="none"/><ellipse cx="42" cy="14" rx="8" ry="4" fill="#7FB069" transform="rotate(-30 42 14)"/><path d="M50 22 C30 24 28 48 32 70 C36 86 50 90 50 90 C50 90 64 86 68 70 C72 48 70 24 50 22 Z" fill="#A88BC0" stroke="#6F5A87" stroke-width="1.5"/><circle cx="44" cy="55" r="1.5" fill="#E8B4B8"/><circle cx="55" cy="60" r="1.5" fill="#E8B4B8"/><circle cx="48" cy="68" r="1.5" fill="#E8B4B8"/><circle cx="58" cy="72" r="1.5" fill="#E8B4B8"/></svg>',
+  lime: '<svg viewBox="0 0 100 100" width="1em" height="1em"><ellipse cx="50" cy="55" rx="32" ry="30" fill="#A8C97A" stroke="#4F6244" stroke-width="2"/><path d="M40 26 L36 18" stroke="#4F6244" stroke-width="2" fill="none"/><ellipse cx="32" cy="20" rx="6" ry="3" fill="#7FB069" transform="rotate(-30 32 20)"/><ellipse cx="40" cy="42" rx="8" ry="4" fill="#D8E5BD" opacity="0.7"/></svg>',
+  bezelye: '<svg viewBox="0 0 100 100" width="1em" height="1em"><path d="M16 50 Q50 35 84 50 Q50 75 16 50 Z" fill="#A8B89E" opacity="0.45"/><path d="M16 50 Q50 35 84 50" stroke="#4F6244" stroke-width="2" fill="none"/><circle cx="32" cy="55" r="11" fill="#A8C97A" stroke="#4F6244" stroke-width="1.5"/><circle cx="50" cy="55" r="11" fill="#A8C97A" stroke="#4F6244" stroke-width="1.5"/><circle cx="68" cy="55" r="11" fill="#A8C97A" stroke="#4F6244" stroke-width="1.5"/><circle cx="29" cy="51" r="2.5" fill="#D8E5BD"/><circle cx="47" cy="51" r="2.5" fill="#D8E5BD"/><circle cx="65" cy="51" r="2.5" fill="#D8E5BD"/></svg>',
+  spagetti_kabagi: '<svg viewBox="0 0 100 100" width="1em" height="1em"><rect x="48" y="14" width="4" height="6" rx="2" fill="#7FB069"/><ellipse cx="50" cy="55" rx="22" ry="38" fill="#F2D279" stroke="#A88B3F" stroke-width="2"/><path d="M40 30 Q42 55 38 80" stroke="#E8C25C" stroke-width="1.5" fill="none"/><path d="M60 30 Q58 55 62 80" stroke="#E8C25C" stroke-width="1.5" fill="none"/><path d="M50 24 L50 86" stroke="#E8C25C" stroke-width="1" fill="none" opacity="0.6"/></svg>',
+  karnabahar: '<svg viewBox="0 0 100 100" width="1em" height="1em"><path d="M22 65 Q14 50 22 38 Q35 35 36 50 Z" fill="#A8B89E" stroke="#4F6244" stroke-width="1.5"/><path d="M78 65 Q86 50 78 38 Q65 35 64 50 Z" fill="#A8B89E" stroke="#4F6244" stroke-width="1.5"/><g fill="#FAF7F2" stroke="#C2B89E" stroke-width="1"><circle cx="40" cy="42" r="9"/><circle cx="55" cy="40" r="9"/><circle cx="32" cy="55" r="9"/><circle cx="48" cy="56" r="11"/><circle cx="65" cy="55" r="9"/><circle cx="40" cy="68" r="9"/><circle cx="58" cy="68" r="9"/></g></svg>',
+  kivircik_marul: '<svg viewBox="0 0 100 100" width="1em" height="1em"><path d="M50 18 Q26 18 18 38 Q12 55 18 70 Q28 86 50 86 Q72 86 82 70 Q88 55 82 38 Q74 18 50 18 Z" fill="#B8D89E" stroke="#7FB069" stroke-width="2"/><path d="M30 30 Q22 38 24 48" stroke="#7FB069" stroke-width="1.4" fill="none"/><path d="M70 30 Q78 38 76 48" stroke="#7FB069" stroke-width="1.4" fill="none"/><path d="M30 70 Q22 62 24 52" stroke="#7FB069" stroke-width="1.4" fill="none"/><path d="M70 70 Q78 62 76 52" stroke="#7FB069" stroke-width="1.4" fill="none"/><path d="M44 22 Q40 28 42 34" stroke="#7FB069" stroke-width="1.2" fill="none"/><path d="M56 22 Q60 28 58 34" stroke="#7FB069" stroke-width="1.2" fill="none"/><path d="M44 78 Q40 72 42 66" stroke="#7FB069" stroke-width="1.2" fill="none"/><path d="M56 78 Q60 72 58 66" stroke="#7FB069" stroke-width="1.2" fill="none"/><path d="M50 28 Q48 50 50 76" stroke="#7FB069" stroke-width="1" fill="none" opacity="0.5"/></svg>',
+  kabacik: '<svg viewBox="0 0 100 100" width="1em" height="1em"><rect x="48" y="14" width="4" height="8" rx="2" fill="#4F6244"/><ellipse cx="50" cy="56" rx="18" ry="34" fill="#7FB069" stroke="#4F6244" stroke-width="2"/><path d="M40 28 Q42 56 38 84" stroke="#A8C97A" stroke-width="1.5" fill="none"/><path d="M60 28 Q58 56 62 84" stroke="#A8C97A" stroke-width="1.5" fill="none"/><path d="M50 24 L50 86" stroke="#A8C97A" stroke-width="1" fill="none" opacity="0.5"/></svg>',
+  lahana: '<svg viewBox="0 0 100 100" width="1em" height="1em"><circle cx="50" cy="55" r="32" fill="#A8C97A" stroke="#4F6244" stroke-width="2"/><path d="M50 23 Q35 35 30 55 Q35 75 50 87" stroke="#7FB069" stroke-width="2" fill="none"/><path d="M50 23 Q65 35 70 55 Q65 75 50 87" stroke="#7FB069" stroke-width="2" fill="none"/><path d="M50 23 L50 87" stroke="#7FB069" stroke-width="1.5" fill="none"/><path d="M22 50 Q14 45 18 35 Q28 38 30 50 Z" fill="#7FB069" stroke="#4F6244" stroke-width="1.5"/><path d="M78 50 Q86 45 82 35 Q72 38 70 50 Z" fill="#7FB069" stroke="#4F6244" stroke-width="1.5"/></svg>',
+  mini_karpuz: '<svg viewBox="0 0 100 100" width="1em" height="1em"><ellipse cx="50" cy="55" rx="32" ry="30" fill="#7FB069" stroke="#4F6244" stroke-width="2"/><path d="M30 28 Q35 55 30 82" stroke="#4F6244" stroke-width="1.5" fill="none"/><path d="M50 23 L50 87" stroke="#4F6244" stroke-width="1.5" fill="none"/><path d="M70 28 Q65 55 70 82" stroke="#4F6244" stroke-width="1.5" fill="none"/><path d="M50 30 A 22 22 0 0 0 50 80 Z" fill="#E8B4B8" opacity="0.75"/><ellipse cx="42" cy="50" rx="1.5" ry="2.5" fill="#2A2D34"/><ellipse cx="44" cy="65" rx="1.5" ry="2.5" fill="#2A2D34"/><ellipse cx="38" cy="58" rx="1.5" ry="2.5" fill="#2A2D34"/></svg>',
+  bal_kabagi: '<svg viewBox="0 0 100 100" width="1em" height="1em"><rect x="48" y="14" width="4" height="6" rx="1" fill="#4F6244"/><ellipse cx="50" cy="56" rx="36" ry="32" fill="#F2A268" stroke="#B86F3D" stroke-width="2"/><path d="M30 30 Q34 56 30 82" stroke="#B86F3D" stroke-width="2" fill="none"/><path d="M42 26 Q44 56 42 86" stroke="#B86F3D" stroke-width="2" fill="none"/><path d="M58 26 Q56 56 58 86" stroke="#B86F3D" stroke-width="2" fill="none"/><path d="M70 30 Q66 56 70 82" stroke="#B86F3D" stroke-width="2" fill="none"/></svg>',
+  marul_basi: '<svg viewBox="0 0 100 100" width="1em" height="1em"><circle cx="50" cy="58" r="34" fill="#B8D89E" stroke="#4F6244" stroke-width="2"/><path d="M30 38 Q40 28 50 30 Q60 28 70 38" stroke="#7FB069" stroke-width="2" fill="none"/><path d="M22 56 Q30 50 40 56" stroke="#7FB069" stroke-width="1.5" fill="none"/><path d="M60 56 Q70 50 78 56" stroke="#7FB069" stroke-width="1.5" fill="none"/><path d="M30 78 Q40 72 50 75 Q60 72 70 78" stroke="#7FB069" stroke-width="1.5" fill="none"/><path d="M50 30 L50 88" stroke="#7FB069" stroke-width="1" fill="none" opacity="0.5"/></svg>',
+  pazi: '<svg viewBox="0 0 100 100" width="1em" height="1em"><path d="M50 92 L50 55" stroke="#C97070" stroke-width="4" stroke-linecap="round"/><path d="M50 55 Q22 40 18 22 Q34 14 50 18 Q66 14 82 22 Q78 40 50 55 Z" fill="#7FB069" stroke="#4F6244" stroke-width="2"/><path d="M50 55 L50 18" stroke="#4F6244" stroke-width="1.5" fill="none"/><path d="M50 35 Q35 30 25 22" stroke="#4F6244" stroke-width="1" fill="none" opacity="0.6"/><path d="M50 35 Q65 30 75 22" stroke="#4F6244" stroke-width="1" fill="none" opacity="0.6"/></svg>',
+  kavun: '<svg viewBox="0 0 100 100" width="1em" height="1em"><ellipse cx="50" cy="55" rx="36" ry="32" fill="#F2DC9E" stroke="#A88E5A" stroke-width="2"/><path d="M14 55 Q50 30 86 55" stroke="#A88E5A" stroke-width="1" fill="none" opacity="0.6"/><path d="M14 55 Q50 80 86 55" stroke="#A88E5A" stroke-width="1" fill="none" opacity="0.6"/><path d="M50 23 L50 87" stroke="#A88E5A" stroke-width="1" fill="none" opacity="0.6"/><circle cx="32" cy="42" r="1.5" fill="#A88E5A" opacity="0.4"/><circle cx="44" cy="35" r="1.5" fill="#A88E5A" opacity="0.4"/><circle cx="60" cy="38" r="1.5" fill="#A88E5A" opacity="0.4"/><circle cx="68" cy="48" r="1.5" fill="#A88E5A" opacity="0.4"/><circle cx="40" cy="68" r="1.5" fill="#A88E5A" opacity="0.4"/><circle cx="56" cy="72" r="1.5" fill="#A88E5A" opacity="0.4"/></svg>'
+};
+
 const WEEK_DATA = {
   4: {
     fruit: "Haşhaş tohumu", emoji: "🌱", size: "≈ 2 mm · <1 g",
@@ -2891,7 +2923,7 @@ const WEEK_DATA = {
     babyLetter: "Kollarım ve bacaklarım belirginleşmeye başladı. Yakında tekme atmaya başlayacağım, sabırlı ol 😊"
   },
   8: {
-    fruit: "Ahududu", emoji: "🍓", size: "≈ 1.6 cm · 1 g",
+    fruit: "Ahududu", emoji: SVG_FRUITS.ahududu, size: "≈ 1.6 cm · 1 g",
     baby: [
       "Parmak izleri bile bu hafta oluşmaya başlıyor",
       "Kulak yapıları oluşuyor",
@@ -2939,7 +2971,7 @@ const WEEK_DATA = {
     babyLetter: "Tırnaklarım çıkmaya başladı! Daha tırnak makasıyla tanışmadım ama yakında 😄"
   },
   11: {
-    fruit: "İncir", emoji: "🍐", size: "≈ 4.1 cm · 7 g",
+    fruit: "İncir", emoji: SVG_FRUITS.incir, size: "≈ 4.1 cm · 7 g",
     baby: [
       "Bebek artık esniyor, geriniyor — küçük insan!",
       "Cinsel organlar farklılaşmaya başlıyor",
@@ -2955,7 +2987,7 @@ const WEEK_DATA = {
     babyLetter: "Düşük riski azaldı bu hafta — birlikte daha güvendeyiz artık. Rahat nefes al anne."
   },
   12: {
-    fruit: "Misket limonu", emoji: "🍋", size: "≈ 5.4 cm · 14 g",
+    fruit: "Misket limonu", emoji: SVG_FRUITS.lime, size: "≈ 5.4 cm · 14 g",
     baby: [
       "Kalp atışı doppler ile dinlenebilir 🎵",
       "Refleksler başladı — parmağı dudağına götürür",
@@ -2971,7 +3003,7 @@ const WEEK_DATA = {
     babyLetter: "Kalbim doppler ile duyulabiliyor şimdi. Babamla beraber dinleyin, çok güzel ses çıkarıyorum."
   },
   13: {
-    fruit: "Bezelye kabuğu", emoji: "🟢", size: "≈ 7.4 cm · 23 g",
+    fruit: "Bezelye", emoji: SVG_FRUITS.bezelye, size: "≈ 7.4 cm · 23 g",
     baby: [
       "Sesleri duymaya başlıyor",
       "Parmak izleri tamamlandı — eşsiz",
@@ -3035,7 +3067,7 @@ const WEEK_DATA = {
     babyLetter: "Ses tellerimi kullanmaya başladım. Daha bağıramıyorum ama yakında 😉"
   },
   17: {
-    fruit: "Şalgam", emoji: "🥔", size: "≈ 13 cm · 140 g",
+    fruit: "Soğan", emoji: "🧅", size: "≈ 13 cm · 140 g",
     baby: [
       "Bebek hıçkırık tutuyor — ileride hissedeceksin",
       "Kalp dakikada 140-150 atıyor",
@@ -3115,7 +3147,7 @@ const WEEK_DATA = {
     babyLetter: "Artık günü gecesi var benim de. Sen uyurken ben uyanık olabilirim — kusura bakma 😅"
   },
   22: {
-    fruit: "Spagetti kabağı", emoji: "🎃", size: "≈ 27.8 cm · 430 g",
+    fruit: "Spagetti kabağı", emoji: SVG_FRUITS.spagetti_kabagi, size: "≈ 27.8 cm · 430 g",
     baby: [
       "Dudaklar ve diş tomurcukları belirgin",
       "Ses tellerinin yapısı tam",
@@ -3163,7 +3195,7 @@ const WEEK_DATA = {
     babyLetter: "30 cm oldum, mısır kadarım. Akciğerlerim olgunlaşıyor, dış dünyaya hazırlanıyorum."
   },
   25: {
-    fruit: "Karnabahar", emoji: "🥦", size: "≈ 34.6 cm · 660 g",
+    fruit: "Karnabahar", emoji: SVG_FRUITS.karnabahar, size: "≈ 34.6 cm · 660 g",
     baby: [
       "Cilt rengi pembeleşmeye başladı",
       "Saç renklenmeye başladı",
@@ -3195,7 +3227,7 @@ const WEEK_DATA = {
     babyLetter: "Gözlerimi açtım! Karanlıkta hâlâ ama ışığa tepki veriyorum. Senin sesin benim güneşim."
   },
   27: {
-    fruit: "Kıvırcık marul", emoji: "🥬", size: "≈ 36.6 cm · 875 g",
+    fruit: "Kıvırcık marul", emoji: SVG_FRUITS.kivircik_marul, size: "≈ 36.6 cm · 875 g",
     baby: [
       "Hıçkırıkları artık belirgin — annenin karnı titriyor",
       "Beyin gelişimi hızla devam ediyor",
@@ -3227,7 +3259,7 @@ const WEEK_DATA = {
     babyLetter: "Üçüncü trimester! Şu anda doğsam yaşarım — ama ben tam zamanında gelmek istiyorum, sabret."
   },
   29: {
-    fruit: "Kabak", emoji: "🎃", size: "≈ 38.6 cm · 1.15 kg",
+    fruit: "Kabacık", emoji: SVG_FRUITS.kabacik, size: "≈ 38.6 cm · 1.15 kg",
     baby: [
       "Akciğerler henüz olgunlaşmadı, ama şu anda doğsa yaşar",
       "Kemikler hızla sertleşiyor — kalsiyum öneml̇ı",
@@ -3243,7 +3275,7 @@ const WEEK_DATA = {
     babyLetter: "Beynim çok hızlı gelişiyor. Anne, sen ne kadar dinleniyorsan ben o kadar daha akıllı oluyorum 😄"
   },
   30: {
-    fruit: "Lahana", emoji: "🥬", size: "≈ 39.9 cm · 1.32 kg",
+    fruit: "Lahana", emoji: SVG_FRUITS.lahana, size: "≈ 39.9 cm · 1.32 kg",
     baby: [
       "Saç ve cilt rengi belirginleşti",
       "Lanugo (ince tüy) dökülmeye başladı",
@@ -3275,7 +3307,7 @@ const WEEK_DATA = {
     babyLetter: "Boy uzamasından çok yağ topluyorum şimdi — yumuşak ve yuvarlak olacağım."
   },
   32: {
-    fruit: "Spagetti kabağı", emoji: "🎃", size: "≈ 42.4 cm · 1.7 kg",
+    fruit: "Mini karpuz", emoji: SVG_FRUITS.mini_karpuz, size: "≈ 42.4 cm · 1.7 kg",
     baby: [
       "Tırnaklar parmak ucuna ulaştı",
       "Akciğerlerde olgunlaşma hızlanıyor",
