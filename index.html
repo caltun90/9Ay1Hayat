@@ -10,6 +10,41 @@
   <meta name="format-detection" content="telephone=no" />
   <title>9 Ay 1 Hayat Olsun</title>
 
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot, enableIndexedDbPersistence, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBzKvMR-x4bbjl1JsIKsFuRN_DOJywU2fQ",
+      authDomain: "ay1hayat.firebaseapp.com",
+      projectId: "ay1hayat",
+      storageBucket: "ay1hayat.firebasestorage.app",
+      messagingSenderId: "292426253465",
+      appId: "1:292426253465:web:984349b6986affb59f2408"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Çevrimdışı destek (multi-tab varsa sessizce başarısız olur)
+    enableIndexedDbPersistence(db).catch(() => {});
+
+    // Yönlendirme akışı sonrası dönüşü yakalamak için
+    getRedirectResult(auth).catch((err) => console.warn("Redirect result error:", err));
+
+    window.fb = {
+      auth, db,
+      GoogleAuthProvider,
+      signInWithPopup, signInWithRedirect,
+      onAuthStateChanged, signOut,
+      doc, setDoc, getDoc, onSnapshot, serverTimestamp
+    };
+    window.dispatchEvent(new Event("fb-ready"));
+  </script>
+
   <style>
     /* ============ TEMA & TEMEL ============ */
     :root {
@@ -542,6 +577,22 @@
     }
     .editor-textarea:focus { border-color: var(--primary); }
 
+    .editor-date {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      color: var(--text);
+      font-size: 17px;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      min-height: 50px;
+      transition: border-color .15s;
+    }
+    .editor-date:focus { border-color: var(--primary); }
+
     .editor-section { margin-bottom: 16px; }
     .editor-label {
       display: block;
@@ -879,6 +930,374 @@
       margin-top: 8px;
     }
 
+    /* ============ RANDEVU KARTLARI ============ */
+    .appt-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: transform .1s;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .appt-card:active { transform: scale(0.99); }
+    .appt-card.done { opacity: 0.5; }
+    .appt-card.overdue { border-left: 3px solid var(--danger); padding-left: 13px; }
+    .appt-card.this-week { border-left: 3px solid var(--warn); padding-left: 13px; }
+    .appt-card .icon-box {
+      flex: 0 0 auto;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--primary-soft);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .appt-card.done .icon-box { background: var(--secondary-soft); }
+    .appt-card .body { flex: 1; min-width: 0; }
+    .appt-card .title-row {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .appt-card .meta-row {
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .appt-card .week-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      background: var(--bg-soft);
+      color: var(--text-muted);
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+    }
+    .appt-card.done .week-tag { background: var(--secondary-soft); color: #4F6244; }
+
+    /* Sıradaki randevu kartı (ana ekran) */
+    .next-appt-card {
+      background: linear-gradient(135deg, var(--warn) 0%, #F8D6B0 100%);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+      cursor: pointer;
+      transition: transform .1s;
+      color: #6B4426;
+    }
+    .next-appt-card:active { transform: scale(0.99); }
+    .next-appt-card .label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      opacity: 0.85;
+    }
+    .next-appt-card .title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .next-appt-card .when {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .next-appt-card.overdue {
+      background: linear-gradient(135deg, #E8A8A8 0%, #F2C4C4 100%);
+      color: #6B2A2A;
+    }
+
+    /* ============ ANNE MODU ============ */
+    .mood-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+    .mood-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 12px 4px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-soft);
+      transition: all .15s;
+      min-height: 84px;
+    }
+    .mood-btn.active {
+      background: var(--primary-soft);
+      transform: scale(1.05);
+    }
+    .mood-btn .emoji { font-size: 28px; line-height: 1; }
+    .mood-btn .lbl { font-size: 11px; color: var(--text-muted); }
+    .mood-btn.active .lbl { color: var(--primary-deep); font-weight: 600; }
+
+    .symptom-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .symptom-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      background: var(--bg-soft);
+      border: 1.5px solid transparent;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      transition: all .15s;
+      text-align: left;
+    }
+    .symptom-chip.active {
+      background: var(--primary-soft);
+      border-color: var(--primary);
+      color: var(--primary-deep);
+      font-weight: 600;
+    }
+    .symptom-chip .icon { font-size: 16px; }
+
+    .water-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      justify-content: center;
+      padding: 8px 0;
+    }
+    .water-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--bg-soft);
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform .1s;
+    }
+    .water-btn:active { transform: scale(0.92); }
+    .water-btn.primary { background: var(--secondary-soft); color: var(--secondary); }
+    .water-display {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--text);
+      min-width: 90px;
+      text-align: center;
+    }
+    .water-display .small { font-size: 16px; color: var(--text-muted); }
+    .water-glasses {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .water-glass {
+      font-size: 22px;
+      opacity: 0.25;
+      transition: opacity .15s;
+    }
+    .water-glass.filled { opacity: 1; }
+
+    .vitamin-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 4px;
+      border-top: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .vitamin-row:first-child { border-top: none; }
+    .vitamin-row .name {
+      font-weight: 500;
+      color: var(--text);
+    }
+    .vitamin-row .hint { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .vitamin-row .check {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: transparent;
+      transition: all .15s;
+    }
+    .vitamin-row .check.checked {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    .toggle {
+      width: 44px;
+      height: 26px;
+      border-radius: 999px;
+      background: var(--bg-soft);
+      position: relative;
+      transition: background .15s;
+      flex: 0 0 auto;
+    }
+    .toggle::before {
+      content: '';
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      transition: transform .2s;
+    }
+    .toggle.on { background: var(--success); }
+    .toggle.on::before { transform: translateX(18px); }
+
+    /* Tekme sayacı */
+    .kick-area {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 28px 20px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      margin: 14px 0;
+    }
+    .kick-big-btn {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: var(--success);
+      color: white;
+      font-size: 32px;
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(127, 176, 105, 0.45);
+      transition: transform .1s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .kick-big-btn:active { transform: scale(0.95); }
+    .kick-big-btn .small { font-size: 14px; font-weight: 500; opacity: 0.9; }
+    .kick-count {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 8px 0;
+    }
+    .kick-progress {
+      height: 8px;
+      background: var(--bg-soft);
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+    .kick-progress-fill {
+      height: 100%;
+      background: var(--success);
+      border-radius: 999px;
+      transition: width .3s;
+    }
+    .kick-timer {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-top: 10px;
+    }
+    .kick-stop-btn {
+      margin-top: 14px;
+      padding: 10px 24px;
+      background: var(--bg-soft);
+      border-radius: 999px;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    /* Cem özet kartı */
+    .buse-summary {
+      background: linear-gradient(135deg, var(--secondary-soft) 0%, var(--primary-soft) 100%);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+    .buse-summary .label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .buse-summary .text {
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--text);
+    }
+
+    /* Soru listesi */
+    .question-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .question-item:last-child { border-bottom: none; }
+    .question-item .check {
+      flex: 0 0 auto;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: transparent;
+      transition: all .15s;
+      margin-top: 2px;
+    }
+    .question-item .check.checked {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+    .question-item .q-text {
+      flex: 1;
+      font-size: 15px;
+      line-height: 1.4;
+      color: var(--text);
+    }
+    .question-item.checked .q-text {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+    .question-item .q-del {
+      flex: 0 0 auto;
+      width: 28px; height: 28px;
+      color: var(--text-soft);
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .question-item .q-del:hover { color: var(--danger); }
+
     /* ============ ERİŞİLEBİLİRLİK ============ */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -894,8 +1313,32 @@
 </head>
 <body>
 
+<!-- ============ AUTH (Google ile giriş) ============ -->
+<div id="screen-auth" class="screen" style="padding: 0;">
+  <div class="onboarding">
+    <div class="onb-hero" style="padding-top: 60px;">
+      <div class="emoji">🤍</div>
+      <h1>9 Ay 1 Hayat Olsun</h1>
+      <p>Hoş geldin. İki telefonun arasında verilerin senkron olması için Google hesabıyla girişe ihtiyaç var. Aynı hesabı sen ve eşin birlikte kullanırsanız her ikinizde de aynı veriler görünür.</p>
+    </div>
+    <div class="card-soft" style="margin-top: 24px;">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <span style="font-size:22px;">🔒</span>
+        <div class="small">Verileriniz Firebase'de şifreli. Sadece sizin Google hesabınız erişebilir. Reklam yok, üçüncü tarafa veri yok.</div>
+      </div>
+    </div>
+    <div class="onb-footer" style="display:flex; flex-direction:column; gap:10px;">
+      <button class="btn btn-primary" onclick="signInWithGoogle()" id="auth-signin-btn">
+        🔐  Google ile giriş yap
+      </button>
+      <button class="btn btn-ghost" onclick="continueLocalOnly()">Bulutsuz devam et (sadece bu cihaz)</button>
+      <div id="auth-error" class="small" style="color: var(--danger); text-align:center; min-height: 18px;"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ============ ONBOARDING ============ -->
-<div id="screen-onboarding" class="screen active" style="padding: 0;">
+<div id="screen-onboarding" class="screen" style="padding: 0;">
   <div class="onboarding">
     <div id="onb-step-welcome" class="onboarding-step">
       <div class="onb-hero">
@@ -973,6 +1416,8 @@
     <!-- içerik JS ile dolduruluyor -->
   </div>
 
+  <div id="home-next-appt"></div>
+
   <div class="quick-grid">
     <button class="quick-btn" onclick="navigate('week-detail')">
       <span class="icon">📅</span>
@@ -982,13 +1427,24 @@
       <span class="icon">📝</span>
       <span class="label">Notlar</span>
     </button>
-    <button class="quick-btn" onclick="showSoonModal('Doktor Randevuları', 'Bu modül v0.3 sürümünde gelecek — Türk doktor protokolüne göre tüm randevu takvimi otomatik kurulacak.')">
+    <button class="quick-btn" onclick="navigate('appointments')">
       <span class="icon">🩺</span>
       <span class="label">Randevular</span>
     </button>
-    <button class="quick-btn" onclick="showSoonModal('Semptom Günlüğü', 'Bu modül v0.4 sürümünde gelecek — semptom, ruh hali, tansiyon, kilo takibi.')">
+    <button class="quick-btn" onclick="navigate('daily-log')">
       <span class="icon">🤰</span>
-      <span class="label">Semptomlar</span>
+      <span class="label">Bugün</span>
+    </button>
+  </div>
+
+  <div class="quick-grid" id="home-extras">
+    <button class="quick-btn" onclick="navigate('measurements')">
+      <span class="icon">⚖️</span>
+      <span class="label">Ölçümler</span>
+    </button>
+    <button class="quick-btn" id="home-kicks-btn" onclick="navigate('kicks')">
+      <span class="icon">👶</span>
+      <span class="label">Tekme</span>
     </button>
   </div>
 
@@ -1072,6 +1528,12 @@
   </div>
 
   <div class="editor-section">
+    <span class="editor-label">Tarih</span>
+    <input type="date" class="editor-date" id="editor-date" />
+    <div class="small" style="margin-top:6px;">Varsayılan: bugün. Geçmişe dönük not için değiştir.</div>
+  </div>
+
+  <div class="editor-section">
     <span class="editor-label">Not</span>
     <textarea class="editor-textarea" id="editor-text" placeholder="Bugün ne hissediyorsun? Ne oldu? Bebeğe söylemek istediğin bir şey?"></textarea>
   </div>
@@ -1133,6 +1595,18 @@
   </div>
 
   <div class="settings-section">
+    <h3>Bulut & Hesap</h3>
+    <div class="settings-row" id="settings-account-row">
+      <span class="label" id="settings-account-label">Bulut</span>
+      <span class="value" id="settings-account-value">—</span>
+    </div>
+    <div class="settings-row" id="settings-sync-row" style="display:none;">
+      <span class="label">Senkron durumu</span>
+      <span class="value" id="settings-sync-status">Aktif ✓</span>
+    </div>
+  </div>
+
+  <div class="settings-section">
     <h3>Veri</h3>
     <div class="settings-row" onclick="exportData()">
       <span class="label">Verileri yedekle (JSON)</span>
@@ -1152,7 +1626,7 @@
     <h3>Hakkında</h3>
     <div class="settings-row">
       <span class="label">Sürüm</span>
-      <span class="value">v0.1 — kişisel</span>
+      <span class="value">v0.2 + v0.3 + v0.4 (bulut + doktor + anne modu)</span>
     </div>
     <div class="settings-row">
       <span class="label">Yapım</span>
@@ -1163,6 +1637,215 @@
   <div class="card-soft" style="margin-top: 16px; font-size: 13px; line-height: 1.55; color: var(--text-muted);">
     Bu uygulama tıbbi kayıt sistemi değildir. Bilgiler T.C. Sağlık Bakanlığı ve TJOD kılavuzlarından alınmıştır; doktor önerisi yerine geçmez.
   </div>
+</div>
+
+<!-- ============ RANDEVULAR LİSTE ============ -->
+<div id="screen-appointments" class="screen">
+  <div class="screen-header">
+    <button onclick="navigate('home')" aria-label="Geri">←</button>
+    <h1>Doktor Randevuları</h1>
+    <button onclick="apptAddManualPrompt()" aria-label="Yeni randevu">＋</button>
+  </div>
+
+  <div class="card-soft" style="font-size: 13px;">
+    <b>🩺 T.C. Sağlık Bakanlığı protokolü</b><br/>
+    Aşağıdaki randevular son adet tarihine göre otomatik kuruldu. Her birinin tarihini, doktor/hastane bilgisini, sorularını ve sonucunu girebilirsin.
+  </div>
+
+  <div id="appointments-pending"></div>
+
+  <h3 style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 24px 0 10px; padding: 0 4px;">Tamamlananlar</h3>
+  <div id="appointments-done"></div>
+</div>
+
+<!-- ============ RANDEVU DETAY ============ -->
+<div id="screen-appointment-detail" class="screen">
+  <div class="screen-header">
+    <button onclick="navigate('appointments')" aria-label="Geri">←</button>
+    <h1 id="appt-detail-title">Randevu</h1>
+    <button class="btn-ghost" style="font-weight:700; color:var(--primary-deep);" onclick="apptSave()">Kaydet</button>
+  </div>
+
+  <div id="appt-info-card" class="card-soft" style="margin-bottom:14px; display:none;"></div>
+
+  <div class="editor-section">
+    <span class="editor-label">Başlık</span>
+    <input type="text" class="editor-date" id="appt-title-input" placeholder="Randevu başlığı" />
+  </div>
+
+  <div class="editor-section">
+    <span class="editor-label">Durum</span>
+    <div class="author-toggle" id="appt-status-toggle">
+      <button data-status="pending" onclick="apptSetDone(false)">Bekliyor</button>
+      <button data-status="done" onclick="apptSetDone(true)">Tamamlandı ✓</button>
+    </div>
+  </div>
+
+  <div class="h-stack" style="gap: 10px;">
+    <div class="editor-section" style="flex: 2;">
+      <span class="editor-label">Tarih</span>
+      <input type="date" class="editor-date" id="appt-date-input" />
+    </div>
+    <div class="editor-section" style="flex: 1;">
+      <span class="editor-label">Saat</span>
+      <input type="time" class="editor-date" id="appt-time-input" />
+    </div>
+  </div>
+
+  <div class="editor-section">
+    <span class="editor-label">Doktor</span>
+    <input type="text" class="editor-date" id="appt-doctor-input" placeholder="Dr. ___" />
+  </div>
+
+  <div class="editor-section">
+    <span class="editor-label">Hastane / Klinik</span>
+    <input type="text" class="editor-date" id="appt-hospital-input" placeholder="Acıbadem, Memorial, vb." />
+  </div>
+
+  <div class="editor-section">
+    <span class="editor-label">Doktora soracaklarım</span>
+    <div class="card" style="padding: 12px; margin-bottom: 0;">
+      <div id="appt-questions-list"></div>
+      <div class="h-stack" style="gap: 8px; margin-top: 8px;">
+        <input type="text" id="appt-question-input" placeholder="Yeni soru ekle"
+          style="flex:1; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 999px; outline: none; background: var(--bg-card); color: var(--text);"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();apptAddQuestion();}" />
+        <button class="btn-ghost" onclick="apptAddQuestion()" style="padding: 10px 18px; color: var(--primary-deep); font-weight: 600;">Ekle</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="editor-section">
+    <span class="editor-label">Notlar</span>
+    <textarea class="editor-textarea" id="appt-notes-input" placeholder="Randevu öncesi/sonrası notlar..." style="min-height: 100px;"></textarea>
+  </div>
+
+  <div class="editor-section">
+    <span class="editor-label">Sonuç / doktor değerlendirmesi</span>
+    <textarea class="editor-textarea" id="appt-result-input" placeholder="Test sonucu, doktor görüşü, bir sonraki adımlar..." style="min-height: 100px;"></textarea>
+  </div>
+
+  <div class="spacer-24"></div>
+  <button id="appt-delete-btn" class="btn btn-danger" onclick="apptDelete()">Bu randevuyu sil</button>
+  <div class="spacer-24"></div>
+</div>
+
+<!-- ============ ANNE MODU — GÜNLÜK GİRDİ ============ -->
+<div id="screen-daily-log" class="screen">
+  <div class="screen-header">
+    <button onclick="navigate('home')" aria-label="Geri">←</button>
+    <h1 id="daily-log-title">Bugün</h1>
+    <button onclick="dailyLogChangeDate()" aria-label="Tarih">📅</button>
+  </div>
+
+  <div class="card-soft" id="daily-log-date-info" style="font-size: 13px;"></div>
+
+  <!-- Ruh hali -->
+  <div class="card">
+    <h3 style="font-size: 14px; color: var(--primary-deep); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 18px;">💫</span> Bugün nasılsın?
+    </h3>
+    <div class="mood-row" id="mood-row"></div>
+  </div>
+
+  <!-- Semptomlar -->
+  <div class="card">
+    <h3 style="font-size: 14px; color: var(--primary-deep); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 18px;">🤰</span> Ne yaşıyorsun?
+    </h3>
+    <div class="symptom-grid" id="symptom-grid"></div>
+  </div>
+
+  <!-- Su -->
+  <div class="card">
+    <h3 style="font-size: 14px; color: var(--primary-deep); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 18px;">💧</span> Su <span class="small" style="font-weight:400;">(hedef ~8 bardak)</span>
+    </h3>
+    <div class="water-row">
+      <button class="water-btn" onclick="dailyLogWaterChange(-1)" aria-label="Eksilt">−</button>
+      <div class="water-display"><span id="water-count">0</span><span class="small">/8</span></div>
+      <button class="water-btn primary" onclick="dailyLogWaterChange(1)" aria-label="Arttır">+</button>
+    </div>
+    <div class="water-glasses" id="water-glasses"></div>
+  </div>
+
+  <!-- Vitaminler -->
+  <div class="card">
+    <h3 style="font-size: 14px; color: var(--primary-deep); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 18px;">💊</span> Vitamin/ilaç
+    </h3>
+    <div id="vitamin-list"></div>
+  </div>
+
+  <!-- Cem ile paylaş -->
+  <div class="card">
+    <h3 style="font-size: 14px; color: var(--primary-deep); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 18px;">🔒</span> Mahremiyet
+    </h3>
+    <div class="settings-row" style="border-top: none; padding: 8px 0;" onclick="dailyLogToggleShare()">
+      <div>
+        <div style="font-size: 15px; font-weight: 500;">Bugünü Cem'le paylaş</div>
+        <div class="small">Açarsan ayrıntıları görür; kapalıysa sadece yumuşak özet.</div>
+      </div>
+      <div class="toggle" id="share-toggle"></div>
+    </div>
+  </div>
+
+  <!-- Kısa not -->
+  <div class="card">
+    <h3 style="font-size: 14px; color: var(--primary-deep); margin-bottom: 10px;">Bugüne dair kısa not (opsiyonel)</h3>
+    <textarea class="editor-textarea" id="daily-note-input" placeholder="Birkaç cümle..." style="min-height: 80px;"></textarea>
+  </div>
+
+  <div class="spacer-24"></div>
+</div>
+
+<!-- ============ KİLO & TANSİYON & GEÇMİŞ ============ -->
+<div id="screen-measurements" class="screen">
+  <div class="screen-header">
+    <button onclick="navigate('home')" aria-label="Geri">←</button>
+    <h1>Ölçümler</h1>
+    <span style="width: 40px;"></span>
+  </div>
+
+  <div class="card">
+    <h3 style="font-size: 14px; color: var(--primary-deep); margin-bottom: 12px;">⚖️ Kilo</h3>
+    <div class="h-stack" style="gap: 10px;">
+      <input type="number" step="0.1" min="40" max="200" id="weight-input" placeholder="Bugünkü kilo (kg)" class="editor-date" style="flex:1;" />
+      <button class="btn btn-primary" onclick="saveWeight()" style="min-width: 90px; min-height: 50px;">Ekle</button>
+    </div>
+    <div id="weight-history" style="margin-top: 14px;"></div>
+  </div>
+
+  <div class="card">
+    <h3 style="font-size: 14px; color: var(--primary-deep); margin-bottom: 12px;">❤️ Tansiyon</h3>
+    <div class="h-stack" style="gap: 8px;">
+      <input type="number" min="60" max="200" id="bp-sys" placeholder="Büyük (sis)" class="editor-date" style="flex:1;" />
+      <span class="small">/</span>
+      <input type="number" min="40" max="120" id="bp-dia" placeholder="Küçük (dia)" class="editor-date" style="flex:1;" />
+      <button class="btn btn-primary" onclick="saveBP()" style="min-width: 80px; min-height: 50px;">Ekle</button>
+    </div>
+    <div id="bp-history" style="margin-top: 14px;"></div>
+  </div>
+</div>
+
+<!-- ============ TEKME SAYACI ============ -->
+<div id="screen-kicks" class="screen">
+  <div class="screen-header">
+    <button onclick="navigate('home')" aria-label="Geri">←</button>
+    <h1>Tekme Sayacı</h1>
+    <span style="width: 40px;"></span>
+  </div>
+
+  <div class="card-soft" style="font-size: 13px; line-height: 1.55;">
+    <b>👶 Nasıl çalışır?</b><br/>
+    Bebek hareket ettikçe büyük yeşil butona bas. 1 saatte 10 hareket sağlıklıdır. Tekme yok ya da çok azsa doktorunu ara.
+  </div>
+
+  <div class="kick-area" id="kick-area"></div>
+
+  <h3 style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 24px 0 10px; padding: 0 4px;">Geçmiş seanslar</h3>
+  <div id="kick-history"></div>
 </div>
 
 <!-- ============ ALT NAVİGASYON ============ -->
@@ -1751,6 +2434,56 @@ const WEEK_DATA = {
   }
 };
 
+/* ---------- 1b) DOKTOR PROTOKOL ŞABLONLARI (TR) ---------- */
+// Sağlık Bakanlığı + TJOD kılavuzlarına göre standart gebelik takip programı.
+// LMP girilince otomatik olarak listeye eklenir.
+
+const APPT_TEMPLATES = [
+  { template: "ilk-muayene", title: "İlk muayene + Beta HCG", icon: "🩺",
+    weekMin: 6, weekMax: 8, defaultWeek: 7,
+    description: "Gebelik teyidi ve ilk değerlendirme. Beta HCG kan testi.", optional: false },
+
+  { template: "ikili-tarama", title: "İkili tarama + Ense kalınlığı (NT)", icon: "🔬",
+    weekMin: 11, weekMax: 14, defaultWeek: 12,
+    description: "Down sendromu ve trizomi 18 taraması. Ultrason + kan testi.", optional: false },
+
+  { template: "nipt", title: "NIPT (kromozom kan testi)", icon: "🧬",
+    weekMin: 10, weekMax: 22, defaultWeek: 12,
+    description: "İleri yaş ya da risk durumunda yapılan opsiyonel kan testi. Sadece istek üzerine.", optional: true },
+
+  { template: "dortlu-tarama", title: "Dörtlü tarama", icon: "🔬",
+    weekMin: 15, weekMax: 18, defaultWeek: 16,
+    description: "İkili tarama yapılmadıysa alternatif. Down sendromu ve nöral tüp defekti taraması.", optional: true },
+
+  { template: "detayli-us", title: "Detaylı (anomali) ultrason", icon: "👶",
+    weekMin: 18, weekMax: 22, defaultWeek: 20,
+    description: "Bebeğin tüm organlarını detaylı inceleme. Atlanmaması gereken kritik test.", optional: false },
+
+  { template: "tdap", title: "Tdap aşısı", icon: "💉",
+    weekMin: 18, weekMax: 24, defaultWeek: 22,
+    description: "T.C. Sağlık Bakanlığı 2025'ten beri ücretsiz. Bebeği boğmacaya karşı korur.", optional: false },
+
+  { template: "ogtt", title: "OGTT — Şeker yükleme testi", icon: "🧪",
+    weekMin: 24, weekMax: 28, defaultWeek: 26,
+    description: "Gebelik diyabeti taraması. Sabah aç karnına gidilir, ~2 saat sürer.", optional: false },
+
+  { template: "anti-d", title: "Anti-D iğnesi (sadece Rh-)", icon: "💉",
+    weekMin: 28, weekMax: 28, defaultWeek: 28,
+    description: "Eşin kan grubu Rh negatifse ve sen Rh pozitifsen. Kan uyuşmazlığını önler.", optional: true },
+
+  { template: "kontrol-us", title: "32. hafta kontrol ultrasonu", icon: "👶",
+    weekMin: 32, weekMax: 32, defaultWeek: 32,
+    description: "Bebeğin büyümesinin takibi. Plasenta ve sıvı miktarı kontrolü.", optional: false },
+
+  { template: "gbs", title: "GBS (B grubu strep) taraması", icon: "🔬",
+    weekMin: 35, weekMax: 37, defaultWeek: 36,
+    description: "Vajinal-rektal sürüntü. Pozitifse doğumda antibiyotik verilir.", optional: false },
+
+  { template: "nst", title: "NST — Bebek kalp atış testi", icon: "💓",
+    weekMin: 36, weekMax: 40, defaultWeek: 36,
+    description: "Doğuma kadar haftalık. Bebeğin kalp atışı ve hareketleri takip edilir.", optional: false }
+];
+
 /* ---------- 2) STATE & PERSISTENCE ---------- */
 
 const STORAGE_KEY = "9ay1hayat:v1";
@@ -1763,8 +2496,74 @@ function defaultState() {
     eddDate: null,            // ISO YYYY-MM-DD (computed)
     activeUser: "cem",        // "cem" | "buse"
     notes: [],                // [{id, createdAt, updatedAt, author, text, tags}]
+    appointments: [],         // v0.3: doktor randevuları
+    autoApptGenerated: false, // şablonlar bir kez üretildi mi
+    // v0.4 — Anne modu
+    dailyLogs: {},            // { "YYYY-MM-DD": { mood, symptoms[], waterGlasses, vitamins[], note, sharedWithCem } }
+    weights: [],              // [{id, date, kg, sharedWithCem}]
+    bps: [],                  // [{id, date, sys, dia, sharedWithCem}]
+    kickSessions: [],         // [{id, startTime, endTime, count}]
+    activeKickSession: null,  // o anda aktif sayım
     createdAt: new Date().toISOString()
   };
+}
+
+/* ---------- 1c) ANNE MODU SABİTLERİ ---------- */
+
+const SYMPTOM_LIST = [
+  { id: "mide-bulantisi", label: "Mide bulantısı", icon: "🤢" },
+  { id: "yorgunluk", label: "Yorgunluk", icon: "😴" },
+  { id: "bas-agrisi", label: "Baş ağrısı", icon: "🤕" },
+  { id: "sirt-agrisi", label: "Sırt ağrısı", icon: "🦴" },
+  { id: "mide-yanmasi", label: "Mide yanması", icon: "🔥" },
+  { id: "odem", label: "Ödem (şişlik)", icon: "💧" },
+  { id: "kabizlik", label: "Kabızlık", icon: "🚽" },
+  { id: "uyku-zorlugu", label: "Uyku zorluğu", icon: "🌙" },
+  { id: "koku-hassasiyeti", label: "Koku hassasiyeti", icon: "👃" },
+  { id: "kasik-agrisi", label: "Kasık ağrısı", icon: "💢" },
+  { id: "gogus-hassasiyeti", label: "Göğüs hassasiyeti", icon: "💗" },
+  { id: "bas-donmesi", label: "Baş dönmesi", icon: "💫" },
+  { id: "karincalanma", label: "El/ayakta karıncalanma", icon: "✋" },
+  { id: "agz-suyu", label: "Aşırı tükürük", icon: "💦" }
+];
+
+const VITAMIN_LIST = [
+  { id: "folik-asit", label: "Folik asit", weekStart: 1, weekEnd: 12, hint: "Gebelik öncesi-12. hafta" },
+  { id: "demir", label: "Demir", weekStart: 14, weekEnd: 42, hint: "2. trimester sonrası" },
+  { id: "d-vit", label: "D vitamini", weekStart: 1, weekEnd: 42, hint: "Tüm hamilelik boyunca" },
+  { id: "kalsiyum", label: "Kalsiyum", weekStart: 14, weekEnd: 42, hint: "Doktor önerirse" },
+  { id: "omega-3", label: "Omega-3", weekStart: 20, weekEnd: 42, hint: "2. trimester sonu" }
+];
+
+const MOOD_LEVELS = [
+  { level: 1, emoji: "😢", label: "Çok kötü" },
+  { level: 2, emoji: "😔", label: "Üzgün" },
+  { level: 3, emoji: "😐", label: "Normal" },
+  { level: 4, emoji: "🙂", label: "İyi" },
+  { level: 5, emoji: "😊", label: "Harika" }
+];
+
+function todayKey() { return toIso(new Date()); }
+
+function getDailyLog(dateKey) {
+  if (!state.dailyLogs) state.dailyLogs = {};
+  if (!state.dailyLogs[dateKey]) {
+    state.dailyLogs[dateKey] = {
+      mood: null,
+      symptoms: [],
+      waterGlasses: 0,
+      vitamins: [],
+      note: "",
+      sharedWithCem: false
+    };
+  }
+  return state.dailyLogs[dateKey];
+}
+
+function relevantVitamins() {
+  const info = getPregnancyInfo();
+  const w = info ? info.currentWeek : 1;
+  return VITAMIN_LIST.filter(v => w >= v.weekStart && w <= v.weekEnd);
 }
 
 let state = loadState();
@@ -1782,11 +2581,20 @@ function loadState() {
 }
 
 function saveState() {
+  // localStorage her zaman güncel
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch (e) {
-    alert("Veri kaydedilemedi — depolama alanı dolmuş olabilir.");
-    console.error(e);
+    console.error("localStorage write hatası", e);
+  }
+  // Bulut sync — sadece signed-in ise
+  if (typeof currentUser !== "undefined" && currentUser && window.fb) {
+    state.lastUpdate = Date.now();
+    if (typeof cloudWriteTimer !== "undefined" && cloudWriteTimer) clearTimeout(cloudWriteTimer);
+    cloudWriteTimer = setTimeout(() => {
+      pushStateToCloud(currentUser.uid).catch(err => console.warn("Cloud yazma hatası", err));
+      cloudWriteTimer = null;
+    }, 800);
   }
 }
 
@@ -1874,11 +2682,11 @@ function weekToLmp(weekNum) {
 
 /* ---------- 4) NAVİGASYON ---------- */
 
-const SCREENS = ["onboarding", "home", "week-detail", "notes", "note-editor", "settings"];
+const SCREENS = ["auth", "onboarding", "home", "week-detail", "notes", "note-editor", "settings", "appointments", "appointment-detail", "daily-log", "measurements", "kicks"];
 
 function navigate(name, params) {
-  // Onboarding tamamlanmadıysa zorla onboarding
-  if (!state.setupComplete && name !== "onboarding") {
+  // Auth ekranı her zaman erişilebilir
+  if (name !== "auth" && !state.setupComplete && name !== "onboarding") {
     name = "onboarding";
   }
 
@@ -1905,6 +2713,11 @@ function navigate(name, params) {
     case "notes": renderNotesList(); break;
     case "note-editor": renderNoteEditor(params); break;
     case "settings": renderSettings(); break;
+    case "appointments": renderAppointments(); break;
+    case "appointment-detail": renderApptDetail(params); break;
+    case "daily-log": renderDailyLog(params); break;
+    case "measurements": renderMeasurements(); break;
+    case "kicks": renderKicks(); break;
   }
 
   window.scrollTo(0, 0);
@@ -1997,8 +2810,64 @@ function onbFinish() {
   state.lmpDate = onbState.value;
   state.eddDate = toIso(addDays(parseDate(onbState.value), 280));
   state.setupComplete = true;
+  maybeGenerateAppointments();
   saveState();
   navigate("home");
+}
+
+/* ---------- DOKTOR RANDEVU AUTO-GEN ---------- */
+
+function maybeGenerateAppointments() {
+  if (state.autoApptGenerated) return;
+  if (!state.lmpDate) return;
+  const lmp = parseDate(state.lmpDate);
+  state.appointments = state.appointments || [];
+  const nowIso = new Date().toISOString();
+
+  APPT_TEMPLATES.forEach(t => {
+    const targetDate = addDays(lmp, (t.defaultWeek - 1) * 7);
+    state.appointments.push({
+      id: "apt_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+      template: t.template,
+      title: t.title,
+      icon: t.icon,
+      weekMin: t.weekMin,
+      weekMax: t.weekMax,
+      defaultWeek: t.defaultWeek,
+      description: t.description,
+      optional: t.optional,
+      scheduledDate: toIso(targetDate),
+      scheduledTime: "",
+      doctor: "",
+      hospital: "",
+      questions: [],
+      notes: "",
+      result: "",
+      done: false,
+      createdAt: nowIso,
+      updatedAt: nowIso
+    });
+  });
+  state.autoApptGenerated = true;
+}
+
+function getNextAppointment() {
+  if (!state.appointments || state.appointments.length === 0) return null;
+  const today = startOfDay(new Date());
+  const upcoming = state.appointments
+    .filter(a => !a.done && a.scheduledDate)
+    .map(a => ({ a, d: parseDate(a.scheduledDate) }))
+    .filter(x => x.d >= today)
+    .sort((x, y) => x.d - y.d);
+  if (upcoming.length === 0) {
+    // Hiç ileri tarih yoksa, en yakın geçmiş ama tamamlanmamış olanı göster
+    const overdue = state.appointments
+      .filter(a => !a.done && a.scheduledDate)
+      .map(a => ({ a, d: parseDate(a.scheduledDate) }))
+      .sort((x, y) => y.d - x.d);
+    return overdue.length > 0 ? overdue[0].a : null;
+  }
+  return upcoming[0].a;
 }
 
 /* ---------- 6) ANA EKRAN ---------- */
@@ -2032,8 +2901,122 @@ function renderHome() {
     '<div class="size">' + data.size + '</div>' +
     '<div class="countdown">Doğuma <b>' + info.daysToBirth + ' gün</b> kaldı</div>';
 
+  // Sıradaki randevu
+  renderNextApptCard();
+
+  // Cem için "Buse bugün nasıl?" özet kartı
+  renderBuseSummaryCard();
+
+  // Tekme butonu sadece 28+ hafta için göster
+  const kickBtn = document.getElementById("home-kicks-btn");
+  if (kickBtn) {
+    if (info.currentWeek >= 28) {
+      kickBtn.style.display = "";
+    } else {
+      kickBtn.style.display = "none";
+    }
+  }
+
   // Son not
   renderLastNote();
+}
+
+function renderBuseSummaryCard() {
+  // Cem aktif kullanıcı değilse kartı gösterme
+  const existing = document.getElementById("buse-summary-card");
+  if (existing) existing.remove();
+
+  if (state.activeUser !== "cem") return;
+
+  // Son 3 günün loglarını topla, paylaşılmış olanları analiz et
+  const today = new Date();
+  let moodSum = 0, moodCount = 0;
+  const symptomsCount = {};
+  let sharedAny = false;
+
+  for (let i = 0; i < 3; i++) {
+    const d = new Date(today); d.setDate(d.getDate() - i);
+    const key = toIso(d);
+    const log = state.dailyLogs && state.dailyLogs[key];
+    if (!log) continue;
+    if (log.sharedWithCem) sharedAny = true;
+
+    if (log.mood) { moodSum += log.mood; moodCount++; }
+    log.symptoms.forEach(s => { symptomsCount[s] = (symptomsCount[s] || 0) + 1; });
+  }
+
+  const todayKey0 = todayKey();
+  const todayLog = state.dailyLogs && state.dailyLogs[todayKey0];
+  const hasAnyData = todayLog && (todayLog.mood || todayLog.symptoms.length > 0);
+
+  if (!hasAnyData && moodCount === 0) return;
+
+  // Mesaj üret
+  let msg = "";
+  const avgMood = moodCount > 0 ? moodSum / moodCount : null;
+  const topSymptoms = Object.entries(symptomsCount)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 2)
+    .map(([id, c]) => SYMPTOM_LIST.find(s => s.id === id)?.label || id);
+
+  if (sharedAny && todayLog && todayLog.sharedWithCem) {
+    // Bugün paylaşıldıysa detayları göster
+    const m = MOOD_LEVELS.find(x => x.level === todayLog.mood);
+    if (m) msg = "Buse bugün " + m.emoji + " " + m.label.toLowerCase() + " hissediyor.";
+    if (todayLog.symptoms.length > 0) {
+      const labels = todayLog.symptoms.map(s => SYMPTOM_LIST.find(x => x.id === s)?.label || s).slice(0, 2).join(", ").toLowerCase();
+      msg += (msg ? " Yaşadıkları: " : "Bugün yaşadıkları: ") + labels + ".";
+    }
+  } else {
+    // Yumuşak özet (mahremiyet)
+    if (avgMood !== null) {
+      if (avgMood >= 4) msg = "Buse son günlerde iyi hissediyor 🤍";
+      else if (avgMood >= 3) msg = "Buse son günlerde fena değil — küçük bir destek hoşuna gidebilir.";
+      else if (avgMood >= 2) msg = "Buse son günlerde biraz yorgun/üzgün hissediyor — bir sarılma, bir kahve?";
+      else msg = "Buse zorlu bir dönemde — yanında ol, sor, dinle.";
+    }
+    if (topSymptoms.length > 0) {
+      msg += " Sıkça yaşadığı: " + topSymptoms.join(", ").toLowerCase() + ".";
+    }
+  }
+
+  if (!msg) return;
+
+  // Kartı home-week-card'dan sonra ekle
+  const homeWeek = document.getElementById("home-week-card");
+  const card = document.createElement("div");
+  card.id = "buse-summary-card";
+  card.className = "buse-summary";
+  card.innerHTML =
+    '<div class="label">🤍 Eşin bugün nasıl?</div>' +
+    '<div class="text">' + escapeHtml(msg) + '</div>';
+  homeWeek.parentNode.insertBefore(card, homeWeek.nextSibling);
+}
+
+function renderNextApptCard() {
+  const box = document.getElementById("home-next-appt");
+  if (!box) return;
+  const apt = getNextAppointment();
+  if (!apt) { box.innerHTML = ""; return; }
+
+  const today = startOfDay(new Date());
+  const apptDate = parseDate(apt.scheduledDate);
+  const days = Math.round((apptDate - today) / MS_PER_DAY);
+  let whenText, isOverdue = false;
+  if (days < 0) { whenText = Math.abs(days) + " gün geçti — gecikti"; isOverdue = true; }
+  else if (days === 0) whenText = "Bugün";
+  else if (days === 1) whenText = "Yarın";
+  else if (days < 7) whenText = days + " gün sonra";
+  else whenText = fmtDate(apt.scheduledDate);
+
+  if (apt.scheduledTime) whenText += " · " + apt.scheduledTime;
+
+  box.innerHTML =
+    '<div class="next-appt-card ' + (isOverdue ? 'overdue' : '') + '" onclick="navigate(\'appointment-detail\', { id: \'' + apt.id + '\' })">' +
+      '<div class="label">' + apt.icon + '  Sıradaki randevu</div>' +
+      '<div class="title">' + escapeHtml(apt.title) + '</div>' +
+      '<div class="when">' + whenText + (apt.hospital ? ' · ' + escapeHtml(apt.hospital) : '') + '</div>' +
+    '</div>';
 }
 
 function renderLastNote() {
@@ -2166,7 +3149,7 @@ function renderNotesList() {
   }).join("");
 }
 
-let editorState = { id: null, author: "cem", text: "", tags: [] };
+let editorState = { id: null, author: "cem", text: "", tags: [], date: null };
 
 function openNoteEditor(noteId) {
   navigate("note-editor", { id: noteId });
@@ -2178,24 +3161,29 @@ function closeNoteEditor() {
 
 function renderNoteEditor(params) {
   const id = (params && params.id) || null;
+  const todayIso = toIso(new Date());
+
   if (id) {
     const note = state.notes.find(n => n.id === id);
     if (!note) {
-      editorState = { id: null, author: state.activeUser, text: "", tags: [] };
+      editorState = { id: null, author: state.activeUser, text: "", tags: [], date: todayIso };
     } else {
       editorState = {
         id: note.id,
         author: note.author,
         text: note.text,
-        tags: [...(note.tags || [])]
+        tags: [...(note.tags || [])],
+        date: (note.createdAt || "").slice(0, 10) || todayIso
       };
     }
   } else {
-    editorState = { id: null, author: state.activeUser, text: "", tags: [] };
+    editorState = { id: null, author: state.activeUser, text: "", tags: [], date: todayIso };
   }
 
   document.getElementById("editor-title").textContent = id ? "Notu düzenle" : "Yeni not";
   document.getElementById("editor-text").value = editorState.text;
+  document.getElementById("editor-date").value = editorState.date;
+  document.getElementById("editor-date").max = todayIso;
   document.getElementById("editor-delete-btn").style.display = id ? "flex" : "none";
   editorRenderAuthor();
   editorRenderTags();
@@ -2269,20 +3257,34 @@ function saveNote() {
     alert("Not boş olamaz.");
     return;
   }
-  const now = new Date().toISOString();
+  const dateVal = document.getElementById("editor-date").value || toIso(new Date());
+  const [y, m, d] = dateVal.split("-").map(Number);
+  const nowDate = new Date();
+  const updatedAt = nowDate.toISOString();
+
   if (editorState.id) {
     const n = state.notes.find(x => x.id === editorState.id);
     if (n) {
       n.text = text;
       n.author = editorState.author;
       n.tags = editorState.tags;
-      n.updatedAt = now;
+      // Tarih değişmişse: yeni tarihe orijinal saat-dakikayı koru;
+      // Tarih aynı ise: createdAt değişmez.
+      const origDate = new Date(n.createdAt);
+      const origDateIso = toIso(origDate);
+      if (origDateIso !== dateVal) {
+        const newDate = new Date(y, m - 1, d, origDate.getHours(), origDate.getMinutes(), origDate.getSeconds());
+        n.createdAt = newDate.toISOString();
+      }
+      n.updatedAt = updatedAt;
     }
   } else {
+    // Yeni not: seçilen tarih + şu anki saat
+    const created = new Date(y, m - 1, d, nowDate.getHours(), nowDate.getMinutes(), nowDate.getSeconds());
     state.notes.push({
       id: "n_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
-      createdAt: now,
-      updatedAt: now,
+      createdAt: created.toISOString(),
+      updatedAt: updatedAt,
       author: editorState.author,
       text: text,
       tags: editorState.tags
@@ -2320,12 +3322,566 @@ function renderSettings() {
   } else {
     document.getElementById("settings-current").textContent = "—";
   }
+
+  // Bulut hesap
+  const acctLabel = document.getElementById("settings-account-label");
+  const acctValue = document.getElementById("settings-account-value");
+  const acctRow = document.getElementById("settings-account-row");
+  const syncRow = document.getElementById("settings-sync-row");
+
+  if (currentUser) {
+    acctLabel.textContent = "Hesap";
+    acctValue.textContent = currentUser.email || currentUser.displayName || "Giriş yapıldı";
+    acctRow.onclick = () => {
+      showConfirm("Çıkış yap?", "Bulutsuz moda dönersin. Verilerin telefonda kalır.", () => {
+        signOutOfApp();
+      });
+    };
+    acctRow.classList.add("clickable");
+    syncRow.style.display = "flex";
+  } else {
+    acctLabel.textContent = "Bulut";
+    acctValue.textContent = "Bulutsuz mod";
+    acctRow.onclick = () => {
+      navigate("auth");
+    };
+    syncRow.style.display = "none";
+  }
 }
 
 function settingsSetUser(u) {
   state.activeUser = u;
   saveState();
   renderSettings();
+}
+
+/* ---------- 9b) RANDEVULAR ---------- */
+
+function renderAppointments() {
+  const list = state.appointments || [];
+  const pending = list.filter(a => !a.done).sort((a, b) => {
+    const da = a.scheduledDate ? parseDate(a.scheduledDate).getTime() : Infinity;
+    const db = b.scheduledDate ? parseDate(b.scheduledDate).getTime() : Infinity;
+    return da - db;
+  });
+  const done = list.filter(a => a.done).sort((a, b) => {
+    const da = a.scheduledDate ? parseDate(a.scheduledDate).getTime() : 0;
+    const db = b.scheduledDate ? parseDate(b.scheduledDate).getTime() : 0;
+    return db - da;
+  });
+
+  document.getElementById("appointments-pending").innerHTML = pending.length === 0
+    ? '<div class="card-soft" style="text-align:center; color:var(--text-muted); padding: 24px 16px;">Bekleyen randevu yok 🤍</div>'
+    : pending.map(apptCardHtml).join("");
+
+  document.getElementById("appointments-done").innerHTML = done.length === 0
+    ? '<div class="small text-center" style="padding: 12px;">Henüz tamamlanan randevu yok</div>'
+    : done.map(apptCardHtml).join("");
+}
+
+function apptCardHtml(a) {
+  const info = getPregnancyInfo();
+  const currentWeek = info ? info.currentWeek : 0;
+  let cls = "appt-card";
+  if (a.done) cls += " done";
+  else if (a.scheduledDate) {
+    const today = startOfDay(new Date());
+    const d = parseDate(a.scheduledDate);
+    if (d < today) cls += " overdue";
+    else if (currentWeek >= a.weekMin && currentWeek <= a.weekMax) cls += " this-week";
+  }
+
+  let dateText = "Tarih ayarlanmadı";
+  if (a.scheduledDate) {
+    dateText = fmtDate(a.scheduledDate);
+    if (a.scheduledTime) dateText += " · " + a.scheduledTime;
+  }
+
+  const weekText = a.weekMin === a.weekMax
+    ? a.weekMin + ". hafta"
+    : a.weekMin + "-" + a.weekMax + ". hafta";
+
+  return '<div class="' + cls + '" onclick="navigate(\'appointment-detail\', { id: \'' + a.id + '\' })">' +
+    '<div class="icon-box">' + a.icon + '</div>' +
+    '<div class="body">' +
+      '<div class="title-row">' + escapeHtml(a.title) + (a.optional ? ' <span class="small">(opsiyonel)</span>' : '') + '</div>' +
+      '<div class="meta-row">' +
+        '<span class="week-tag">' + weekText + '</span>' +
+        '<span>' + dateText + '</span>' +
+        (a.doctor ? '<span>👨‍⚕️ ' + escapeHtml(a.doctor) + '</span>' : '') +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function apptAddManualPrompt() {
+  const id = "apt_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7);
+  const today = toIso(new Date());
+  const info = getPregnancyInfo();
+  const currentWeek = info ? info.currentWeek : 8;
+  state.appointments.push({
+    id: id,
+    template: null,
+    title: "Yeni randevu",
+    icon: "🩺",
+    weekMin: currentWeek,
+    weekMax: currentWeek,
+    defaultWeek: currentWeek,
+    description: "",
+    optional: false,
+    scheduledDate: today,
+    scheduledTime: "",
+    doctor: "",
+    hospital: "",
+    questions: [],
+    notes: "",
+    result: "",
+    done: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  });
+  saveState();
+  navigate("appointment-detail", { id: id });
+}
+
+let apptDraft = null; // detay ekranındaki çalışılan randevu kopyası
+
+function renderApptDetail(params) {
+  const id = params && params.id;
+  const apt = (state.appointments || []).find(a => a.id === id);
+  if (!apt) { navigate("appointments"); return; }
+
+  apptDraft = JSON.parse(JSON.stringify(apt)); // klon
+
+  document.getElementById("appt-detail-title").textContent = apt.template ? "Randevu" : "Yeni randevu";
+
+  const info = getPregnancyInfo();
+  const currentWeek = info ? info.currentWeek : 0;
+  const inWindow = currentWeek >= apt.weekMin && currentWeek <= apt.weekMax;
+  let infoHtml = "";
+  if (apt.description) {
+    const weekText = apt.weekMin === apt.weekMax
+      ? apt.weekMin + ". hafta"
+      : apt.weekMin + "-" + apt.weekMax + ". hafta arası";
+    infoHtml = '<div style="display:flex;gap:10px;align-items:flex-start;">' +
+      '<div style="font-size:28px;line-height:1;">' + apt.icon + '</div>' +
+      '<div><b>' + weekText + '</b>' +
+        (inWindow ? ' <span class="badge-week-appt" style="margin-top:0;display:inline-block;">Şu an bu pencerede</span>' : '') +
+        '<div style="margin-top:6px; font-size:14px; line-height:1.5; color:var(--text);">' + escapeHtml(apt.description) + '</div>' +
+      '</div>' +
+    '</div>';
+  }
+  const infoCard = document.getElementById("appt-info-card");
+  if (infoHtml) {
+    infoCard.innerHTML = infoHtml;
+    infoCard.style.display = "block";
+  } else {
+    infoCard.style.display = "none";
+  }
+
+  document.getElementById("appt-title-input").value = apt.title || "";
+  document.getElementById("appt-date-input").value = apt.scheduledDate || "";
+  document.getElementById("appt-time-input").value = apt.scheduledTime || "";
+  document.getElementById("appt-doctor-input").value = apt.doctor || "";
+  document.getElementById("appt-hospital-input").value = apt.hospital || "";
+  document.getElementById("appt-notes-input").value = apt.notes || "";
+  document.getElementById("appt-result-input").value = apt.result || "";
+  apptRenderStatus();
+  apptRenderQuestions();
+}
+
+function apptSetDone(done) {
+  if (!apptDraft) return;
+  apptDraft.done = done;
+  apptRenderStatus();
+}
+
+function apptRenderStatus() {
+  if (!apptDraft) return;
+  document.querySelectorAll("#appt-status-toggle button").forEach(b => {
+    const active = (b.dataset.status === "done") === !!apptDraft.done;
+    b.classList.toggle("active", active);
+  });
+}
+
+function apptAddQuestion() {
+  const inp = document.getElementById("appt-question-input");
+  const text = (inp.value || "").trim();
+  if (!text) return;
+  if (!apptDraft.questions) apptDraft.questions = [];
+  apptDraft.questions.push({ text: text, answered: false });
+  inp.value = "";
+  apptRenderQuestions();
+}
+
+function apptToggleQuestion(idx) {
+  if (!apptDraft || !apptDraft.questions) return;
+  const q = apptDraft.questions[idx];
+  if (!q) return;
+  q.answered = !q.answered;
+  apptRenderQuestions();
+}
+
+function apptDelQuestion(idx) {
+  if (!apptDraft || !apptDraft.questions) return;
+  apptDraft.questions.splice(idx, 1);
+  apptRenderQuestions();
+}
+
+function apptRenderQuestions() {
+  const list = document.getElementById("appt-questions-list");
+  const qs = (apptDraft && apptDraft.questions) || [];
+  if (qs.length === 0) {
+    list.innerHTML = '<div class="small" style="padding: 8px 0;">Henüz soru yok. Aklına geldikçe ekle, randevu öncesi hazır olur.</div>';
+    return;
+  }
+  list.innerHTML = qs.map((q, i) => {
+    return '<div class="question-item' + (q.answered ? ' checked' : '') + '">' +
+      '<button type="button" class="check' + (q.answered ? ' checked' : '') + '" onclick="apptToggleQuestion(' + i + ')" aria-label="İşaretle">✓</button>' +
+      '<div class="q-text">' + escapeHtml(q.text) + '</div>' +
+      '<button type="button" class="q-del" onclick="apptDelQuestion(' + i + ')" aria-label="Sil">×</button>' +
+    '</div>';
+  }).join("");
+}
+
+function apptSave() {
+  if (!apptDraft) return;
+  // Form alanlarını draft'a aktar
+  apptDraft.title = document.getElementById("appt-title-input").value.trim() || apptDraft.title;
+  apptDraft.scheduledDate = document.getElementById("appt-date-input").value || "";
+  apptDraft.scheduledTime = document.getElementById("appt-time-input").value || "";
+  apptDraft.doctor = document.getElementById("appt-doctor-input").value.trim();
+  apptDraft.hospital = document.getElementById("appt-hospital-input").value.trim();
+  apptDraft.notes = document.getElementById("appt-notes-input").value;
+  apptDraft.result = document.getElementById("appt-result-input").value;
+  apptDraft.updatedAt = new Date().toISOString();
+
+  const idx = state.appointments.findIndex(a => a.id === apptDraft.id);
+  if (idx >= 0) state.appointments[idx] = apptDraft;
+  saveState();
+  apptDraft = null;
+  navigate("appointments");
+}
+
+function apptDelete() {
+  if (!apptDraft) return;
+  const id = apptDraft.id;
+  showConfirm("Bu randevuyu sil?", "Sonuç ve sorular dahil bütün bilgileri silinir.", () => {
+    state.appointments = state.appointments.filter(a => a.id !== id);
+    saveState();
+    apptDraft = null;
+    navigate("appointments");
+  });
+}
+
+/* ---------- 9c) ANNE MODU — GÜNLÜK GİRDİ ---------- */
+
+let dailyLogDate = null; // şu an düzenlenen tarih
+
+function renderDailyLog(params) {
+  dailyLogDate = (params && params.date) || todayKey();
+  const log = getDailyLog(dailyLogDate);
+
+  const isToday = dailyLogDate === todayKey();
+  document.getElementById("daily-log-title").textContent = isToday ? "Bugün" : fmtDate(dailyLogDate);
+
+  const info = getPregnancyInfo();
+  const dateInfo = document.getElementById("daily-log-date-info");
+  let dateInfoText = fmtDate(dailyLogDate);
+  if (info && state.lmpDate) {
+    const targetDate = parseDate(dailyLogDate);
+    const lmp = parseDate(state.lmpDate);
+    const days = Math.floor((targetDate - lmp) / MS_PER_DAY);
+    const w = Math.max(1, Math.floor(days / 7) + 1);
+    dateInfoText += " · " + w + ". hafta";
+  }
+  dateInfo.innerHTML = dateInfoText;
+
+  // Ruh hali
+  const moodRow = document.getElementById("mood-row");
+  moodRow.innerHTML = MOOD_LEVELS.map(m => {
+    const active = log.mood === m.level;
+    return '<button class="mood-btn' + (active ? ' active' : '') + '" onclick="dailyLogSetMood(' + m.level + ')">' +
+      '<span class="emoji">' + m.emoji + '</span>' +
+      '<span class="lbl">' + m.label + '</span>' +
+    '</button>';
+  }).join("");
+
+  // Semptomlar
+  const symptomGrid = document.getElementById("symptom-grid");
+  symptomGrid.innerHTML = SYMPTOM_LIST.map(s => {
+    const active = log.symptoms.includes(s.id);
+    return '<button class="symptom-chip' + (active ? ' active' : '') + '" onclick="dailyLogToggleSymptom(\'' + s.id + '\')">' +
+      '<span class="icon">' + s.icon + '</span>' +
+      '<span>' + s.label + '</span>' +
+    '</button>';
+  }).join("");
+
+  // Su
+  renderWaterDisplay();
+
+  // Vitaminler
+  const rel = relevantVitamins();
+  const vitList = document.getElementById("vitamin-list");
+  vitList.innerHTML = rel.length === 0
+    ? '<div class="small" style="text-align:center; padding: 12px;">Bu hafta için protokol vitamini yok. Doktorun ekstra önerirse manuel ekleyebilirsin.</div>'
+    : rel.map(v => {
+      const taken = log.vitamins.includes(v.id);
+      return '<div class="vitamin-row" onclick="dailyLogToggleVitamin(\'' + v.id + '\')">' +
+        '<div>' +
+          '<div class="name">' + v.label + '</div>' +
+          '<div class="hint">' + v.hint + '</div>' +
+        '</div>' +
+        '<div class="check' + (taken ? ' checked' : '') + '">✓</div>' +
+      '</div>';
+    }).join("");
+
+  // Mahremiyet toggle
+  document.getElementById("share-toggle").classList.toggle("on", !!log.sharedWithCem);
+
+  // Not
+  document.getElementById("daily-note-input").value = log.note || "";
+  document.getElementById("daily-note-input").oninput = function() {
+    const l = getDailyLog(dailyLogDate);
+    l.note = this.value;
+    saveState();
+  };
+}
+
+function renderWaterDisplay() {
+  const log = getDailyLog(dailyLogDate);
+  document.getElementById("water-count").textContent = log.waterGlasses;
+  const glassEl = document.getElementById("water-glasses");
+  let glasses = "";
+  for (let i = 0; i < 8; i++) {
+    glasses += '<span class="water-glass' + (i < log.waterGlasses ? ' filled' : '') + '">💧</span>';
+  }
+  glassEl.innerHTML = glasses;
+}
+
+function dailyLogSetMood(level) {
+  const log = getDailyLog(dailyLogDate);
+  log.mood = log.mood === level ? null : level; // ikinci dokunuş = temizle
+  saveState();
+  renderDailyLog({ date: dailyLogDate });
+}
+
+function dailyLogToggleSymptom(id) {
+  const log = getDailyLog(dailyLogDate);
+  const idx = log.symptoms.indexOf(id);
+  if (idx >= 0) log.symptoms.splice(idx, 1);
+  else log.symptoms.push(id);
+  saveState();
+  renderDailyLog({ date: dailyLogDate });
+}
+
+function dailyLogWaterChange(delta) {
+  const log = getDailyLog(dailyLogDate);
+  log.waterGlasses = Math.max(0, Math.min(20, log.waterGlasses + delta));
+  saveState();
+  renderWaterDisplay();
+}
+
+function dailyLogToggleVitamin(id) {
+  const log = getDailyLog(dailyLogDate);
+  const idx = log.vitamins.indexOf(id);
+  if (idx >= 0) log.vitamins.splice(idx, 1);
+  else log.vitamins.push(id);
+  saveState();
+  renderDailyLog({ date: dailyLogDate });
+}
+
+function dailyLogToggleShare() {
+  const log = getDailyLog(dailyLogDate);
+  log.sharedWithCem = !log.sharedWithCem;
+  saveState();
+  document.getElementById("share-toggle").classList.toggle("on", log.sharedWithCem);
+}
+
+function dailyLogChangeDate() {
+  showPrompt(
+    "Hangi gün?",
+    "Geçmişe dönük düzenleme için tarih seç.",
+    "date",
+    dailyLogDate,
+    (val) => {
+      if (val) {
+        dailyLogDate = val;
+        renderDailyLog({ date: val });
+      }
+    }
+  );
+}
+
+/* ---------- 9d) ÖLÇÜMLER (KİLO + TANSİYON) ---------- */
+
+function renderMeasurements() {
+  // Geçmiş kilo
+  const weights = [...(state.weights || [])].sort((a, b) => parseDate(b.date) - parseDate(a.date));
+  document.getElementById("weight-history").innerHTML = weights.length === 0
+    ? '<div class="small" style="text-align:center; padding: 8px;">Henüz kilo girilmedi.</div>'
+    : weights.slice(0, 12).map(w =>
+        '<div style="display:flex; justify-content:space-between; padding: 8px 0; border-top: 1px solid var(--border); font-size: 14px;">' +
+          '<span>' + fmtDate(w.date) + '</span>' +
+          '<span style="font-weight:600;">' + w.kg + ' kg</span>' +
+          '<button class="btn-ghost" style="padding: 0 8px; color: var(--text-soft);" onclick="deleteWeight(\'' + w.id + '\')">×</button>' +
+        '</div>'
+      ).join("");
+  document.getElementById("weight-input").value = "";
+
+  // Geçmiş tansiyon
+  const bps = [...(state.bps || [])].sort((a, b) => parseDate(b.date) - parseDate(a.date));
+  document.getElementById("bp-history").innerHTML = bps.length === 0
+    ? '<div class="small" style="text-align:center; padding: 8px;">Henüz tansiyon girilmedi.</div>'
+    : bps.slice(0, 12).map(b =>
+        '<div style="display:flex; justify-content:space-between; padding: 8px 0; border-top: 1px solid var(--border); font-size: 14px;">' +
+          '<span>' + fmtDate(b.date) + '</span>' +
+          '<span style="font-weight:600;">' + b.sys + '/' + b.dia + '</span>' +
+          '<button class="btn-ghost" style="padding: 0 8px; color: var(--text-soft);" onclick="deleteBP(\'' + b.id + '\')">×</button>' +
+        '</div>'
+      ).join("");
+  document.getElementById("bp-sys").value = "";
+  document.getElementById("bp-dia").value = "";
+}
+
+function saveWeight() {
+  const v = parseFloat(document.getElementById("weight-input").value);
+  if (isNaN(v) || v < 30 || v > 250) { alert("Geçerli bir kilo gir (30-250 kg)."); return; }
+  state.weights = state.weights || [];
+  state.weights.push({
+    id: "w_" + Date.now(),
+    date: todayKey(),
+    kg: v.toFixed(1),
+    sharedWithCem: false
+  });
+  saveState();
+  renderMeasurements();
+}
+
+function deleteWeight(id) {
+  state.weights = (state.weights || []).filter(w => w.id !== id);
+  saveState();
+  renderMeasurements();
+}
+
+function saveBP() {
+  const sys = parseInt(document.getElementById("bp-sys").value, 10);
+  const dia = parseInt(document.getElementById("bp-dia").value, 10);
+  if (isNaN(sys) || sys < 60 || sys > 220) { alert("Büyük tansiyon (sis): 60-220 arası olmalı."); return; }
+  if (isNaN(dia) || dia < 40 || dia > 140) { alert("Küçük tansiyon (dia): 40-140 arası olmalı."); return; }
+  state.bps = state.bps || [];
+  state.bps.push({
+    id: "bp_" + Date.now(),
+    date: todayKey(),
+    sys: sys, dia: dia,
+    sharedWithCem: false
+  });
+  saveState();
+  renderMeasurements();
+  // Kritik tansiyon uyarısı (preeklampsi)
+  if (sys >= 140 || dia >= 90) {
+    setTimeout(() => alert("⚠ Tansiyon yüksek (≥140/90). Doktorla görüşmeyi düşün — preeklampsi riski olabilir."), 200);
+  }
+}
+
+function deleteBP(id) {
+  state.bps = (state.bps || []).filter(b => b.id !== id);
+  saveState();
+  renderMeasurements();
+}
+
+/* ---------- 9e) TEKME SAYACI ---------- */
+
+let kickTimerInterval = null;
+
+function renderKicks() {
+  const area = document.getElementById("kick-area");
+  const session = state.activeKickSession;
+
+  if (session) {
+    // Aktif seans
+    const elapsed = Math.floor((Date.now() - new Date(session.startTime).getTime()) / 1000);
+    const mm = Math.floor(elapsed / 60).toString().padStart(2, "0");
+    const ss = (elapsed % 60).toString().padStart(2, "0");
+    const pct = Math.min(100, (session.count / 10) * 100);
+
+    area.innerHTML =
+      '<div class="kick-count">' + session.count + '<span style="font-size:18px;color:var(--text-muted);"> / 10</span></div>' +
+      '<div class="kick-progress"><div class="kick-progress-fill" style="width:' + pct + '%;"></div></div>' +
+      '<button class="kick-big-btn" onclick="kickRecord()">' +
+        'TEKME' +
+        '<span class="small">basınca +1</span>' +
+      '</button>' +
+      '<div class="kick-timer">⏱ Geçen süre: ' + mm + ':' + ss + '</div>' +
+      '<button class="kick-stop-btn" onclick="kickStop()">Seansı bitir</button>';
+
+    // Timer güncelle
+    if (kickTimerInterval) clearInterval(kickTimerInterval);
+    kickTimerInterval = setInterval(() => {
+      if (state.activeKickSession && document.getElementById("screen-kicks").classList.contains("active")) {
+        renderKicks();
+      } else {
+        clearInterval(kickTimerInterval);
+        kickTimerInterval = null;
+      }
+    }, 1000);
+  } else {
+    area.innerHTML =
+      '<div style="font-size: 15px; color: var(--text-muted); margin-bottom: 16px;">Bebeğin hareketlerini sayacaksın. 1 saatlik bir seans başlat.</div>' +
+      '<button class="kick-big-btn" onclick="kickStart()">' +
+        'BAŞLAT' +
+        '<span class="small">1 saat sayım</span>' +
+      '</button>';
+    if (kickTimerInterval) { clearInterval(kickTimerInterval); kickTimerInterval = null; }
+  }
+
+  // Geçmiş seanslar
+  const history = (state.kickSessions || []).slice().reverse();
+  document.getElementById("kick-history").innerHTML = history.length === 0
+    ? '<div class="card-soft small text-center">Henüz seans yok.</div>'
+    : history.slice(0, 20).map(s => {
+        const dur = Math.round((new Date(s.endTime) - new Date(s.startTime)) / 60000);
+        const ok = s.count >= 10;
+        return '<div class="card" style="padding: 12px 16px; margin-bottom: 8px; display:flex; justify-content: space-between; align-items: center;">' +
+          '<div>' +
+            '<div style="font-weight: 600; font-size: 15px;">' + s.count + ' tekme · ' + dur + ' dk</div>' +
+            '<div class="small">' + fmtDateTime(s.startTime) + '</div>' +
+          '</div>' +
+          '<div style="font-size: 24px;">' + (ok ? "✅" : "⚠") + '</div>' +
+        '</div>';
+      }).join("");
+}
+
+function kickStart() {
+  state.activeKickSession = {
+    id: "k_" + Date.now(),
+    startTime: new Date().toISOString(),
+    count: 0
+  };
+  saveState();
+  renderKicks();
+}
+
+function kickRecord() {
+  if (!state.activeKickSession) return;
+  state.activeKickSession.count++;
+  saveState();
+  renderKicks();
+  // 10'a ulaşınca ufak kutlama
+  if (state.activeKickSession.count === 10) {
+    setTimeout(() => alert("🎉 10 tekme tamam! Bebek aktif."), 100);
+  }
+}
+
+function kickStop() {
+  if (!state.activeKickSession) return;
+  const s = state.activeKickSession;
+  s.endTime = new Date().toISOString();
+  state.kickSessions = state.kickSessions || [];
+  state.kickSessions.push(s);
+  state.activeKickSession = null;
+  saveState();
+  renderKicks();
 }
 
 function settingsEditLmp() {
@@ -2395,15 +3951,29 @@ function importDataPrompt() {
 }
 
 function resetAllPrompt() {
+  const message = currentUser
+    ? "Notlar, tarihler — buluttaki ve telefondaki kopyalar dahil hiçbiri geri gelmez. Önce yedek almak ister misin?"
+    : "Notlar, tarihler — hiçbiri geri gelmez. Önce yedek almak ister misin?";
   showConfirm(
     "Tüm verileri sil?",
-    "Notlar, tarihler — hiçbiri geri gelmez. Önce yedek almak ister misin?",
-    () => {
+    message,
+    async () => {
       localStorage.removeItem(STORAGE_KEY);
+      // Buluttaki veriyi de temizle
+      if (currentUser && window.fb) {
+        try {
+          const ref = window.fb.doc(window.fb.db, "families", currentUser.uid);
+          await window.fb.setDoc(ref, { members: [currentUser.uid], lastUpdate: Date.now() });
+        } catch (err) { console.warn(err); }
+      }
       state = defaultState();
-      navigate("onboarding");
-      onbGoTo("welcome");
       onbState = { mode: null, value: null };
+      if (currentUser) {
+        navigate("onboarding");
+        onbGoTo("welcome");
+      } else {
+        navigate("auth");
+      }
     }
   );
 }
@@ -2487,15 +4057,189 @@ function escapeHtml(s) {
     .replace(/'/g, "&#039;");
 }
 
-/* ---------- 13) BAŞLATMA ---------- */
+/* ---------- 13) FIREBASE — AUTH & CLOUD SYNC (v0.2) ---------- */
 
-function init() {
+let currentUser = null;
+let unsubscribeStateListener = null;
+let cloudWriteTimer = null;
+let suppressNextLocalSave = false; // realtime listener'dan gelen update'ler için
+
+function saveStateLocal() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.error("localStorage write hatası", e);
+  }
+}
+
+async function pushStateToCloud(uid) {
+  if (!window.fb || !uid) return;
+  const ref = window.fb.doc(window.fb.db, "families", uid);
+  // Doc'un var olduğundan emin ol — yoksa oluştur (rules: create allowed for any auth)
+  const dataToSave = Object.assign({}, state, {
+    members: [uid],
+    lastUpdate: Date.now(),
+    cloudUpdatedAt: window.fb.serverTimestamp ? window.fb.serverTimestamp() : Date.now()
+  });
+  await window.fb.setDoc(ref, dataToSave);
+}
+
+async function loadFamilyState(uid) {
+  if (!window.fb) return;
+  try {
+    const ref = window.fb.doc(window.fb.db, "families", uid);
+    const snap = await window.fb.getDoc(ref);
+    if (snap.exists()) {
+      const data = snap.data();
+      // Bulutta güncel veri var, mevcut state'i değiştir
+      const localUpdate = state.lastUpdate || 0;
+      const cloudUpdate = data.lastUpdate || 0;
+      if (cloudUpdate >= localUpdate) {
+        // Bulut daha yeni: bulut kazanır
+        Object.keys(data).forEach(k => {
+          if (k !== "cloudUpdatedAt") state[k] = data[k];
+        });
+      } else {
+        // Local daha yeni: bulutu güncelle
+        await pushStateToCloud(uid);
+      }
+    } else {
+      // Yeni kullanıcı — local'i buluta yükle (migration)
+      await pushStateToCloud(uid);
+    }
+    saveStateLocal();
+  } catch (err) {
+    console.warn("Cloud yüklenemedi, local kullanılacak:", err);
+  }
+}
+
+function startStateListener(uid) {
+  if (!window.fb) return;
+  if (unsubscribeStateListener) unsubscribeStateListener();
+  const ref = window.fb.doc(window.fb.db, "families", uid);
+  unsubscribeStateListener = window.fb.onSnapshot(ref, (snap) => {
+    if (snap.metadata.hasPendingWrites) return; // kendi yazımızın echo'su, atla
+    if (!snap.exists()) return;
+    const data = snap.data();
+    const localUpdate = state.lastUpdate || 0;
+    const cloudUpdate = data.lastUpdate || 0;
+    if (cloudUpdate <= localUpdate) return;
+
+    // Diğer cihazdan güncel veri geldi — state'i güncelle ve ekranı yenile
+    Object.keys(data).forEach(k => {
+      if (k !== "cloudUpdatedAt") state[k] = data[k];
+    });
+    saveStateLocal();
+    rerenderCurrentScreen();
+  }, (err) => {
+    console.warn("Listener hatası:", err);
+  });
+}
+
+function rerenderCurrentScreen() {
+  const active = document.querySelector(".screen.active");
+  if (!active) return;
+  const id = active.id.replace("screen-", "");
+  if (id === "auth" || id === "onboarding") return;
+  navigate(id);
+}
+
+async function signInWithGoogle() {
+  const btn = document.getElementById("auth-signin-btn");
+  const errBox = document.getElementById("auth-error");
+  errBox.textContent = "";
+  if (!window.fb) {
+    errBox.textContent = "Firebase henüz yüklenmedi, sayfayı yenile lütfen.";
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = "Açılıyor...";
+  try {
+    const provider = new window.fb.GoogleAuthProvider();
+    // Önce popup dene (masaüstü için), iOS standalone'da redirect
+    const isStandalone = window.navigator.standalone === true;
+    if (isStandalone) {
+      await window.fb.signInWithRedirect(window.fb.auth, provider);
+    } else {
+      await window.fb.signInWithPopup(window.fb.auth, provider);
+    }
+  } catch (err) {
+    console.error(err);
+    errBox.textContent = "Giriş başarısız: " + (err.message || err.code || "bilinmeyen hata");
+    btn.disabled = false;
+    btn.textContent = "🔐  Google ile giriş yap";
+  }
+}
+
+async function signOutOfApp() {
+  if (!window.fb || !currentUser) return;
+  if (cloudWriteTimer) {
+    clearTimeout(cloudWriteTimer);
+    await pushStateToCloud(currentUser.uid).catch(()=>{});
+  }
+  if (unsubscribeStateListener) { unsubscribeStateListener(); unsubscribeStateListener = null; }
+  await window.fb.signOut(window.fb.auth);
+  // currentUser onAuthStateChanged ile null olacak ve auth ekranına gideceğiz
+}
+
+function continueLocalOnly() {
+  // Cloud olmadan devam — sadece bu cihazda
+  currentUser = null;
+  try { localStorage.setItem("9ay1hayat:declinedCloud", "1"); } catch(e) {}
   if (state.setupComplete && state.lmpDate) {
+    navigateToHomeOrOnboarding();
+  } else {
+    navigate("onboarding");
+    onbGoTo("welcome");
+  }
+}
+
+function navigateToHomeOrOnboarding() {
+  if (state.setupComplete && state.lmpDate) {
+    if (!state.autoApptGenerated) {
+      maybeGenerateAppointments();
+      saveState();
+    }
     navigate("home");
   } else {
     navigate("onboarding");
     onbGoTo("welcome");
   }
+}
+
+/* ---------- 14) BAŞLATMA ---------- */
+
+function init() {
+  // Firebase hazır değilse bekle
+  if (!window.fb) {
+    window.addEventListener("fb-ready", init, { once: true });
+    return;
+  }
+
+  // Auth state'i izle (ilk fire'da mevcut state ile gelir)
+  window.fb.onAuthStateChanged(window.fb.auth, async (user) => {
+    currentUser = user;
+    if (user) {
+      // Hesap girişli — bulutsuz tercihini temizle
+      try { localStorage.removeItem("9ay1hayat:declinedCloud"); } catch(e) {}
+      try {
+        await loadFamilyState(user.uid);
+        startStateListener(user.uid);
+      } catch (err) {
+        console.warn(err);
+      }
+      navigateToHomeOrOnboarding();
+    } else {
+      // Hesap girişli değil
+      const declined = localStorage.getItem("9ay1hayat:declinedCloud") === "1";
+      if (declined && state.setupComplete && state.lmpDate) {
+        // Önce "bulutsuz devam et" demiş + lokal hazır — direkt home'a
+        navigateToHomeOrOnboarding();
+      } else {
+        navigate("auth");
+      }
+    }
+  });
 }
 
 init();
