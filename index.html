@@ -1,0 +1,2505 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#FAF7F2" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="9 Ay 1 Hayat" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>9 Ay 1 Hayat Olsun</title>
+
+  <style>
+    /* ============ TEMA & TEMEL ============ */
+    :root {
+      --bg: #FAF7F2;
+      --bg-card: #FFFFFF;
+      --bg-soft: #F2EDE5;
+      --primary: #E8B4B8;
+      --primary-deep: #D49497;
+      --primary-soft: #F5DCDE;
+      --secondary: #A8B89E;
+      --secondary-soft: #E2EAD9;
+      --text: #2A2D34;
+      --text-muted: #7A7A85;
+      --text-soft: #B0B0B8;
+      --warn: #F2B880;
+      --success: #7FB069;
+      --danger: #C97070;
+      --border: #ECE6DC;
+      --shadow: 0 2px 12px rgba(42, 45, 52, 0.06);
+      --shadow-lg: 0 8px 28px rgba(42, 45, 52, 0.10);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --radius-lg: 28px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1B2330;
+        --bg-card: #242C3A;
+        --bg-soft: #2D3645;
+        --primary: #E8B4B8;
+        --primary-deep: #D49497;
+        --primary-soft: #3A2E36;
+        --secondary: #A8B89E;
+        --secondary-soft: #2E3A36;
+        --text: #F2EFE9;
+        --text-muted: #9BA3B0;
+        --text-soft: #5C6478;
+        --border: #2F3848;
+        --shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+        --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.40);
+      }
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 17px;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+      overscroll-behavior-y: none;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    body { padding-bottom: calc(80px + var(--safe-bottom)); }
+
+    button {
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      padding: 0;
+    }
+
+    input, textarea, select {
+      font-family: inherit;
+      font-size: 17px;
+      color: var(--text);
+    }
+
+    h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+
+    /* ============ EKRAN SİSTEMİ ============ */
+    .screen { display: none; padding: calc(20px + var(--safe-top)) 20px 20px; max-width: 520px; margin: 0 auto; }
+    .screen.active { display: block; }
+
+    .screen-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      min-height: 36px;
+    }
+    .screen-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .screen-header button {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: var(--text);
+      transition: background .15s;
+    }
+    .screen-header button:hover, .screen-header button:active {
+      background: var(--bg-soft);
+    }
+
+    /* ============ KARTLAR ============ */
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+
+    .card-soft {
+      background: var(--bg-soft);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    /* ============ BUTONLAR ============ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 56px;
+      padding: 14px 22px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 17px;
+      transition: transform .1s, box-shadow .15s, background .15s;
+      width: 100%;
+    }
+    .btn:active { transform: scale(0.98); }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #FFF;
+      box-shadow: 0 2px 8px rgba(232, 180, 184, 0.45);
+    }
+    .btn-primary:hover { background: var(--primary-deep); }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--primary-deep);
+      min-height: 44px;
+      padding: 10px 16px;
+      font-weight: 500;
+    }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--danger);
+      border: 1.5px solid var(--danger);
+    }
+
+    /* ============ ANA EKRAN — DASHBOARD ============ */
+    .greeting {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .greeting-name {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 22px;
+    }
+
+    .week-card {
+      background: linear-gradient(135deg, var(--primary-soft) 0%, var(--secondary-soft) 100%);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .week-card .week-num {
+      font-size: 64px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--text);
+      letter-spacing: -0.03em;
+    }
+    .week-card .week-label {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin: 4px 0 16px;
+    }
+    .week-card .fruit-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      background: rgba(255,255,255,0.55);
+      padding: 8px 16px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+    .week-card .fruit-emoji { font-size: 24px; }
+    .week-card .size {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+    .week-card .countdown {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      color: var(--text);
+      font-weight: 500;
+    }
+    .week-card .countdown b {
+      font-weight: 700;
+      color: var(--primary-deep);
+    }
+
+    /* Quick actions grid */
+    .quick-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .quick-btn {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 22px 16px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      transition: transform .1s, box-shadow .15s;
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .quick-btn:active { transform: scale(0.97); }
+    .quick-btn .icon {
+      font-size: 32px;
+      line-height: 1;
+    }
+    .quick-btn .label {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* Last note preview */
+    .last-note {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+    .last-note .meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .last-note .author-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 600;
+      color: var(--text);
+      font-size: 13px;
+      background: var(--bg-soft);
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+    .last-note .text {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.55;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .last-note .empty {
+      color: var(--text-muted);
+      font-size: 14px;
+      text-align: center;
+      padding: 8px 0;
+    }
+
+    /* ============ HAFTA DETAY ============ */
+    .week-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .week-nav button {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      box-shadow: var(--shadow);
+      font-size: 20px;
+      color: var(--text);
+    }
+    .week-nav button:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .week-nav .current-week {
+      flex: 1;
+      text-align: center;
+    }
+    .week-nav .current-week .num {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .week-nav .current-week .sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .week-hero {
+      background: var(--primary-soft);
+      border-radius: var(--radius-lg);
+      padding: 36px 20px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .week-hero .big-fruit { font-size: 78px; line-height: 1; margin-bottom: 12px; }
+    .week-hero .fruit-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .week-hero .fruit-size {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .info-section {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+    .info-section h3 {
+      font-size: 16px;
+      color: var(--primary-deep);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info-section ul {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--text);
+    }
+    .info-section li {
+      margin-bottom: 6px;
+      line-height: 1.5;
+    }
+
+    .tip-card {
+      background: var(--secondary-soft);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+    .tip-card .tip-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--secondary);
+      margin-bottom: 6px;
+    }
+    .tip-card .tip-text {
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--text);
+      font-style: italic;
+    }
+
+    .appt-banner {
+      background: linear-gradient(135deg, var(--warn) 0%, #F8D6B0 100%);
+      border-radius: var(--radius);
+      padding: 16px;
+      color: #6B4426;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .appt-banner .appt-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    /* ============ NOTLAR LİSTE ============ */
+    .notes-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+    .notes-empty .icon { font-size: 56px; margin-bottom: 12px; }
+
+    .note-item {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: transform .1s;
+    }
+    .note-item:active { transform: scale(0.99); }
+    .note-item .meta-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .note-item .text {
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .note-item .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .tag-chip {
+      display: inline-block;
+      font-size: 12px;
+      padding: 3px 10px;
+      background: var(--primary-soft);
+      color: var(--primary-deep);
+      border-radius: 999px;
+      font-weight: 500;
+    }
+
+    .author-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .author-chip.cem { background: var(--secondary-soft); color: #4F6244; }
+    .author-chip.buse { background: var(--primary-soft); color: var(--primary-deep); }
+
+    .fab {
+      position: fixed;
+      right: 20px;
+      bottom: calc(96px + var(--safe-bottom));
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #FFF;
+      box-shadow: 0 6px 20px rgba(232, 180, 184, 0.55);
+      font-size: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      transition: transform .1s;
+    }
+    .fab:active { transform: scale(0.94); }
+
+    /* ============ NOT EDITÖR ============ */
+    .editor-textarea {
+      width: 100%;
+      min-height: 220px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      background: var(--bg-card);
+      color: var(--text);
+      font-size: 17px;
+      line-height: 1.55;
+      resize: vertical;
+      outline: none;
+      transition: border-color .15s;
+    }
+    .editor-textarea:focus { border-color: var(--primary); }
+
+    .editor-section { margin-bottom: 16px; }
+    .editor-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .author-toggle {
+      display: flex;
+      gap: 8px;
+    }
+    .author-toggle button {
+      flex: 1;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      color: var(--text-muted);
+      font-weight: 600;
+      transition: all .15s;
+    }
+    .author-toggle button.active {
+      background: var(--primary-soft);
+      border-color: var(--primary);
+      color: var(--primary-deep);
+    }
+
+    .tag-input-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .tag-input-row .selected-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--primary-soft);
+      color: var(--primary-deep);
+      font-size: 14px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 500;
+    }
+    .tag-input-row .selected-tag button {
+      color: var(--primary-deep);
+      font-size: 16px;
+      padding: 0;
+      line-height: 1;
+    }
+    .tag-input-row input {
+      flex: 1;
+      min-width: 100px;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 999px;
+      background: var(--bg-card);
+      outline: none;
+    }
+    .tag-input-row input:focus { border-color: var(--primary); }
+
+    .tag-suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .tag-suggestion {
+      font-size: 13px;
+      padding: 5px 12px;
+      background: var(--bg-soft);
+      color: var(--text-muted);
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .tag-suggestion:active { background: var(--primary-soft); color: var(--primary-deep); }
+
+    /* ============ ONBOARDING ============ */
+    .onboarding {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: calc(40px + var(--safe-top)) 24px 40px;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+    .onboarding-step { flex: 1; display: flex; flex-direction: column; }
+
+    .onb-hero {
+      text-align: center;
+      padding: 30px 0 20px;
+    }
+    .onb-hero .emoji {
+      font-size: 80px;
+      margin-bottom: 18px;
+      line-height: 1;
+    }
+    .onb-hero h1 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+    .onb-hero p {
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--text-muted);
+      max-width: 360px;
+      margin: 0 auto;
+    }
+
+    .onb-options {
+      margin-top: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .onb-option {
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      text-align: left;
+      transition: all .15s;
+      width: 100%;
+    }
+    .onb-option:active, .onb-option.selected {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+    }
+    .onb-option .opt-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .onb-option .opt-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .onb-input-row {
+      margin-top: 24px;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .onb-input-row label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .onb-input-row input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 18px;
+      background: var(--bg);
+      outline: none;
+    }
+    .onb-input-row input:focus { border-color: var(--primary); }
+
+    .onb-summary {
+      background: var(--secondary-soft);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-top: 18px;
+      font-size: 14px;
+      color: var(--text);
+    }
+    .onb-summary b { color: var(--primary-deep); }
+
+    .onb-footer { margin-top: auto; padding-top: 24px; }
+
+    /* ============ AYARLAR ============ */
+    .settings-section {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 8px 0;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+    .settings-section h3 {
+      padding: 12px 18px 6px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .settings-row {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-top: 1px solid var(--border);
+      cursor: pointer;
+      min-height: 56px;
+    }
+    .settings-row:first-of-type { border-top: none; }
+    .settings-row .label {
+      font-size: 16px;
+      color: var(--text);
+      font-weight: 500;
+    }
+    .settings-row .value {
+      font-size: 15px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+    .settings-row .arrow {
+      color: var(--text-soft);
+      font-size: 18px;
+    }
+
+    .user-toggle {
+      display: flex;
+      gap: 6px;
+      background: var(--bg-soft);
+      padding: 4px;
+      border-radius: 999px;
+    }
+    .user-toggle button {
+      flex: 1;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-muted);
+      transition: all .15s;
+    }
+    .user-toggle button.active {
+      background: var(--bg-card);
+      color: var(--text);
+      box-shadow: var(--shadow);
+    }
+
+    /* ============ ALT NAVİGASYON ============ */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-top: 1px solid var(--border);
+      padding: 6px 0 calc(6px + var(--safe-bottom));
+      display: flex;
+      justify-content: space-around;
+      z-index: 100;
+    }
+    @media (prefers-color-scheme: dark) {
+      .bottom-nav {
+        background: rgba(36, 44, 58, 0.92);
+      }
+    }
+    .nav-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 8px 4px;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 500;
+      transition: color .15s;
+      min-height: 56px;
+    }
+    .nav-btn .ico { font-size: 22px; line-height: 1; }
+    .nav-btn.active { color: var(--primary-deep); }
+    .nav-btn:active { opacity: 0.7; }
+
+    /* ============ MODAL ============ */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 200;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      animation: fadein .2s;
+    }
+    @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+    .modal {
+      background: var(--bg-card);
+      width: 100%;
+      max-width: 520px;
+      border-top-left-radius: var(--radius-lg);
+      border-top-right-radius: var(--radius-lg);
+      padding: 22px 22px calc(22px + var(--safe-bottom));
+      animation: slideup .25s cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
+    @keyframes slideup { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal h2 { font-size: 20px; margin-bottom: 14px; }
+    .modal p { color: var(--text-muted); font-size: 15px; line-height: 1.55; margin: 0 0 18px; }
+    .modal .actions {
+      display: flex;
+      gap: 10px;
+      flex-direction: column;
+    }
+
+    /* ============ YARDIMCI ============ */
+    .text-center { text-align: center; }
+    .small { font-size: 13px; color: var(--text-muted); }
+    .spacer-12 { height: 12px; }
+    .spacer-24 { height: 24px; }
+    .spacer-40 { height: 40px; }
+    .v-stack { display: flex; flex-direction: column; gap: 10px; }
+    .h-stack { display: flex; gap: 10px; align-items: center; }
+
+    .badge-week-appt {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--warn);
+      color: #6B4426;
+      margin-top: 8px;
+    }
+
+    /* ============ ERİŞİLEBİLİRLİK ============ */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* iOS native form controls daha iyi görünsün */
+    input[type="date"] {
+      -webkit-appearance: none;
+      appearance: none;
+      min-height: 48px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============ ONBOARDING ============ -->
+<div id="screen-onboarding" class="screen active" style="padding: 0;">
+  <div class="onboarding">
+    <div id="onb-step-welcome" class="onboarding-step">
+      <div class="onb-hero">
+        <div class="emoji">🤍</div>
+        <h1>9 Ay 1 Hayat Olsun</h1>
+        <p>Bebeğinizin yolculuğunu birlikte takip edebilmeniz için sıfırdan, ikiniz için tasarlandı.</p>
+      </div>
+      <div class="card-soft" style="margin-top: 24px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
+          <span style="font-size: 22px;">🌱</span>
+          <b>Önce küçük bir soru</b>
+        </div>
+        <div class="small">Bebeğin haftasını ve doğum tarihini hesaplayabilmek için aşağıdakilerden birini biliyor olmamız yeterli.</div>
+      </div>
+      <div class="onb-footer">
+        <button class="btn btn-primary" onclick="onbGoTo('lmp-choice')">Başlayalım →</button>
+      </div>
+    </div>
+
+    <div id="onb-step-lmp-choice" class="onboarding-step" style="display: none;">
+      <div class="onb-hero" style="padding-top: 12px;">
+        <div class="emoji">📅</div>
+        <h1 style="font-size: 26px;">Hangisini biliyorsun?</h1>
+        <p>Birini seç, gerisini biz hesaplarız.</p>
+      </div>
+      <div class="onb-options">
+        <button class="onb-option" data-mode="lmp" onclick="onbSelectMode(this)">
+          <div class="opt-title">Buse'nin son adet tarihi</div>
+          <div class="opt-sub">Doktorlar genelde bu tarihi bilir.</div>
+        </button>
+        <button class="onb-option" data-mode="edd" onclick="onbSelectMode(this)">
+          <div class="opt-title">Tahmini doğum tarihi (TDT)</div>
+          <div class="opt-sub">Doktorun verdiği "doğum tarihi".</div>
+        </button>
+        <button class="onb-option" data-mode="week" onclick="onbSelectMode(this)">
+          <div class="opt-title">Şu an X. haftadayız</div>
+          <div class="opt-sub">İlk muayeneden sonrasıysa kolay olur.</div>
+        </button>
+      </div>
+
+      <div id="onb-input-lmp" class="onb-input-row" style="display: none;">
+        <label for="onb-lmp-date">Son adet tarihi</label>
+        <input type="date" id="onb-lmp-date" oninput="onbValidate()">
+      </div>
+      <div id="onb-input-edd" class="onb-input-row" style="display: none;">
+        <label for="onb-edd-date">Tahmini doğum tarihi</label>
+        <input type="date" id="onb-edd-date" oninput="onbValidate()">
+      </div>
+      <div id="onb-input-week" class="onb-input-row" style="display: none;">
+        <label for="onb-week-num">Şu anki hafta</label>
+        <input type="number" id="onb-week-num" min="1" max="42" placeholder="örn: 12" oninput="onbValidate()">
+      </div>
+
+      <div id="onb-summary" class="onb-summary" style="display: none;"></div>
+
+      <div class="onb-footer">
+        <button class="btn btn-primary" id="onb-continue-btn" onclick="onbFinish()" disabled style="opacity:.4;">Devam et</button>
+        <button class="btn btn-ghost" onclick="onbGoTo('welcome')">← Geri</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ANA EKRAN ============ -->
+<div id="screen-home" class="screen">
+  <div class="screen-header">
+    <h1>9 Ay 1 Hayat</h1>
+    <button onclick="navigate('settings')" aria-label="Ayarlar">⚙</button>
+  </div>
+
+  <div class="greeting" id="home-greeting">Merhaba</div>
+  <div class="greeting-name" id="home-name">—</div>
+
+  <div class="week-card" id="home-week-card" onclick="navigate('week-detail')">
+    <!-- içerik JS ile dolduruluyor -->
+  </div>
+
+  <div class="quick-grid">
+    <button class="quick-btn" onclick="navigate('week-detail')">
+      <span class="icon">📅</span>
+      <span class="label">Hafta Detayı</span>
+    </button>
+    <button class="quick-btn" onclick="navigate('notes')">
+      <span class="icon">📝</span>
+      <span class="label">Notlar</span>
+    </button>
+    <button class="quick-btn" onclick="showSoonModal('Doktor Randevuları', 'Bu modül v0.3 sürümünde gelecek — Türk doktor protokolüne göre tüm randevu takvimi otomatik kurulacak.')">
+      <span class="icon">🩺</span>
+      <span class="label">Randevular</span>
+    </button>
+    <button class="quick-btn" onclick="showSoonModal('Semptom Günlüğü', 'Bu modül v0.4 sürümünde gelecek — semptom, ruh hali, tansiyon, kilo takibi.')">
+      <span class="icon">🤰</span>
+      <span class="label">Semptomlar</span>
+    </button>
+  </div>
+
+  <div class="last-note" id="home-last-note">
+    <!-- içerik JS ile -->
+  </div>
+
+  <div class="text-center" style="margin-top: 8px;">
+    <button class="btn-ghost" onclick="navigate('notes')">Tüm notlar →</button>
+  </div>
+</div>
+
+<!-- ============ HAFTA DETAY ============ -->
+<div id="screen-week-detail" class="screen">
+  <div class="screen-header">
+    <button onclick="navigate('home')" aria-label="Geri">←</button>
+    <h1>Hafta Detayı</h1>
+    <button onclick="weekJumpToCurrent()" aria-label="Şu anki hafta">⏱</button>
+  </div>
+
+  <div class="week-nav">
+    <button id="week-prev" onclick="weekChange(-1)" aria-label="Önceki hafta">‹</button>
+    <div class="current-week">
+      <div class="num" id="week-num-display">—</div>
+      <div class="sub" id="week-sub-display"></div>
+    </div>
+    <button id="week-next" onclick="weekChange(1)" aria-label="Sonraki hafta">›</button>
+  </div>
+
+  <div class="week-hero" id="week-hero">
+    <!-- içerik JS ile -->
+  </div>
+
+  <div id="week-appt-banner"></div>
+
+  <div class="info-section" id="week-baby">
+    <h3>👶 Bebekte neler oluyor?</h3>
+    <ul></ul>
+  </div>
+
+  <div class="info-section" id="week-mom">
+    <h3>🤰 Annede neler olabilir?</h3>
+    <ul></ul>
+  </div>
+
+  <div class="tip-card" id="week-tip">
+    <div class="tip-label">Bu hafta için ipucu</div>
+    <div class="tip-text"></div>
+  </div>
+</div>
+
+<!-- ============ NOTLAR LİSTE ============ -->
+<div id="screen-notes" class="screen">
+  <div class="screen-header">
+    <button onclick="navigate('home')" aria-label="Geri">←</button>
+    <h1>Notlar</h1>
+    <span style="width: 40px;"></span>
+  </div>
+
+  <div id="notes-list">
+    <!-- liste JS ile -->
+  </div>
+
+  <button class="fab" onclick="openNoteEditor()" aria-label="Yeni not">＋</button>
+</div>
+
+<!-- ============ NOT EDİTÖR ============ -->
+<div id="screen-note-editor" class="screen">
+  <div class="screen-header">
+    <button onclick="closeNoteEditor()" aria-label="İptal">✕</button>
+    <h1 id="editor-title">Yeni not</h1>
+    <button class="btn-ghost" style="font-weight:700; color:var(--primary-deep);" onclick="saveNote()">Kaydet</button>
+  </div>
+
+  <div class="editor-section">
+    <span class="editor-label">Kim yazıyor?</span>
+    <div class="author-toggle" id="editor-author-toggle">
+      <button data-author="cem" onclick="editorSetAuthor('cem')">Cem</button>
+      <button data-author="buse" onclick="editorSetAuthor('buse')">Buse</button>
+    </div>
+  </div>
+
+  <div class="editor-section">
+    <span class="editor-label">Not</span>
+    <textarea class="editor-textarea" id="editor-text" placeholder="Bugün ne hissediyorsun? Ne oldu? Bebeğe söylemek istediğin bir şey?"></textarea>
+  </div>
+
+  <div class="editor-section">
+    <span class="editor-label">Etiketler</span>
+    <div class="tag-input-row" id="editor-tags-row">
+      <input type="text" id="editor-tag-input" placeholder="Etiket ekle ve Enter'a bas" onkeydown="editorTagKey(event)" />
+    </div>
+    <div class="tag-suggestions">
+      <span class="tag-suggestion" onclick="editorAddTag('ilk-tekme')">ilk-tekme</span>
+      <span class="tag-suggestion" onclick="editorAddTag('ultrason')">ultrason</span>
+      <span class="tag-suggestion" onclick="editorAddTag('anı')">anı</span>
+      <span class="tag-suggestion" onclick="editorAddTag('ruh-hali')">ruh-hali</span>
+      <span class="tag-suggestion" onclick="editorAddTag('endişe')">endişe</span>
+      <span class="tag-suggestion" onclick="editorAddTag('mutluluk')">mutluluk</span>
+      <span class="tag-suggestion" onclick="editorAddTag('doktor')">doktor</span>
+    </div>
+  </div>
+
+  <div class="spacer-24"></div>
+
+  <button id="editor-delete-btn" class="btn btn-danger" onclick="deleteNote()" style="display:none;">Notu sil</button>
+</div>
+
+<!-- ============ AYARLAR ============ -->
+<div id="screen-settings" class="screen">
+  <div class="screen-header">
+    <button onclick="navigate('home')" aria-label="Geri">←</button>
+    <h1>Ayarlar</h1>
+    <span style="width: 40px;"></span>
+  </div>
+
+  <div class="settings-section">
+    <h3>Aktif kullanıcı</h3>
+    <div style="padding: 8px 18px 14px;">
+      <div class="user-toggle">
+        <button data-user="cem" onclick="settingsSetUser('cem')">Cem</button>
+        <button data-user="buse" onclick="settingsSetUser('buse')">Buse</button>
+      </div>
+      <div class="small" style="margin-top:8px;">v0.2 ile bulut senkronu gelince ikiniz aynı anda kendi telefonunuzdan kullanacaksınız. Şimdilik tek cihazda hangimiz açıyorsa burayı değiştiriyoruz.</div>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <h3>Tarihler</h3>
+    <div class="settings-row" onclick="settingsEditLmp()">
+      <span class="label">Son adet tarihi (LMP)</span>
+      <span class="value" id="settings-lmp">—</span>
+    </div>
+    <div class="settings-row" onclick="settingsEditLmp()">
+      <span class="label">Tahmini doğum tarihi</span>
+      <span class="value" id="settings-edd">—</span>
+    </div>
+    <div class="settings-row">
+      <span class="label">Şu an</span>
+      <span class="value" id="settings-current">—</span>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <h3>Veri</h3>
+    <div class="settings-row" onclick="exportData()">
+      <span class="label">Verileri yedekle (JSON)</span>
+      <span class="arrow">›</span>
+    </div>
+    <div class="settings-row" onclick="importDataPrompt()">
+      <span class="label">Yedekten yükle</span>
+      <span class="arrow">›</span>
+    </div>
+    <div class="settings-row" onclick="resetAllPrompt()">
+      <span class="label" style="color: var(--danger);">Tüm verileri sıfırla</span>
+      <span class="arrow">›</span>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <h3>Hakkında</h3>
+    <div class="settings-row">
+      <span class="label">Sürüm</span>
+      <span class="value">v0.1 — kişisel</span>
+    </div>
+    <div class="settings-row">
+      <span class="label">Yapım</span>
+      <span class="value">Cem & Claude · 2026</span>
+    </div>
+  </div>
+
+  <div class="card-soft" style="margin-top: 16px; font-size: 13px; line-height: 1.55; color: var(--text-muted);">
+    Bu uygulama tıbbi kayıt sistemi değildir. Bilgiler T.C. Sağlık Bakanlığı ve TJOD kılavuzlarından alınmıştır; doktor önerisi yerine geçmez.
+  </div>
+</div>
+
+<!-- ============ ALT NAVİGASYON ============ -->
+<nav class="bottom-nav" id="bottom-nav" style="display: none;">
+  <button class="nav-btn" data-screen="home" onclick="navigate('home')">
+    <span class="ico">🏠</span><span>Ana</span>
+  </button>
+  <button class="nav-btn" data-screen="week-detail" onclick="navigate('week-detail')">
+    <span class="ico">📅</span><span>Hafta</span>
+  </button>
+  <button class="nav-btn" data-screen="notes" onclick="navigate('notes')">
+    <span class="ico">📝</span><span>Notlar</span>
+  </button>
+  <button class="nav-btn" data-screen="settings" onclick="navigate('settings')">
+    <span class="ico">⚙</span><span>Ayar</span>
+  </button>
+</nav>
+
+<!-- ============ MODAL CONTAINER ============ -->
+<div id="modal-root"></div>
+
+<script>
+/* =====================================================
+   9 AY 1 HAYAT OLSUN — v0.1
+   Tek dosyada bir hamilelik takibi.
+   Veri: localStorage. Sonraki sürümde: Firebase.
+   ===================================================== */
+
+/* ---------- 1) HAFTA HAFTA VERİ (4-40) ---------- */
+
+const WEEK_DATA = {
+  4: {
+    fruit: "Haşhaş tohumu", emoji: "🌱", size: "≈ 2 mm · <1 g",
+    baby: [
+      "Embriyo rahime tutundu — yolculuk başladı",
+      "Kalp, beyin ve omurilik için ilk hücre tabakaları oluşuyor",
+      "Plasenta ve göbek kordonu şekilleniyor"
+    ],
+    mom: [
+      "Adet gecikmesi — testte iki çizgi 🤍",
+      "Yorgunluk, hafif sızılar olabilir",
+      "Hormon değişimi nedeniyle ruh hali dalgalı"
+    ],
+    tip: "Folik asit önemli — eğer doktor önerisiyle başlamadıysan, hemen başlat. Nöral tüp gelişimi için kritik dönem.",
+    appt: "İlk doktor randevusunu al"
+  },
+  5: {
+    fruit: "Susam tohumu", emoji: "🌾", size: "≈ 5 mm · <1 g",
+    baby: [
+      "Kalp ilk kez atmaya başlıyor (henüz duyulmuyor)",
+      "Beyin ve sinir sistemi hızla gelişiyor",
+      "Kollar ve bacaklar için tomurcuklar belirdi"
+    ],
+    mom: [
+      "Mide bulantısı başlayabilir — özellikle sabahları",
+      "Memelerde hassasiyet, kabarma",
+      "Sık idrara çıkma"
+    ],
+    tip: "Sabah kalkmadan önce küçük bir kraker yemek mide bulantısını hafifletebilir.",
+    appt: ""
+  },
+  6: {
+    fruit: "Mercimek", emoji: "🫘", size: "≈ 6 mm · 1 g",
+    baby: [
+      "Kalp atışı ultrasonda görülebilir hale geliyor",
+      "Yüz hatları belirginleşiyor — gözler ve burun yerleri",
+      "İç organlar oluşmaya başladı"
+    ],
+    mom: [
+      "Mide bulantısı yoğunlaşabilir",
+      "Yorgunluk derinleşti — kestirmelere izin ver",
+      "Kokulara aşırı duyarlılık"
+    ],
+    tip: "Bu hafta ilk muayene zamanı (6-8). Beta HCG ve gebelik teyidi yapılır.",
+    appt: "İlk muayene + Beta HCG"
+  },
+  7: {
+    fruit: "Yaban mersini", emoji: "🫐", size: "≈ 1 cm · 1 g",
+    baby: [
+      "Kollar ve bacaklar uzuyor, parmaklar şekilleniyor",
+      "Beyin iki yarımküreye ayrılıyor",
+      "Kalp dört odacığa bölünüyor"
+    ],
+    mom: [
+      "Bel/karında hafif kramplar normaldir",
+      "İştah değişiyor: bazı yiyeceklerden tiksinti",
+      "Tükürük artışı olabilir"
+    ],
+    tip: "Bol su iç. Günde 2-2.5 litre hedefle — dehidrasyon mide bulantısını ve baş ağrısını artırır.",
+    appt: ""
+  },
+  8: {
+    fruit: "Ahududu", emoji: "🍓", size: "≈ 1.6 cm · 1 g",
+    baby: [
+      "Parmak izleri bile bu hafta oluşmaya başlıyor",
+      "Kulak yapıları oluşuyor",
+      "Bebek ilk kez küçük hareketler yapıyor (henüz hissetmezsin)"
+    ],
+    mom: [
+      "Karında hafif ağırlık hissi",
+      "Bel ve göğüs ölçüleri değişmeye başlıyor",
+      "Duygusal dalgalanmalar — ağlama nöbetleri normaldir"
+    ],
+    tip: "Eşin yorgunsa onu zorlamayın — ev işlerini paylaşmanın iyi bir zamanı.",
+    appt: ""
+  },
+  9: {
+    fruit: "Kiraz", emoji: "🍒", size: "≈ 2.3 cm · 2 g",
+    baby: [
+      "Embriyo dönemi bitti — artık 'fetüs' diyoruz",
+      "Tüm temel organlar yerli yerinde",
+      "Küçük hareketleri ultrasonda görülür"
+    ],
+    mom: [
+      "Karın hafifçe gözle görülür şişebilir",
+      "Memeler büyümeye devam ediyor",
+      "Mide bulantısı bazılarında hafifliyor"
+    ],
+    tip: "Eşin halsiz — bu çok normal. Hafif bir yürüyüş enerji verir; siz de eşlik edin.",
+    appt: ""
+  },
+  10: {
+    fruit: "Çilek", emoji: "🍓", size: "≈ 3.1 cm · 4 g",
+    baby: [
+      "Tırnaklar oluşmaya başladı",
+      "İç organlar aktif çalışıyor",
+      "Kemikleşme süreci başladı"
+    ],
+    mom: [
+      "Bazıları için artık 'gebelik şıkıyla' uyum sağlama dönemi",
+      "Cilt değişiklikleri (parlama, bazılarında akne)",
+      "Karın çevresinde belirginleşme"
+    ],
+    tip: "İstersen NIPT (kromozom taraması) testini doktorla konuş — 10. haftadan itibaren yapılabilir.",
+    appt: "NIPT (opsiyonel, 10+)"
+  },
+  11: {
+    fruit: "İncir", emoji: "🍐", size: "≈ 4.1 cm · 7 g",
+    baby: [
+      "Bebek artık esniyor, geriniyor — küçük insan!",
+      "Cinsel organlar farklılaşmaya başlıyor",
+      "Diş tomurcukları ortaya çıkıyor"
+    ],
+    mom: [
+      "Düşük riski belirgin biçimde azalıyor 🤍",
+      "Enerji yavaş yavaş geri geliyor",
+      "Karın daha belirgin şişmeye başlıyor"
+    ],
+    tip: "11-14 hafta arası ikili tarama (Down sendromu taraması) zamanı. Randevu al.",
+    appt: "İkili tarama + Ense kalınlığı (11-14)"
+  },
+  12: {
+    fruit: "Misket limonu", emoji: "🍋", size: "≈ 5.4 cm · 14 g",
+    baby: [
+      "Kalp atışı doppler ile dinlenebilir 🎵",
+      "Refleksler başladı — parmağı dudağına götürür",
+      "Bebek artık 'küçük bebek' formunda"
+    ],
+    mom: [
+      "İlk trimester biti̇yor — birçok semptom hafifler",
+      "Karın belirginleşmeye başladı",
+      "Cilt ve saçlar parlak görünebilir"
+    ],
+    tip: "İlk trimesteri tamamladığınız için tebrikler 🎉 — bu kritik dönemi geride bıraktınız.",
+    appt: ""
+  },
+  13: {
+    fruit: "Bezelye kabuğu", emoji: "🟢", size: "≈ 7.4 cm · 23 g",
+    baby: [
+      "Sesleri duymaya başlıyor",
+      "Parmak izleri tamamlandı — eşsiz",
+      "Bağırsaklar bebeğin karnına yerleşiyor"
+    ],
+    mom: [
+      "İkinci trimester başladı — genelde en rahat dönem",
+      "Enerji geri geliyor, iştah açıyor",
+      "Cinsel istek değişebilir (artabilir)"
+    ],
+    tip: "Bebek artık ses duyuyor — birlikte ona şarkı söyleyin, ad araştırın, kitap okuyun.",
+    appt: ""
+  },
+  14: {
+    fruit: "Limon", emoji: "🍋", size: "≈ 8.7 cm · 43 g",
+    baby: [
+      "Bebek baş aşağı, baş yukarı dönebilir",
+      "Yüz kasları çalışıyor — kaş çatabilir, gülümseyebilir",
+      "Karaciğer safra üretmeye başladı"
+    ],
+    mom: [
+      "Karın belirgin şekilde dışarı çıkıyor",
+      "Cilt karnında çatlamalar olmaması için nemli tut",
+      "Burun tıkanıklığı normaldir"
+    ],
+    tip: "Hamilelik özelinde nemlendirici (badem yağı, kakao yağı) karın cildinde çatlakları azaltır.",
+    appt: ""
+  },
+  15: {
+    fruit: "Elma", emoji: "🍎", size: "≈ 10 cm · 70 g",
+    baby: [
+      "Bebek artık ışığı algılıyor (kapalı gözlerinden)",
+      "Kemikler sertleşiyor",
+      "Bebek tat alabiliyor — anne ne yiyorsa o tadıyor"
+    ],
+    mom: [
+      "Kilo artışı normalleşti (haftada 0.4-0.5 kg)",
+      "Bel ağrısı başlayabilir — duruşa dikkat",
+      "Saç gürleşip parlayabilir"
+    ],
+    tip: "Yeterince protein (et, balık, baklagil) ve demir (kırmızı et, ıspanak) tüket — bebek hızla büyüyor.",
+    appt: "Dörtlü tarama (eğer ikili yapılmadıysa, 15-18)"
+  },
+  16: {
+    fruit: "Avokado", emoji: "🥑", size: "≈ 11.6 cm · 100 g",
+    baby: [
+      "Bebek artık duyuyor — annenin sesini ayırt edebiliyor",
+      "Saç ve kirpikler büyümeye başladı",
+      "Kollar ve bacaklar koordineli hareket ediyor"
+    ],
+    mom: [
+      "Bazı anneler bu hafta ilk hareketleri hissetmeye başlar (ikinci gebelikte daha erken)",
+      "Karın şişti — sevdiğin pantolonlar artık dar",
+      "Genel iyilik hissi — '2. trimester rahatlığı'"
+    ],
+    tip: "Eşin ilk tekmeleri hissedince hemen sana söyleyecek — keyifli bir an, beraber heyecanlanın.",
+    appt: ""
+  },
+  17: {
+    fruit: "Şalgam", emoji: "🥔", size: "≈ 13 cm · 140 g",
+    baby: [
+      "Bebek hıçkırık tutuyor — ileride hissedeceksin",
+      "Kalp dakikada 140-150 atıyor",
+      "Yağ depolamaya başladı (gözenekleri ısıtacak)"
+    ],
+    mom: [
+      "Karın belirgin yuvarlaklaştı",
+      "Sırt ve karın bağlarında gerilim",
+      "Saç ve tırnaklar daha hızlı uzar"
+    ],
+    tip: "Sol tarafa yatarak uyumak kan dolaşımı için en iyi pozisyon.",
+    appt: ""
+  },
+  18: {
+    fruit: "Dolmalık biber", emoji: "🫑", size: "≈ 14.2 cm · 190 g",
+    baby: [
+      "Kulaklar tam yerleşti — sesleri net duyuyor",
+      "Sinir sistemi miyelinleşmeye başladı",
+      "Cinsiyet ultrasonda artık görülebilir"
+    ],
+    mom: [
+      "İlk net tekmeler bu haftalarda — sevin",
+      "Kan basıncı düşebilir, ani kalkmaktan kaçın",
+      "Çoğu kadın için en güzel dönem 🤍"
+    ],
+    tip: "18-22 hafta arası detaylı ultrason (anomali taraması) yaptırılmalı. Kritik bir test.",
+    appt: "Detaylı (anomali) ultrason (18-22)"
+  },
+  19: {
+    fruit: "Domates", emoji: "🍅", size: "≈ 15.3 cm · 240 g",
+    baby: [
+      "Cildi 'vernix caseosa' (beyaz koruyucu tabaka) ile kaplandı",
+      "Beyinde 5 duyu için alanlar gelişiyor",
+      "Kız bebekte yumurtalıklar oluşmuş"
+    ],
+    mom: [
+      "Bağ ağrıları normal — uterus bağları geriliyor",
+      "Hamilelik karnı net şekilde belirgin",
+      "Bazı annelerde 'maske' (yüzde koyulaşma) başlar"
+    ],
+    tip: "2025'ten beri Tdap aşısı ücretsiz; 18-24 hafta arası önerilir. Boğmacaya karşı bebeği korur.",
+    appt: "Tdap aşısı (18-24, ücretsiz)"
+  },
+  20: {
+    fruit: "Muz", emoji: "🍌", size: "≈ 16.4 cm · 300 g",
+    baby: [
+      "Yarı yol! 🎉 Bebek artık avokado kadar değil, muz kadar",
+      "Yutma ve emme refleksleri gelişiyor",
+      "Saç köklerinde pigment oluşuyor"
+    ],
+    mom: [
+      "Karın 'göbek deliği' düz oldu ya da dışa çıktı",
+      "Hareketler artık günlük",
+      "Doğum tarihinin yarısındasın 🤍"
+    ],
+    tip: "Bu özel anı kutlayın — bir anı fotoğrafı çekin, tarihe geçirin.",
+    appt: ""
+  },
+  21: {
+    fruit: "Havuç", emoji: "🥕", size: "≈ 26.7 cm · 360 g (artık baş-topuk)",
+    baby: [
+      "Hareketler güçlendi, gece-gündüz farkı gelişiyor",
+      "Kaş ve kirpikler oluştu",
+      "Sindirim sistemi pratik yapıyor (amniyotik sıvı yutuyor)"
+    ],
+    mom: [
+      "Geceleri bebeğin tekmeleri uyutmayabilir",
+      "Mide yanması başlayabilir (bebek mideyi itiyor)",
+      "Ödem ayaklarda hafif başlayabilir"
+    ],
+    tip: "Akşam yemeği erken ve hafif olsun — yatakta mide yanması sıkıntı yaratır.",
+    appt: ""
+  },
+  22: {
+    fruit: "Spagetti kabağı", emoji: "🎃", size: "≈ 27.8 cm · 430 g",
+    baby: [
+      "Dudaklar ve diş tomurcukları belirgin",
+      "Ses tellerinin yapısı tam",
+      "Beyinde milyarlarca nöron her gün ekleniyor"
+    ],
+    mom: [
+      "Karın orantılı büyüyor",
+      "Bağ ağrıları, bazen göbek hassasiyeti",
+      "Cilt çatlaklarına dikkat"
+    ],
+    tip: "Eşinin karnına elini koy — bebeğin tekmesini hissedebilirsin. Üçüncü kalp ortak başladı 🤍",
+    appt: ""
+  },
+  23: {
+    fruit: "Greyfurt", emoji: "🍊", size: "≈ 28.9 cm · 500 g",
+    baby: [
+      "Bebek artık dış sesleri net duyuyor — babanın sesini de tanıyor",
+      "Akciğerler kan damarlarıyla doluyor",
+      "Hızla yağ topluyor (cilt daha az kırışık)"
+    ],
+    mom: [
+      "Memelerde kolostrum (ilk süt) sızıntısı olabilir",
+      "Bel ağrısı belirginleşebilir",
+      "Karın gerilmesi nedeniyle mide yanmaları artabilir"
+    ],
+    tip: "Babanın sesi bebek için çok önemli — düzenli olarak konuş, oku, şarkı söyle.",
+    appt: ""
+  },
+  24: {
+    fruit: "Mısır", emoji: "🌽", size: "≈ 30 cm · 600 g",
+    baby: [
+      "Akciğerler olgunlaşmaya başladı",
+      "Tat alma duyusu gelişti",
+      "İç kulak gelişimini tamamladı — denge başladı"
+    ],
+    mom: [
+      "Karın belirgin büyüdü",
+      "Sırt ağrısı başlayabilir",
+      "İlk gerçek tekmeleri hissetmek için en güzel dönem"
+    ],
+    tip: "Şeker yükleme testi (OGTT) yakında. 24-28 hafta arası yaptırılmalı.",
+    appt: "Şeker yükleme testi — OGTT (24-28)"
+  },
+  25: {
+    fruit: "Karnabahar", emoji: "🥦", size: "≈ 34.6 cm · 660 g",
+    baby: [
+      "Cilt rengi pembeleşmeye başladı",
+      "Saç renklenmeye başladı",
+      "El kavrama gücü gelişti — parmaklar kapanıyor"
+    ],
+    mom: [
+      "Karın ölçüsü her hafta gözle görülür",
+      "Tansiyonu izle — gebelik tansiyonu için risk",
+      "Uyku pozisyonu sol yan en iyisi"
+    ],
+    tip: "Ayaklarını yüksekte tutmaya çalış — ödemi azaltır.",
+    appt: ""
+  },
+  26: {
+    fruit: "Marul", emoji: "🥬", size: "≈ 35.6 cm · 760 g",
+    baby: [
+      "Gözler açılmaya başladı — ışığa tepki veriyor",
+      "Beyin elektriksel olarak aktif — bebek rüya görüyor olabilir",
+      "Akciğerlerde sürfaktan üretilmeye başladı"
+    ],
+    mom: [
+      "Bebeğin tekmeleri çok belirgin",
+      "Karında 'Braxton-Hicks' (yalancı kasılmalar) başlayabilir — sancılı değildir",
+      "Sıkıntılı uyku — yan yatışla yastık desteği işe yarar"
+    ],
+    tip: "Tekme sayma alışkanlığı bu hafta başlatılabilir — günün belli saatinde 1 saatte 10 tekme normaldir.",
+    appt: ""
+  },
+  27: {
+    fruit: "Kıvırcık marul", emoji: "🥬", size: "≈ 36.6 cm · 875 g",
+    baby: [
+      "Hıçkırıkları artık belirgin — annenin karnı titriyor",
+      "Beyin gelişimi hızla devam ediyor",
+      "Akciğerler nefes pratiği yapıyor (sıvı içinde)"
+    ],
+    mom: [
+      "İkinci trimester sonunda — üçüncü trimester yaklaşıyor",
+      "Bel ağrısı, kasık ağrıları yaygın",
+      "Sırt için yastık şart"
+    ],
+    tip: "Hastane çantası listesi yapmaya başlamak için iyi bir zaman — acele etmeden yavaş yavaş hazırla.",
+    appt: ""
+  },
+  28: {
+    fruit: "Patlıcan", emoji: "🍆", size: "≈ 37.6 cm · 1 kg",
+    baby: [
+      "Üçüncü trimester başladı 🌟",
+      "Gözler artık tam açabiliyor — kirpikler tam",
+      "Beyin yüzeyi kıvrımlanıyor"
+    ],
+    mom: [
+      "Karın hızla büyüyecek — 1 kg/hafta normal değil ama 0.5 kg evet",
+      "Yorgunluk geri geliyor",
+      "Mide yanması, kabızlık daha sık"
+    ],
+    tip: "Rh negatifsen Anti-D iğnesi bu hafta yapılır. Doktorla teyit et.",
+    appt: "Anti-D (Rh negatifse, 28)"
+  },
+  29: {
+    fruit: "Kabak", emoji: "🎃", size: "≈ 38.6 cm · 1.15 kg",
+    baby: [
+      "Akciğerler henüz olgunlaşmadı, ama şu anda doğsa yaşar",
+      "Kemikler hızla sertleşiyor — kalsiyum öneml̇ı",
+      "Beyin sıcaklığı kontrol etmeye başlıyor"
+    ],
+    mom: [
+      "Yorgunluk + nefes darlığı — bebek diyaframı itiyor",
+      "Karında belirgin gerilim",
+      "Nabız artmış olabilir (kalp daha çok çalışıyor)"
+    ],
+    tip: "Kalsiyum kaynaklarını artır: süt, yoğurt, peynir, susam, kuru meyveler. Doktor önerirse takviye al.",
+    appt: ""
+  },
+  30: {
+    fruit: "Lahana", emoji: "🥬", size: "≈ 39.9 cm · 1.32 kg",
+    baby: [
+      "Saç ve cilt rengi belirginleşti",
+      "Lanugo (ince tüy) dökülmeye başladı",
+      "Bebek artık başını çevirebiliyor"
+    ],
+    mom: [
+      "Doğum hazırlığı için hipnoz/breathwork sınıflarını araştırma zamanı",
+      "Kan dolaşımı yavaşladı — uzun durma yok",
+      "Ayak/el ödemine dikkat"
+    ],
+    tip: "Doğum dersi/hazırlık kursu kayıtlarını araştırın — birlikte hazırlanmak çok önemli.",
+    appt: ""
+  },
+  31: {
+    fruit: "Hindistan cevizi", emoji: "🥥", size: "≈ 41.1 cm · 1.5 kg",
+    baby: [
+      "Beyin hızla büyüyor — yüksek miktarda Omega-3 ister",
+      "İdrar üretiyor (amniyotik sıvıya) — bu normal",
+      "Hareketler artık 'pozisyon değişimi' boyutunda"
+    ],
+    mom: [
+      "Memelerde belirgin değişim — emzirme hazırlığı",
+      "Kontrol ultrason zamanı (32. hafta) yakın",
+      "Mide yanması belki hayatın bir parçası oldu"
+    ],
+    tip: "Balık (haftada 2 porsiyon, civa düşük olanlar) ya da omega-3 takviyesi al — beyin gelişimi için.",
+    appt: ""
+  },
+  32: {
+    fruit: "Spagetti kabağı", emoji: "🎃", size: "≈ 42.4 cm · 1.7 kg",
+    baby: [
+      "Tırnaklar parmak ucuna ulaştı",
+      "Akciğerlerde olgunlaşma hızlanıyor",
+      "Bebek genelde baş aşağı pozisyon almaya başlar"
+    ],
+    mom: [
+      "32. hafta kontrol ultrasonu — büyüme takibi yapılır",
+      "Nefes alıp vermek zorlaşabilir",
+      "Beyaz akıntı artabilir (sıvı kaçağıyla karıştırma)"
+    ],
+    tip: "Doğum çantası listesini hazırla; isim listesini de bitirmek için son haftalar.",
+    appt: "Kontrol ultrason (32)"
+  },
+  33: {
+    fruit: "Ananas", emoji: "🍍", size: "≈ 43.7 cm · 1.9 kg",
+    baby: [
+      "Kafatası kemikleri henüz birleşmedi (doğum kanalından geçecek)",
+      "Bağışıklık sistemi anneden antikor alıyor",
+      "Vücut yağ oranı artıyor"
+    ],
+    mom: [
+      "Kasık baskısı arttı",
+      "Sık sık tuvalete kalkma — bebek mesaneye baskı yapıyor",
+      "Doğum sancısı/yalancı sancı farkını araştır"
+    ],
+    tip: "Pelvik tabanı güçlendiren Kegel egzersizlerini günde birkaç kez yap — doğuma yardımcı olur.",
+    appt: ""
+  },
+  34: {
+    fruit: "Kavun", emoji: "🍈", size: "≈ 45 cm · 2.15 kg",
+    baby: [
+      "Akciğerler neredeyse tam olgun",
+      "Merkezi sinir sistemi olgunlaşıyor",
+      "Tırnaklar küçük insanlardakinin aynısı 🤍"
+    ],
+    mom: [
+      "Bel ve kasık ağrıları yoğunlaştı",
+      "Uyku zorlaştı — yastık + yan yatış",
+      "Hastane çantası tamamlanmalı"
+    ],
+    tip: "Hastane çantasını birlikte gözden geçirin; eksikleri bu hafta tamamla.",
+    appt: ""
+  },
+  35: {
+    fruit: "Bal kabağı", emoji: "🎃", size: "≈ 46.2 cm · 2.4 kg",
+    baby: [
+      "Bebek artık sıkı sıkıya yerleşmiş — fazla hareket alanı yok",
+      "Yağ tabakası vücudu yuvarlaklaştırdı",
+      "Böbrekler tam çalışıyor"
+    ],
+    mom: [
+      "GBS (B grubu strep) taraması yakın",
+      "Yorgunluk doruk noktada",
+      "Sancı belirtilerine dikkat — gerçek sancı dengeli ve artan ritimde olur"
+    ],
+    tip: "Hastaneye nasıl gideceğinizi konuşun — saat, yol, kim arabaya binecek, kim çağrılacak.",
+    appt: "GBS taraması (35-37)"
+  },
+  36: {
+    fruit: "Marul başı", emoji: "🥬", size: "≈ 47.4 cm · 2.6 kg",
+    baby: [
+      "Bebek 'tam dönem'e yaklaşıyor",
+      "Lanugo neredeyse tamamen döküldü",
+      "Bağışıklık ve sindirim sistemleri hazırda"
+    ],
+    mom: [
+      "Doktor bu haftadan itibaren haftalık görmek isteyebilir",
+      "NST (kalp atış takibi) başlayabilir",
+      "Hastane çantası kapıda hazır olmalı"
+    ],
+    tip: "Doğum sırasında ne yapacağınızı planlayın: kim ne yapar, eşin yanında kalacak mı, doula var mı?",
+    appt: "Haftalık NST (36+)"
+  },
+  37: {
+    fruit: "Pazı", emoji: "🥬", size: "≈ 48.6 cm · 2.86 kg",
+    baby: [
+      "Erken-zamanında doğum sayılır — akciğerler hazır",
+      "El kavrama gücü gelişti",
+      "Yutma ve emme tam koordineli"
+    ],
+    mom: [
+      "Bebek pelvise iniyor (lightening)",
+      "Nefes biraz rahatlayabilir, kasık baskısı artar",
+      "'Kontraksiyon sayma' zamanı yakın"
+    ],
+    tip: "5-1-1 kuralı: 5 dakikada bir, 1 dakika süren, 1 saattir devam eden kasılmalar varsa hastaneye.",
+    appt: ""
+  },
+  38: {
+    fruit: "Pırasa", emoji: "🌿", size: "≈ 49.8 cm · 3.08 kg",
+    baby: [
+      "Saç tutamı oluşmuş olabilir (ya da hiç yok)",
+      "Vücut yağı yaklaşık %15",
+      "Bebek herhangi bir gün doğmaya hazır"
+    ],
+    mom: [
+      "Yalancı kasılmalar daha sık",
+      "Bel ve kasık ağrısı doruk",
+      "Sabırlı ol — bebek kendi zamanını biliyor"
+    ],
+    tip: "Eşinin yanında olabilmek için programını esnet; her an arama gelebilir.",
+    appt: ""
+  },
+  39: {
+    fruit: "Kavun (büyük)", emoji: "🍈", size: "≈ 50.7 cm · 3.3 kg",
+    baby: [
+      "Beyin gelişimi son hafta dahil devam ediyor",
+      "Sürfaktan tam — bebek nefes almaya hazır",
+      "Tüm sistemler doğum için tamam"
+    ],
+    mom: [
+      "Sancılar gerçek olabilir — düzenli, artan, dinlenmeyle geçmeyen",
+      "Su gelmesi (kese yırtılması) işaretine dikkat",
+      "Hastane numarasını telefona kısayol koy"
+    ],
+    tip: "Telefonun şarjını sürekli dolu tut; eşinin telefonu da. Hastane çantası kapıda.",
+    appt: ""
+  },
+  40: {
+    fruit: "Karpuz", emoji: "🍉", size: "≈ 51.2 cm · 3.5 kg",
+    baby: [
+      "Tahmini doğum tarihi — bebek herhangi bir gün gelebilir 🌟",
+      "Tüm gelişim tamamlandı",
+      "Sadece dünyaya hoş geldin diyecek"
+    ],
+    mom: [
+      "Sabır ve dinlenme",
+      "Bebek 41. haftaya kadar gelmezse yine doktora gidilir",
+      "Bu yolculuğun en güzel anı yaklaşıyor"
+    ],
+    tip: "Tebrikler — bu özel anı yaşamaya hazır olun. Birbirinize sıkı sarılın 🤍",
+    appt: ""
+  }
+};
+
+/* ---------- 2) STATE & PERSISTENCE ---------- */
+
+const STORAGE_KEY = "9ay1hayat:v1";
+
+function defaultState() {
+  return {
+    version: 1,
+    setupComplete: false,
+    lmpDate: null,            // ISO YYYY-MM-DD
+    eddDate: null,            // ISO YYYY-MM-DD (computed)
+    activeUser: "cem",        // "cem" | "buse"
+    notes: [],                // [{id, createdAt, updatedAt, author, text, tags}]
+    createdAt: new Date().toISOString()
+  };
+}
+
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultState();
+    const parsed = JSON.parse(raw);
+    return Object.assign(defaultState(), parsed);
+  } catch (e) {
+    console.warn("State yüklenemedi, sıfırdan başlıyoruz", e);
+    return defaultState();
+  }
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    alert("Veri kaydedilemedi — depolama alanı dolmuş olabilir.");
+    console.error(e);
+  }
+}
+
+/* ---------- 3) TARİH MATEMATİĞİ ---------- */
+
+const MS_PER_DAY = 86400000;
+
+function startOfDay(d) {
+  const x = new Date(d);
+  x.setHours(0, 0, 0, 0);
+  return x;
+}
+
+function parseDate(iso) {
+  // "YYYY-MM-DD" → local date
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function fmtDate(iso) {
+  if (!iso) return "—";
+  const d = parseDate(iso);
+  const months = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
+  return d.getDate() + " " + months[d.getMonth()] + " " + d.getFullYear();
+}
+
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  const today = startOfDay(new Date());
+  const dDay = startOfDay(d);
+  const diffDays = Math.round((today - dDay) / MS_PER_DAY);
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mm = String(d.getMinutes()).padStart(2, "0");
+  if (diffDays === 0) return "Bugün " + hh + ":" + mm;
+  if (diffDays === 1) return "Dün " + hh + ":" + mm;
+  if (diffDays < 7) return diffDays + " gün önce";
+  return fmtDate(d.toISOString().slice(0, 10)) + " " + hh + ":" + mm;
+}
+
+function toIso(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return y + "-" + m + "-" + d;
+}
+
+function addDays(date, n) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + n);
+  return d;
+}
+
+// Konvansiyon: at LMP day 0 → "1. hafta, 0 gün". 280 days = EDD = "40 hafta 0 gün".
+function getPregnancyInfo() {
+  if (!state.lmpDate) return null;
+  const lmp = parseDate(state.lmpDate);
+  const today = startOfDay(new Date());
+  const days = Math.floor((today - lmp) / MS_PER_DAY);
+  const totalDays = 280;
+
+  const completedWeeks = Math.max(0, Math.floor(days / 7));
+  const dayInWeek = ((days % 7) + 7) % 7;
+  const currentWeek = Math.min(40, Math.max(1, completedWeeks + 1)); // gösterim için
+  const daysToBirth = Math.max(0, totalDays - days);
+  const edd = addDays(lmp, totalDays);
+  const isPostDate = days > totalDays;
+
+  return {
+    days, completedWeeks, dayInWeek, currentWeek,
+    daysToBirth, edd, eddIso: toIso(edd), isPostDate
+  };
+}
+
+function eddToLmp(eddIso) {
+  const edd = parseDate(eddIso);
+  return toIso(addDays(edd, -280));
+}
+
+function weekToLmp(weekNum) {
+  // hafta numarası → bugünden geriye gidilecek gün
+  const today = startOfDay(new Date());
+  const daysAgo = (weekNum - 1) * 7; // hafta 1 başında olmak için
+  return toIso(addDays(today, -daysAgo));
+}
+
+/* ---------- 4) NAVİGASYON ---------- */
+
+const SCREENS = ["onboarding", "home", "week-detail", "notes", "note-editor", "settings"];
+
+function navigate(name, params) {
+  // Onboarding tamamlanmadıysa zorla onboarding
+  if (!state.setupComplete && name !== "onboarding") {
+    name = "onboarding";
+  }
+
+  SCREENS.forEach(s => {
+    const el = document.getElementById("screen-" + s);
+    if (el) el.classList.remove("active");
+  });
+  const target = document.getElementById("screen-" + name);
+  if (target) target.classList.add("active");
+
+  // Bottom nav görünürlük
+  const nav = document.getElementById("bottom-nav");
+  if (nav) {
+    nav.style.display = (name === "onboarding" || name === "note-editor") ? "none" : "flex";
+    nav.querySelectorAll(".nav-btn").forEach(b => {
+      b.classList.toggle("active", b.dataset.screen === name);
+    });
+  }
+
+  // Sayfa bazında render
+  switch (name) {
+    case "home": renderHome(); break;
+    case "week-detail": renderWeekDetail(params); break;
+    case "notes": renderNotesList(); break;
+    case "note-editor": renderNoteEditor(params); break;
+    case "settings": renderSettings(); break;
+  }
+
+  window.scrollTo(0, 0);
+}
+
+/* ---------- 5) ONBOARDING ---------- */
+
+let onbState = { mode: null, value: null };
+
+function onbGoTo(step) {
+  document.getElementById("onb-step-welcome").style.display = (step === "welcome") ? "flex" : "none";
+  document.getElementById("onb-step-lmp-choice").style.display = (step === "lmp-choice") ? "flex" : "none";
+}
+
+function onbSelectMode(btn) {
+  const mode = btn.dataset.mode;
+  onbState.mode = mode;
+  document.querySelectorAll(".onb-option").forEach(o => o.classList.remove("selected"));
+  btn.classList.add("selected");
+
+  document.getElementById("onb-input-lmp").style.display = (mode === "lmp") ? "block" : "none";
+  document.getElementById("onb-input-edd").style.display = (mode === "edd") ? "block" : "none";
+  document.getElementById("onb-input-week").style.display = (mode === "week") ? "block" : "none";
+
+  // Default değerler
+  const today = toIso(new Date());
+  if (mode === "lmp" && !document.getElementById("onb-lmp-date").value) {
+    document.getElementById("onb-lmp-date").max = today;
+  }
+  if (mode === "edd" && !document.getElementById("onb-edd-date").value) {
+    document.getElementById("onb-edd-date").min = today;
+  }
+
+  onbValidate();
+}
+
+function onbValidate() {
+  const summary = document.getElementById("onb-summary");
+  const btn = document.getElementById("onb-continue-btn");
+  let lmpIso = null;
+
+  if (onbState.mode === "lmp") {
+    lmpIso = document.getElementById("onb-lmp-date").value || null;
+  } else if (onbState.mode === "edd") {
+    const edd = document.getElementById("onb-edd-date").value;
+    if (edd) lmpIso = eddToLmp(edd);
+  } else if (onbState.mode === "week") {
+    const w = parseInt(document.getElementById("onb-week-num").value, 10);
+    if (w >= 1 && w <= 42) lmpIso = weekToLmp(w);
+  }
+
+  if (!lmpIso) {
+    summary.style.display = "none";
+    btn.disabled = true;
+    btn.style.opacity = "0.4";
+    onbState.value = null;
+    return;
+  }
+
+  // Geçerlilik
+  const lmp = parseDate(lmpIso);
+  const today = startOfDay(new Date());
+  const daysSince = Math.floor((today - lmp) / MS_PER_DAY);
+  if (daysSince < 0 || daysSince > 320) {
+    summary.style.display = "block";
+    summary.innerHTML = "⚠️ Tarih makul aralıkta değil. Kontrol et lütfen.";
+    btn.disabled = true;
+    btn.style.opacity = "0.4";
+    onbState.value = null;
+    return;
+  }
+
+  onbState.value = lmpIso;
+  const completedWeeks = Math.floor(daysSince / 7);
+  const dayInWeek = daysSince % 7;
+  const eddIso = toIso(addDays(lmp, 280));
+  const daysToBirth = Math.max(0, 280 - daysSince);
+
+  summary.style.display = "block";
+  summary.innerHTML =
+    "Şu an <b>" + (completedWeeks + 1) + ". hafta " + dayInWeek + ". gün</b><br/>" +
+    "Tahmini doğum: <b>" + fmtDate(eddIso) + "</b><br/>" +
+    "Doğuma <b>" + daysToBirth + " gün</b> kaldı 🤍";
+  btn.disabled = false;
+  btn.style.opacity = "1";
+}
+
+function onbFinish() {
+  if (!onbState.value) return;
+  state.lmpDate = onbState.value;
+  state.eddDate = toIso(addDays(parseDate(onbState.value), 280));
+  state.setupComplete = true;
+  saveState();
+  navigate("home");
+}
+
+/* ---------- 6) ANA EKRAN ---------- */
+
+function renderHome() {
+  const info = getPregnancyInfo();
+  if (!info) { navigate("onboarding"); return; }
+
+  // Selamlama
+  const userName = state.activeUser === "cem" ? "Cem" : "Buse";
+  const hour = new Date().getHours();
+  let greeting = "Merhaba";
+  if (hour < 6) greeting = "İyi geceler";
+  else if (hour < 12) greeting = "Günaydın";
+  else if (hour < 18) greeting = "İyi günler";
+  else if (hour < 22) greeting = "İyi akşamlar";
+  else greeting = "İyi geceler";
+
+  document.getElementById("home-greeting").textContent = greeting + ",";
+  document.getElementById("home-name").textContent = userName + " 🤍";
+
+  // Hafta kartı — gerçek hafta gösterilir; fruit verisi 4-40 arasıyla sınırlı
+  const w = info.currentWeek;
+  const dataWeek = Math.min(40, Math.max(4, w));
+  const data = WEEK_DATA[dataWeek];
+  const card = document.getElementById("home-week-card");
+  card.innerHTML =
+    '<div class="week-num">' + w + '</div>' +
+    '<div class="week-label">HAFTA' + (info.dayInWeek > 0 ? ' · ' + info.dayInWeek + '. GÜN' : '') + '</div>' +
+    '<div class="fruit-row"><span class="fruit-emoji">' + data.emoji + '</span><span>' + data.fruit + ' büyüklüğünde</span></div>' +
+    '<div class="size">' + data.size + '</div>' +
+    '<div class="countdown">Doğuma <b>' + info.daysToBirth + ' gün</b> kaldı</div>';
+
+  // Son not
+  renderLastNote();
+}
+
+function renderLastNote() {
+  const box = document.getElementById("home-last-note");
+  const sorted = [...state.notes].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  if (sorted.length === 0) {
+    box.innerHTML = '<div class="empty">📝 Henüz not yok — ilk notu sen yaz, hatıra olsun.</div>';
+    return;
+  }
+  const n = sorted[0];
+  const authorName = n.author === "cem" ? "Cem" : "Buse";
+  box.innerHTML =
+    '<div class="meta">' +
+      '<span class="author-chip">' + authorName + '</span>' +
+      '<span>' + fmtDateTime(n.createdAt) + '</span>' +
+    '</div>' +
+    '<div class="text">' + escapeHtml(n.text) + '</div>';
+  box.onclick = () => openNoteEditor(n.id);
+  box.style.cursor = "pointer";
+}
+
+/* ---------- 7) HAFTA DETAY ---------- */
+
+let viewingWeek = null;
+
+function renderWeekDetail(params) {
+  const info = getPregnancyInfo();
+  if (!info) { navigate("onboarding"); return; }
+
+  if (params && params.week) {
+    viewingWeek = params.week;
+  } else if (viewingWeek === null) {
+    viewingWeek = info.currentWeek;
+  }
+  viewingWeek = Math.max(4, Math.min(40, viewingWeek));
+
+  document.getElementById("week-num-display").textContent = viewingWeek + ". hafta";
+  const subtext = (viewingWeek === info.currentWeek)
+    ? "Bu hafta · " + info.dayInWeek + ". gün"
+    : (viewingWeek < info.currentWeek ? "Geçmiş hafta" : "Gelecek hafta");
+  document.getElementById("week-sub-display").textContent = subtext;
+
+  document.getElementById("week-prev").disabled = viewingWeek <= 4;
+  document.getElementById("week-next").disabled = viewingWeek >= 40;
+
+  const data = WEEK_DATA[viewingWeek];
+  document.getElementById("week-hero").innerHTML =
+    '<div class="big-fruit">' + data.emoji + '</div>' +
+    '<div class="fruit-name">' + data.fruit + ' boyutunda</div>' +
+    '<div class="fruit-size">' + data.size + '</div>';
+
+  // Randevu uyarısı
+  const apptBox = document.getElementById("week-appt-banner");
+  if (data.appt) {
+    apptBox.innerHTML =
+      '<div class="appt-banner">' +
+        '<div class="appt-label">Bu hafta önerilen</div>' +
+        '<div>' + data.appt + '</div>' +
+      '</div>';
+  } else {
+    apptBox.innerHTML = "";
+  }
+
+  document.getElementById("week-baby").querySelector("ul").innerHTML =
+    data.baby.map(b => "<li>" + escapeHtml(b) + "</li>").join("");
+  document.getElementById("week-mom").querySelector("ul").innerHTML =
+    data.mom.map(b => "<li>" + escapeHtml(b) + "</li>").join("");
+  document.getElementById("week-tip").querySelector(".tip-text").textContent = data.tip;
+}
+
+function weekChange(delta) {
+  if (viewingWeek === null) return;
+  viewingWeek = Math.max(4, Math.min(40, viewingWeek + delta));
+  renderWeekDetail({ week: viewingWeek });
+}
+
+function weekJumpToCurrent() {
+  const info = getPregnancyInfo();
+  if (!info) return;
+  viewingWeek = info.currentWeek;
+  renderWeekDetail({ week: viewingWeek });
+}
+
+// Sol-sağ kaydırma desteği
+let touchStartX = null;
+document.addEventListener("touchstart", (e) => {
+  if (!document.getElementById("screen-week-detail").classList.contains("active")) return;
+  touchStartX = e.touches[0].clientX;
+}, { passive: true });
+document.addEventListener("touchend", (e) => {
+  if (touchStartX === null) return;
+  if (!document.getElementById("screen-week-detail").classList.contains("active")) {
+    touchStartX = null;
+    return;
+  }
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  touchStartX = null;
+  if (Math.abs(dx) < 60) return;
+  if (dx > 0) weekChange(-1);
+  else weekChange(1);
+}, { passive: true });
+
+/* ---------- 8) NOTLAR ---------- */
+
+function renderNotesList() {
+  const list = document.getElementById("notes-list");
+  const sorted = [...state.notes].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  if (sorted.length === 0) {
+    list.innerHTML =
+      '<div class="notes-empty">' +
+        '<div class="icon">📝</div>' +
+        '<div style="font-size:18px; font-weight:600; color:var(--text); margin-bottom:6px;">Henüz not yok</div>' +
+        '<div>İlk notu sen yaz — bebeğe yazılan ilk mektup olsun 🤍</div>' +
+      '</div>';
+    return;
+  }
+
+  list.innerHTML = sorted.map(n => {
+    const authorName = n.author === "cem" ? "Cem" : "Buse";
+    const tags = (n.tags || []).map(t => '<span class="tag-chip">#' + escapeHtml(t) + '</span>').join("");
+    return '<div class="note-item" onclick="openNoteEditor(\'' + n.id + '\')">' +
+      '<div class="meta-row">' +
+        '<span class="author-chip ' + n.author + '">' + authorName + '</span>' +
+        '<span>' + fmtDateTime(n.createdAt) + '</span>' +
+      '</div>' +
+      '<div class="text">' + escapeHtml(n.text) + '</div>' +
+      (tags ? '<div class="tags">' + tags + '</div>' : '') +
+    '</div>';
+  }).join("");
+}
+
+let editorState = { id: null, author: "cem", text: "", tags: [] };
+
+function openNoteEditor(noteId) {
+  navigate("note-editor", { id: noteId });
+}
+
+function closeNoteEditor() {
+  navigate("notes");
+}
+
+function renderNoteEditor(params) {
+  const id = (params && params.id) || null;
+  if (id) {
+    const note = state.notes.find(n => n.id === id);
+    if (!note) {
+      editorState = { id: null, author: state.activeUser, text: "", tags: [] };
+    } else {
+      editorState = {
+        id: note.id,
+        author: note.author,
+        text: note.text,
+        tags: [...(note.tags || [])]
+      };
+    }
+  } else {
+    editorState = { id: null, author: state.activeUser, text: "", tags: [] };
+  }
+
+  document.getElementById("editor-title").textContent = id ? "Notu düzenle" : "Yeni not";
+  document.getElementById("editor-text").value = editorState.text;
+  document.getElementById("editor-delete-btn").style.display = id ? "flex" : "none";
+  editorRenderAuthor();
+  editorRenderTags();
+  setTimeout(() => {
+    if (!id) document.getElementById("editor-text").focus();
+  }, 200);
+}
+
+function editorSetAuthor(a) {
+  editorState.author = a;
+  editorRenderAuthor();
+}
+
+function editorRenderAuthor() {
+  document.querySelectorAll("#editor-author-toggle button").forEach(b => {
+    b.classList.toggle("active", b.dataset.author === editorState.author);
+  });
+}
+
+function editorAddTag(t) {
+  t = t.trim().toLowerCase().replace(/^#/, "");
+  if (!t) return;
+  if (editorState.tags.includes(t)) return;
+  editorState.tags.push(t);
+  editorRenderTags();
+}
+
+function editorRemoveTag(t) {
+  editorState.tags = editorState.tags.filter(x => x !== t);
+  editorRenderTags();
+}
+
+function editorRenderTags() {
+  const row = document.getElementById("editor-tags-row");
+  // Mevcut input'u koru
+  const existing = document.getElementById("editor-tag-input");
+  const inputVal = existing ? existing.value : "";
+  row.innerHTML = "";
+  editorState.tags.forEach(t => {
+    const chip = document.createElement("span");
+    chip.className = "selected-tag";
+    chip.innerHTML = "#" + escapeHtml(t) + " <button type=\"button\" aria-label=\"Sil\">×</button>";
+    chip.querySelector("button").onclick = () => editorRemoveTag(t);
+    row.appendChild(chip);
+  });
+  const input = document.createElement("input");
+  input.type = "text";
+  input.id = "editor-tag-input";
+  input.placeholder = "Etiket ekle ve Enter'a bas";
+  input.value = inputVal;
+  input.onkeydown = editorTagKey;
+  row.appendChild(input);
+}
+
+function editorTagKey(e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const v = e.target.value;
+    if (v.trim()) {
+      editorAddTag(v);
+      e.target.value = "";
+    }
+  } else if (e.key === "Backspace" && e.target.value === "" && editorState.tags.length > 0) {
+    editorRemoveTag(editorState.tags[editorState.tags.length - 1]);
+  }
+}
+
+function saveNote() {
+  const text = document.getElementById("editor-text").value.trim();
+  if (!text) {
+    alert("Not boş olamaz.");
+    return;
+  }
+  const now = new Date().toISOString();
+  if (editorState.id) {
+    const n = state.notes.find(x => x.id === editorState.id);
+    if (n) {
+      n.text = text;
+      n.author = editorState.author;
+      n.tags = editorState.tags;
+      n.updatedAt = now;
+    }
+  } else {
+    state.notes.push({
+      id: "n_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+      createdAt: now,
+      updatedAt: now,
+      author: editorState.author,
+      text: text,
+      tags: editorState.tags
+    });
+  }
+  saveState();
+  navigate("notes");
+}
+
+function deleteNote() {
+  if (!editorState.id) return;
+  showConfirm("Notu silmek istediğine emin misin?", "Bu işlem geri alınamaz.", () => {
+    state.notes = state.notes.filter(n => n.id !== editorState.id);
+    saveState();
+    navigate("notes");
+  });
+}
+
+/* ---------- 9) AYARLAR ---------- */
+
+function renderSettings() {
+  const info = getPregnancyInfo();
+
+  // Aktif kullanıcı
+  document.querySelectorAll("#screen-settings .user-toggle button").forEach(b => {
+    b.classList.toggle("active", b.dataset.user === state.activeUser);
+  });
+
+  // Tarihler
+  document.getElementById("settings-lmp").textContent = fmtDate(state.lmpDate);
+  document.getElementById("settings-edd").textContent = fmtDate(state.eddDate);
+  if (info) {
+    document.getElementById("settings-current").textContent =
+      info.currentWeek + ". hafta " + info.dayInWeek + ". gün · " + info.daysToBirth + " gün kaldı";
+  } else {
+    document.getElementById("settings-current").textContent = "—";
+  }
+}
+
+function settingsSetUser(u) {
+  state.activeUser = u;
+  saveState();
+  renderSettings();
+}
+
+function settingsEditLmp() {
+  showPrompt(
+    "Son adet tarihi (LMP)",
+    "Tahmini doğum tarihi otomatik yeniden hesaplanır.",
+    "date",
+    state.lmpDate,
+    (val) => {
+      if (!val) return;
+      const d = parseDate(val);
+      const today = startOfDay(new Date());
+      const days = Math.floor((today - d) / MS_PER_DAY);
+      if (days < 0 || days > 320) {
+        alert("Tarih makul aralıkta değil.");
+        return;
+      }
+      state.lmpDate = val;
+      state.eddDate = toIso(addDays(d, 280));
+      saveState();
+      renderSettings();
+    }
+  );
+}
+
+/* ---------- 10) VERİ YEDEK / GERİ YÜKLEME / SIFIRLAMA ---------- */
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "9ay1hayat-yedek-" + toIso(new Date()) + ".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importDataPrompt() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "application/json,.json";
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result);
+        if (!parsed.lmpDate && !parsed.notes) {
+          alert("Bu dosya bir 9 Ay 1 Hayat yedeği değil.");
+          return;
+        }
+        showConfirm("Yedeği yükle?", "Mevcut tüm verilerin değiştirilecek.", () => {
+          state = Object.assign(defaultState(), parsed);
+          saveState();
+          navigate("home");
+        });
+      } catch (err) {
+        alert("Dosya okunamadı.");
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function resetAllPrompt() {
+  showConfirm(
+    "Tüm verileri sil?",
+    "Notlar, tarihler — hiçbiri geri gelmez. Önce yedek almak ister misin?",
+    () => {
+      localStorage.removeItem(STORAGE_KEY);
+      state = defaultState();
+      navigate("onboarding");
+      onbGoTo("welcome");
+      onbState = { mode: null, value: null };
+    }
+  );
+}
+
+/* ---------- 11) MODAL'LAR ---------- */
+
+function showConfirm(title, message, onConfirm) {
+  const root = document.getElementById("modal-root");
+  root.innerHTML =
+    '<div class="modal-backdrop" id="modal-bd">' +
+      '<div class="modal" onclick="event.stopPropagation()">' +
+        '<h2>' + escapeHtml(title) + '</h2>' +
+        '<p>' + escapeHtml(message) + '</p>' +
+        '<div class="actions">' +
+          '<button class="btn btn-danger" id="modal-confirm">Evet, devam</button>' +
+          '<button class="btn btn-secondary" id="modal-cancel">İptal</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  document.getElementById("modal-bd").onclick = closeModal;
+  document.getElementById("modal-confirm").onclick = () => { closeModal(); onConfirm && onConfirm(); };
+  document.getElementById("modal-cancel").onclick = closeModal;
+}
+
+function showSoonModal(title, message) {
+  const root = document.getElementById("modal-root");
+  root.innerHTML =
+    '<div class="modal-backdrop" id="modal-bd">' +
+      '<div class="modal" onclick="event.stopPropagation()">' +
+        '<h2>🌱 ' + escapeHtml(title) + '</h2>' +
+        '<p>' + escapeHtml(message) + '</p>' +
+        '<div class="actions">' +
+          '<button class="btn btn-primary" id="modal-ok">Tamam</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  document.getElementById("modal-bd").onclick = closeModal;
+  document.getElementById("modal-ok").onclick = closeModal;
+}
+
+function showPrompt(title, message, type, defaultVal, onSave) {
+  const root = document.getElementById("modal-root");
+  const inputId = "modal-prompt-input";
+  root.innerHTML =
+    '<div class="modal-backdrop" id="modal-bd">' +
+      '<div class="modal" onclick="event.stopPropagation()">' +
+        '<h2>' + escapeHtml(title) + '</h2>' +
+        '<p>' + escapeHtml(message) + '</p>' +
+        '<div class="onb-input-row" style="margin: 0 0 12px; box-shadow:none; padding:0; background: transparent;">' +
+          '<input type="' + type + '" id="' + inputId + '" value="' + (defaultVal || "") + '">' +
+        '</div>' +
+        '<div class="actions">' +
+          '<button class="btn btn-primary" id="modal-save">Kaydet</button>' +
+          '<button class="btn btn-secondary" id="modal-cancel">İptal</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  document.getElementById("modal-bd").onclick = closeModal;
+  document.getElementById("modal-cancel").onclick = closeModal;
+  document.getElementById("modal-save").onclick = () => {
+    const v = document.getElementById(inputId).value;
+    closeModal();
+    onSave && onSave(v);
+  };
+  setTimeout(() => document.getElementById(inputId).focus(), 200);
+}
+
+function closeModal() {
+  document.getElementById("modal-root").innerHTML = "";
+}
+
+/* ---------- 12) YARDIMCI ---------- */
+
+function escapeHtml(s) {
+  if (s == null) return "";
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+/* ---------- 13) BAŞLATMA ---------- */
+
+function init() {
+  if (state.setupComplete && state.lmpDate) {
+    navigate("home");
+  } else {
+    navigate("onboarding");
+    onbGoTo("welcome");
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>
