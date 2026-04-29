@@ -1749,6 +1749,259 @@
     }
     .role-warning b { color: var(--text); }
 
+    /* ============ NOTLAR — düzenle ikonu, expand state ============ */
+    .note-item { position: relative; padding-right: 44px; }
+    .note-item .note-edit-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: var(--text-muted);
+      background: var(--bg-soft);
+      z-index: 1;
+      transition: all .15s;
+    }
+    .note-item .note-edit-btn:active {
+      background: var(--primary-soft);
+      color: var(--primary-deep);
+      transform: scale(0.92);
+    }
+    .note-item.expanded .text {
+      -webkit-line-clamp: unset;
+      display: block;
+      overflow: visible;
+    }
+    .note-expand-btn {
+      background: transparent;
+      color: var(--primary-deep);
+      font-weight: 600;
+      font-size: 13px;
+      padding: 8px 0 0;
+      margin-top: 6px;
+      display: none;
+    }
+
+    /* ============ EDİTÖR — + Ekle butonu ============ */
+    .tag-input-row .tag-add-btn {
+      flex: 0 0 auto;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary-deep);
+      font-weight: 600;
+      font-size: 14px;
+      transition: all .15s;
+    }
+    .tag-input-row .tag-add-btn:active {
+      background: var(--primary);
+      color: white;
+      transform: scale(0.96);
+    }
+
+    /* ============ TOAST (genel kullanım) ============ */
+    .toast {
+      position: fixed;
+      top: calc(20px + var(--safe-top));
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-card);
+      border-radius: 999px;
+      padding: 10px 18px;
+      box-shadow: var(--shadow-lg);
+      z-index: 9999;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: toastIn .25s ease-out;
+      max-width: calc(100% - 32px);
+    }
+    .toast .ico { font-size: 16px; color: var(--success); }
+    .toast.fading { animation: toastOut .25s ease-in forwards; }
+
+    /* ============ DAILY LOG — kaydet butonu ============ */
+    .daily-save-row {
+      margin: 16px 0 8px;
+    }
+    .daily-save-btn {
+      width: 100%;
+      min-height: 56px;
+      padding: 14px 22px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 17px;
+      border: 1.5px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-muted);
+      transition: all .2s;
+    }
+    .daily-save-btn.dirty {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 4px 14px rgba(232, 180, 184, 0.45);
+    }
+    .daily-save-btn:active { transform: scale(0.98); }
+
+    /* ============ ÖLÇÜM input görünürlüğü ============ */
+    .measure-input {
+      flex: 1;
+      width: 100%;
+      font-size: 17px;
+      color: var(--text);
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      min-height: 50px;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      font-family: inherit;
+      transition: border-color .15s;
+    }
+    .measure-input:focus { border-color: var(--primary); }
+    .measure-input::placeholder { color: var(--text-soft); }
+
+    /* ============ KİLO grafiği ============ */
+    .weight-chart {
+      background: var(--bg-soft);
+      border-radius: var(--radius-sm);
+      padding: 8px 4px;
+      margin: 14px 0 4px;
+    }
+    .weight-chart-empty {
+      background: var(--bg-soft);
+      border-radius: var(--radius-sm);
+      padding: 18px 14px;
+      margin: 14px 0 4px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* ============ MOOD calendar ============ */
+    .mood-cal-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 4px 0 14px;
+    }
+    .mood-cal-nav button {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      box-shadow: var(--shadow);
+      font-size: 20px;
+      color: var(--text);
+    }
+    .mood-cal-nav button:disabled { opacity: 0.35; cursor: not-allowed; }
+    .mood-cal-nav .month-name {
+      flex: 1;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .mood-cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .mood-cal-head {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      font-weight: 600;
+      padding: 6px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .mood-cal-cell {
+      aspect-ratio: 1;
+      border-radius: 12px;
+      background: var(--bg-card);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      font-size: 22px;
+      cursor: pointer;
+      transition: transform .1s;
+    }
+    .mood-cal-cell.empty {
+      background: var(--bg-soft);
+      box-shadow: none;
+      cursor: default;
+    }
+    .mood-cal-cell.placeholder {
+      background: transparent;
+      box-shadow: none;
+      cursor: default;
+    }
+    .mood-cal-cell.today { box-shadow: inset 0 0 0 2px var(--primary), var(--shadow); }
+    .mood-cal-cell.future { opacity: 0.45; cursor: default; }
+    .mood-cal-cell:active:not(.empty):not(.future):not(.placeholder) { transform: scale(0.95); }
+    .mood-cal-cell .day-num {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .mood-cal-cell.today .day-num { color: var(--primary-deep); }
+    .mood-cal-cell .shared-badge {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+    .mood-cal-cell.empty .day-num { color: var(--text-soft); }
+
+    /* Mood detail sheet */
+    .mood-sheet h3 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .mood-sheet .date-sub {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+    .mood-sheet .field {
+      padding: 12px 0;
+      border-top: 1px solid var(--border);
+    }
+    .mood-sheet .field:first-of-type { border-top: none; padding-top: 4px; }
+    .mood-sheet .field-lbl {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .mood-sheet .field-val { font-size: 15px; color: var(--text); line-height: 1.5; }
+    .mood-sheet .symptom-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
     /* ============ HOME WEEK CARD — alt bilgi satırı ============ */
     .week-card .subline {
       display: inline-flex;
@@ -2414,7 +2667,8 @@
   <div class="editor-section">
     <span class="editor-label">Etiketler</span>
     <div class="tag-input-row" id="editor-tags-row">
-      <input type="text" id="editor-tag-input" placeholder="Etiket ekle ve Enter'a bas" onkeydown="editorTagKey(event)" />
+      <input type="text" id="editor-tag-input" placeholder="Etiket yaz ve + Ekle'ye bas" onkeydown="editorTagKey(event)" />
+      <button type="button" class="tag-add-btn" onclick="editorAddTagFromInput()">+ Ekle</button>
     </div>
     <div class="tag-suggestions">
       <span class="tag-suggestion" onclick="editorAddTag('ilk-tekme')">ilk-tekme</span>
@@ -2499,7 +2753,7 @@
     <h3>Hakkında</h3>
     <div class="settings-row">
       <span class="label">Sürüm</span>
-      <span class="value">v1.0 — App ikonu (icon.png) auth/welcome/splash entegre, "Ana Ekrana Ekle" hazır</span>
+      <span class="value">v1.1 — Notlar inline expand · daily-log save · mood takvimi · kilo grafiği</span>
     </div>
     <div class="settings-row">
       <span class="label">Yapım</span>
@@ -2610,10 +2864,10 @@
   <div class="screen-header">
     <button onclick="navigate('home')" aria-label="Geri">←</button>
     <h1 id="daily-log-title">Bugün</h1>
-    <button onclick="dailyLogChangeDate()" aria-label="Tarih">📅</button>
+    <button onclick="navigate('mood-calendar')" aria-label="Ruh hali takvimi">📊</button>
   </div>
 
-  <div class="card-soft" id="daily-log-date-info" style="font-size: 13px;"></div>
+  <div class="card-soft" id="daily-log-date-info" style="font-size: 13px; cursor: pointer;" onclick="dailyLogChangeDate()" title="Tarih değiştir"></div>
 
   <!-- Ruh hali -->
   <div class="card">
@@ -2672,6 +2926,10 @@
     <textarea class="editor-textarea" id="daily-note-input" placeholder="Birkaç cümle..." style="min-height: 80px;"></textarea>
   </div>
 
+  <div class="daily-save-row">
+    <button class="daily-save-btn" id="daily-log-save-btn" onclick="dailyLogSave()">✓ Kaydet</button>
+  </div>
+
   <div class="spacer-24"></div>
 </div>
 
@@ -2686,22 +2944,53 @@
   <div class="card">
     <h3 style="font-size: 14px; color: var(--primary-deep); margin-bottom: 12px;">⚖️ Kilo</h3>
     <div class="h-stack" style="gap: 10px;">
-      <input type="number" step="0.1" min="40" max="200" id="weight-input" placeholder="Bugünkü kilo (kg)" class="editor-date" style="flex:1;" />
-      <button class="btn btn-primary" onclick="saveWeight()" style="min-width: 90px; min-height: 50px;">Ekle</button>
+      <input type="number" inputmode="decimal" step="0.1" min="40" max="200" id="weight-input" placeholder="Bugünkü kilo (kg)" class="measure-input" />
+      <button class="btn btn-primary" onclick="saveWeight()" style="min-width: 90px; min-height: 50px; flex: 0 0 auto;">Ekle</button>
     </div>
+    <div id="weight-chart-box"></div>
     <div id="weight-history" style="margin-top: 14px;"></div>
   </div>
 
   <div class="card">
     <h3 style="font-size: 14px; color: var(--primary-deep); margin-bottom: 12px;">❤️ Tansiyon</h3>
     <div class="h-stack" style="gap: 8px;">
-      <input type="number" min="60" max="200" id="bp-sys" placeholder="Büyük (sis)" class="editor-date" style="flex:1;" />
-      <span class="small">/</span>
-      <input type="number" min="40" max="120" id="bp-dia" placeholder="Küçük (dia)" class="editor-date" style="flex:1;" />
-      <button class="btn btn-primary" onclick="saveBP()" style="min-width: 80px; min-height: 50px;">Ekle</button>
+      <input type="number" inputmode="numeric" min="60" max="200" id="bp-sys" placeholder="Büyük (sis)" class="measure-input" />
+      <span class="small" style="flex: 0 0 auto;">/</span>
+      <input type="number" inputmode="numeric" min="40" max="120" id="bp-dia" placeholder="Küçük (dia)" class="measure-input" />
+      <button class="btn btn-primary" onclick="saveBP()" style="min-width: 80px; min-height: 50px; flex: 0 0 auto;">Ekle</button>
     </div>
     <div id="bp-history" style="margin-top: 14px;"></div>
   </div>
+</div>
+
+<!-- ============ MOOD TAKVİMİ ============ -->
+<div id="screen-mood-calendar" class="screen">
+  <div class="screen-header">
+    <button onclick="moodCalGoBack()" aria-label="Geri">←</button>
+    <h1>Ruh hali takvimi</h1>
+    <button onclick="moodCalJumpToday()" aria-label="Bu ay">⏱</button>
+  </div>
+
+  <div class="card-soft" id="mood-cal-info" style="font-size: 13px;"></div>
+
+  <div class="mood-cal-nav">
+    <button id="mood-cal-prev" onclick="moodCalChange(-1)" aria-label="Önceki ay">‹</button>
+    <div class="month-name" id="mood-cal-month">—</div>
+    <button id="mood-cal-next" onclick="moodCalChange(1)" aria-label="Sonraki ay">›</button>
+  </div>
+
+  <div class="mood-cal-grid">
+    <div class="mood-cal-head">Pzt</div>
+    <div class="mood-cal-head">Sal</div>
+    <div class="mood-cal-head">Çar</div>
+    <div class="mood-cal-head">Per</div>
+    <div class="mood-cal-head">Cum</div>
+    <div class="mood-cal-head">Cmt</div>
+    <div class="mood-cal-head">Paz</div>
+  </div>
+  <div class="mood-cal-grid" id="mood-cal-grid"></div>
+
+  <div class="card-soft" id="mood-cal-legend" style="margin-top: 16px; font-size: 12px; line-height: 1.6;"></div>
 </div>
 
 <!-- ============ TEKME SAYACI ============ -->
@@ -2802,6 +3091,11 @@
       <span class="ico">⚖️</span>
       <div class="lbl">Ölçümler</div>
       <div class="sub">Kilo · tansiyon</div>
+    </button>
+    <button class="more-item" onclick="navigate('mood-calendar')">
+      <span class="ico">📊</span>
+      <div class="lbl">Ruh hali takvimi</div>
+      <div class="sub">Aylık geçmiş bakış</div>
     </button>
     <button class="more-item" id="more-kicks-btn" onclick="navigate('kicks')">
       <span class="ico">👶</span>
@@ -3800,7 +4094,7 @@ function weekToLmp(weekNum) {
 
 /* ---------- 4) NAVİGASYON ---------- */
 
-const SCREENS = ["auth", "onboarding", "home", "week-detail", "notes", "note-editor", "settings", "appointments", "appointment-detail", "daily-log", "measurements", "kicks", "hospital-bag", "names", "more"];
+const SCREENS = ["auth", "onboarding", "home", "week-detail", "notes", "note-editor", "settings", "appointments", "appointment-detail", "daily-log", "mood-calendar", "measurements", "kicks", "hospital-bag", "names", "more"];
 
 function navigate(name, params) {
   // Auth ekranı her zaman erişilebilir
@@ -3842,6 +4136,7 @@ function navigate(name, params) {
     case "appointments": renderAppointments(); break;
     case "appointment-detail": renderApptDetail(params); break;
     case "daily-log": renderDailyLog(params); break;
+    case "mood-calendar": renderMoodCalendar(); break;
     case "measurements": renderMeasurements(); break;
     case "kicks": renderKicks(); break;
     case "hospital-bag": renderHospitalBag(); break;
@@ -4467,15 +4762,37 @@ function renderNotesList() {
   list.innerHTML = sorted.map(n => {
     const authorName = n.author === "cem" ? "Cem" : "Buse";
     const tags = (n.tags || []).map(t => '<span class="tag-chip">#' + escapeHtml(t) + '</span>').join("");
-    return '<div class="note-item" onclick="openNoteEditor(\'' + n.id + '\')">' +
+    return '<div class="note-item" data-note-id="' + n.id + '" onclick="toggleNoteExpand(this)">' +
+      '<button class="note-edit-btn" onclick="event.stopPropagation();openNoteEditor(\'' + n.id + '\')" aria-label="Düzenle">✏</button>' +
       '<div class="meta-row">' +
         '<span class="author-chip ' + n.author + '">' + authorName + '</span>' +
         '<span>' + fmtDateTime(n.createdAt) + '</span>' +
       '</div>' +
       '<div class="text">' + escapeHtml(n.text) + '</div>' +
+      '<button type="button" class="note-expand-btn" onclick="event.stopPropagation();toggleNoteExpand(this.closest(\'.note-item\'))">Devamını oku ↓</button>' +
       (tags ? '<div class="tags">' + tags + '</div>' : '') +
     '</div>';
   }).join("");
+
+  // Render sonrası: hangi notların metni 3 satırı aşıyorsa "Devamını oku" butonunu göster
+  setTimeout(() => {
+    document.querySelectorAll("#notes-list .note-item").forEach(item => {
+      const textEl = item.querySelector(".text");
+      const btn = item.querySelector(".note-expand-btn");
+      if (!textEl || !btn) return;
+      // 4px tolerans — clamp ile tam çakışmasın
+      if (textEl.scrollHeight > textEl.clientHeight + 4) {
+        btn.style.display = "inline-block";
+      }
+    });
+  }, 30);
+}
+
+function toggleNoteExpand(el) {
+  if (!el) return;
+  const expanded = el.classList.toggle("expanded");
+  const btn = el.querySelector(".note-expand-btn");
+  if (btn) btn.textContent = expanded ? "Daralt ↑" : "Devamını oku ↓";
 }
 
 let editorState = { id: null, author: "cem", text: "", tags: [], date: null };
@@ -4578,10 +4895,31 @@ function editorRenderTags() {
   const input = document.createElement("input");
   input.type = "text";
   input.id = "editor-tag-input";
-  input.placeholder = "Etiket ekle ve Enter'a bas";
+  input.placeholder = "Etiket yaz ve + Ekle'ye bas";
   input.value = inputVal;
   input.onkeydown = editorTagKey;
   row.appendChild(input);
+  const addBtn = document.createElement("button");
+  addBtn.type = "button";
+  addBtn.className = "tag-add-btn";
+  addBtn.textContent = "+ Ekle";
+  addBtn.onclick = editorAddTagFromInput;
+  row.appendChild(addBtn);
+}
+
+function editorAddTagFromInput() {
+  const inp = document.getElementById("editor-tag-input");
+  if (!inp) return;
+  const v = (inp.value || "").trim();
+  if (!v) {
+    inp.focus();
+    return;
+  }
+  editorAddTag(v);
+  // Yeniden render edilince input yeniden oluştu — değeri sıfırla
+  const after = document.getElementById("editor-tag-input");
+  if (after) { after.value = ""; after.focus(); }
+  showToast("✓ Etiket eklendi", 1200);
 }
 
 function editorTagKey(e) {
@@ -4590,7 +4928,8 @@ function editorTagKey(e) {
     const v = e.target.value;
     if (v.trim()) {
       editorAddTag(v);
-      e.target.value = "";
+      const after = document.getElementById("editor-tag-input");
+      if (after) { after.value = ""; after.focus(); }
     }
   } else if (e.key === "Backspace" && e.target.value === "" && editorState.tags.length > 0) {
     editorRemoveTag(editorState.tags[editorState.tags.length - 1]);
@@ -5128,9 +5467,31 @@ function nameDelete(id) {
 /* ---------- 9c) ANNE MODU — GÜNLÜK GİRDİ ---------- */
 
 let dailyLogDate = null; // şu an düzenlenen tarih
+let dailyLogDirty = false;
+let _dailyLogPrevDate = null;
+
+function dailyLogMarkDirty() {
+  dailyLogDirty = true;
+  const btn = document.getElementById("daily-log-save-btn");
+  if (btn) btn.classList.add("dirty");
+}
+
+function dailyLogSave() {
+  saveState();
+  dailyLogDirty = false;
+  const btn = document.getElementById("daily-log-save-btn");
+  if (btn) btn.classList.remove("dirty");
+  showToast("✓ Bugünün girişi kaydedildi", 2000);
+}
 
 function renderDailyLog(params) {
-  dailyLogDate = (params && params.date) || todayKey();
+  const newDate = (params && params.date) || todayKey();
+  // Tarih değişmişse dirty resetle (yeni güne girdi)
+  if (newDate !== _dailyLogPrevDate) {
+    dailyLogDirty = false;
+    _dailyLogPrevDate = newDate;
+  }
+  dailyLogDate = newDate;
   const log = getDailyLog(dailyLogDate);
 
   const isToday = dailyLogDate === todayKey();
@@ -5138,15 +5499,19 @@ function renderDailyLog(params) {
 
   const info = getPregnancyInfo();
   const dateInfo = document.getElementById("daily-log-date-info");
-  let dateInfoText = fmtDate(dailyLogDate);
+  let dateInfoText = fmtDate(dailyLogDate) + ' <span style="color:var(--primary-deep); font-weight:600;">· değiştir</span>';
   if (info && state.lmpDate) {
     const targetDate = parseDate(dailyLogDate);
     const lmp = parseDate(state.lmpDate);
     const days = Math.floor((targetDate - lmp) / MS_PER_DAY);
     const w = Math.max(1, Math.floor(days / 7) + 1);
-    dateInfoText += " · " + w + ". hafta";
+    dateInfoText = fmtDate(dailyLogDate) + " · " + w + ". hafta · <span style=\"color:var(--primary-deep); font-weight:600;\">değiştir</span>";
   }
   dateInfo.innerHTML = dateInfoText;
+
+  // Save butonu dirty class
+  const saveBtn = document.getElementById("daily-log-save-btn");
+  if (saveBtn) saveBtn.classList.toggle("dirty", dailyLogDirty);
 
   // Ruh hali
   const moodRow = document.getElementById("mood-row");
@@ -5195,6 +5560,7 @@ function renderDailyLog(params) {
   document.getElementById("daily-note-input").oninput = function() {
     const l = getDailyLog(dailyLogDate);
     l.note = this.value;
+    dailyLogMarkDirty();
     saveState();
   };
 }
@@ -5213,6 +5579,7 @@ function renderWaterDisplay() {
 function dailyLogSetMood(level) {
   const log = getDailyLog(dailyLogDate);
   log.mood = log.mood === level ? null : level; // ikinci dokunuş = temizle
+  dailyLogMarkDirty();
   saveState();
   renderDailyLog({ date: dailyLogDate });
 }
@@ -5222,6 +5589,7 @@ function dailyLogToggleSymptom(id) {
   const idx = log.symptoms.indexOf(id);
   if (idx >= 0) log.symptoms.splice(idx, 1);
   else log.symptoms.push(id);
+  dailyLogMarkDirty();
   saveState();
   renderDailyLog({ date: dailyLogDate });
 }
@@ -5229,6 +5597,7 @@ function dailyLogToggleSymptom(id) {
 function dailyLogWaterChange(delta) {
   const log = getDailyLog(dailyLogDate);
   log.waterGlasses = Math.max(0, Math.min(20, log.waterGlasses + delta));
+  dailyLogMarkDirty();
   saveState();
   renderWaterDisplay();
 }
@@ -5238,6 +5607,7 @@ function dailyLogToggleVitamin(id) {
   const idx = log.vitamins.indexOf(id);
   if (idx >= 0) log.vitamins.splice(idx, 1);
   else log.vitamins.push(id);
+  dailyLogMarkDirty();
   saveState();
   renderDailyLog({ date: dailyLogDate });
 }
@@ -5245,6 +5615,7 @@ function dailyLogToggleVitamin(id) {
 function dailyLogToggleShare() {
   const log = getDailyLog(dailyLogDate);
   log.sharedWithCem = !log.sharedWithCem;
+  dailyLogMarkDirty();
   saveState();
   document.getElementById("share-toggle").classList.toggle("on", log.sharedWithCem);
 }
@@ -5261,9 +5632,252 @@ function dailyLogChangeDate() {
       if (val) {
         dailyLogDate = val;
         renderDailyLog({ date: val });
+        showToast("✓ Tarih güncellendi", 1000);
       }
     }
   });
+}
+
+/* ---------- 9c2) MOOD TAKVİMİ ---------- */
+
+const TR_MONTHS_FULL = [
+  "Ocak","Şubat","Mart","Nisan","Mayıs","Haziran",
+  "Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"
+];
+
+let moodCalViewDate = null; // Date — görüntülenen ayın ilk günü
+
+function moodCalGoBack() {
+  if (state.role === "mother") navigate("daily-log");
+  else navigate("more");
+}
+
+function moodCalJumpToday() {
+  const t = new Date();
+  moodCalViewDate = new Date(t.getFullYear(), t.getMonth(), 1);
+  renderMoodCalendar();
+}
+
+function moodCalChange(delta) {
+  if (!moodCalViewDate) moodCalJumpToday();
+  const d = new Date(moodCalViewDate);
+  d.setMonth(d.getMonth() + delta);
+  moodCalViewDate = d;
+  renderMoodCalendar();
+}
+
+function renderMoodCalendar() {
+  if (!moodCalViewDate) {
+    const t = new Date();
+    moodCalViewDate = new Date(t.getFullYear(), t.getMonth(), 1);
+  }
+  const isFather = state.role === "father";
+  const year = moodCalViewDate.getFullYear();
+  const month = moodCalViewDate.getMonth();
+  const today = startOfDay(new Date());
+  const todayKeyStr = toIso(today);
+
+  // Ay adı
+  document.getElementById("mood-cal-month").textContent = TR_MONTHS_FULL[month] + " " + year;
+
+  // Bilgilendirme kartı (rol bazlı)
+  const info = document.getElementById("mood-cal-info");
+  if (info) {
+    if (isFather) {
+      info.innerHTML = '🔒 <b>Buse</b>\'nin paylaştığı günler burada görünür. Paylaşılmayan günler gizli kalır.';
+    } else {
+      info.innerHTML = '📊 Geçmiş günleri gör. Cem ile paylaştığın günlerde köşede yeşil ✓ rozeti olur.';
+    }
+  }
+
+  // İlk günün haftadaki yeri (Pzt=0)
+  const firstDow = new Date(year, month, 1).getDay(); // 0=Pazar
+  const startOffset = (firstDow + 6) % 7; // Pzt=0 olacak şekilde
+  const lastDay = new Date(year, month + 1, 0).getDate();
+
+  let cells = "";
+  // Önce boş placeholder hücreler
+  for (let i = 0; i < startOffset; i++) {
+    cells += '<div class="mood-cal-cell placeholder"></div>';
+  }
+  // Sonra gerçek günler
+  for (let d = 1; d <= lastDay; d++) {
+    const dateObj = new Date(year, month, d);
+    const dateKey = toIso(dateObj);
+    const isFuture = dateObj > today;
+    const isToday = dateKey === todayKeyStr;
+    const log = state.dailyLogs && state.dailyLogs[dateKey];
+
+    let canShow = false;
+    let moodEmoji = "";
+    let sharedBadge = "";
+    if (log && log.mood) {
+      if (isFather) {
+        if (log.sharedWithCem) {
+          canShow = true;
+          const m = MOOD_LEVELS.find(x => x.level === log.mood);
+          if (m) moodEmoji = m.emoji;
+        }
+      } else {
+        canShow = true;
+        const m = MOOD_LEVELS.find(x => x.level === log.mood);
+        if (m) moodEmoji = m.emoji;
+        if (log.sharedWithCem) sharedBadge = '<span class="shared-badge"></span>';
+      }
+    }
+
+    let cls = "mood-cal-cell";
+    if (!canShow && !isFuture) cls += " empty";
+    if (isToday) cls += " today";
+    if (isFuture) cls += " future";
+
+    const clickable = !isFuture && (canShow || (!isFather && log));
+    const onclick = clickable ? ' onclick="showMoodSheet(\'' + dateKey + '\')"' : '';
+
+    cells += '<div class="' + cls + '"' + onclick + '>' +
+      '<span class="day-num">' + d + '</span>' +
+      moodEmoji +
+      sharedBadge +
+    '</div>';
+  }
+
+  document.getElementById("mood-cal-grid").innerHTML = cells;
+
+  // Önceki ay butonu — LMP'den önce gitmeyi engelle
+  const prevBtn = document.getElementById("mood-cal-prev");
+  const nextBtn = document.getElementById("mood-cal-next");
+  if (prevBtn) {
+    if (state.lmpDate) {
+      const lmp = parseDate(state.lmpDate);
+      const lmpMonthStart = new Date(lmp.getFullYear(), lmp.getMonth(), 1);
+      const prevView = new Date(year, month - 1, 1);
+      prevBtn.disabled = prevView < lmpMonthStart;
+    } else {
+      prevBtn.disabled = false;
+    }
+  }
+  if (nextBtn) {
+    const todayMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    nextBtn.disabled = moodCalViewDate >= todayMonthStart;
+  }
+
+  // Legend
+  const legend = document.getElementById("mood-cal-legend");
+  if (legend) {
+    if (isFather) {
+      legend.innerHTML = '<b>Boş hücreler</b>: Buse o gün için ya bir şey girmemiş ya da paylaşmamış.';
+    } else {
+      const moodList = MOOD_LEVELS.map(m => m.emoji + ' ' + m.label).join(' · ');
+      legend.innerHTML = '<b>Ruh hali skalası:</b><br/>' + moodList;
+    }
+  }
+}
+
+function showMoodSheet(dateKey) {
+  const log = (state.dailyLogs && state.dailyLogs[dateKey]) || null;
+  if (!log) return;
+  const isFather = state.role === "father";
+  if (isFather && !log.sharedWithCem) return;
+
+  const mood = log.mood ? MOOD_LEVELS.find(x => x.level === log.mood) : null;
+  const symptoms = (log.symptoms || []).map(id => {
+    const s = SYMPTOM_LIST.find(x => x.id === id);
+    return s ? '<span class="tag-chip">' + s.icon + ' ' + escapeHtml(s.label) + '</span>' : '';
+  }).filter(Boolean).join("");
+  const vits = (log.vitamins || []).map(id => {
+    const v = VITAMIN_LIST.find(x => x.id === id);
+    return v ? escapeHtml(v.label) : null;
+  }).filter(Boolean).join(", ");
+
+  const dateObj = parseDate(dateKey);
+  const dayLabel = dateObj.getDate() + " " + TR_MONTHS_FULL[dateObj.getMonth()] + " " + dateObj.getFullYear();
+  const todayKeyStr = toIso(startOfDay(new Date()));
+  const isToday = dateKey === todayKeyStr;
+  const headTitle = isToday ? "Bugün" : dayLabel;
+
+  let html = '<h3>' + escapeHtml(headTitle) + '</h3>' +
+    '<div class="date-sub">' + (isToday ? dayLabel : "") + '</div>';
+
+  if (mood) {
+    html += '<div class="field">' +
+      '<div class="field-lbl">Ruh hali</div>' +
+      '<div class="field-val" style="font-size:18px;">' + mood.emoji + ' ' + escapeHtml(mood.label) + '</div>' +
+    '</div>';
+  }
+  if (symptoms) {
+    html += '<div class="field">' +
+      '<div class="field-lbl">Semptomlar</div>' +
+      '<div class="symptom-list">' + symptoms + '</div>' +
+    '</div>';
+  }
+  if (typeof log.waterGlasses === "number" && log.waterGlasses > 0) {
+    html += '<div class="field">' +
+      '<div class="field-lbl">Su</div>' +
+      '<div class="field-val">💧 ' + log.waterGlasses + ' bardak</div>' +
+    '</div>';
+  }
+  if (vits) {
+    html += '<div class="field">' +
+      '<div class="field-lbl">Vitamin / İlaç</div>' +
+      '<div class="field-val">💊 ' + vits + '</div>' +
+    '</div>';
+  }
+  if (log.note) {
+    html += '<div class="field">' +
+      '<div class="field-lbl">Not</div>' +
+      '<div class="field-val" style="white-space: pre-wrap;">' + escapeHtml(log.note) + '</div>' +
+    '</div>';
+  }
+
+  // Anne için: paylaş toggle
+  if (!isFather) {
+    html += '<div class="field">' +
+      '<div class="settings-row" style="border-top: none; padding: 8px 0;" onclick="moodSheetToggleShare(\'' + dateKey + '\')">' +
+        '<div>' +
+          '<div style="font-size: 15px; font-weight: 500;">Cem\'le paylaş</div>' +
+          '<div class="small">Açıksa Cem detayları görür.</div>' +
+        '</div>' +
+        '<div class="toggle ' + (log.sharedWithCem ? "on" : "") + '" id="mood-sheet-toggle"></div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  // Düzenle butonu (sadece anne)
+  if (!isFather) {
+    html += '<div class="actions" style="margin-top:14px;">' +
+      '<button class="btn btn-primary" onclick="moodSheetEditDay(\'' + dateKey + '\')">Düzenle</button>' +
+      '<button class="btn btn-secondary" onclick="closeModal()">Kapat</button>' +
+    '</div>';
+  } else {
+    html += '<div class="actions" style="margin-top:14px;">' +
+      '<button class="btn btn-secondary" onclick="closeModal()">Kapat</button>' +
+    '</div>';
+  }
+
+  const root = document.getElementById("modal-root");
+  root.innerHTML =
+    '<div class="modal-backdrop" id="modal-bd">' +
+      '<div class="modal mood-sheet" onclick="event.stopPropagation()">' + html + '</div>' +
+    '</div>';
+  document.getElementById("modal-bd").onclick = closeModal;
+}
+
+function moodSheetToggleShare(dateKey) {
+  const log = state.dailyLogs && state.dailyLogs[dateKey];
+  if (!log) return;
+  log.sharedWithCem = !log.sharedWithCem;
+  saveState();
+  const t = document.getElementById("mood-sheet-toggle");
+  if (t) t.classList.toggle("on", log.sharedWithCem);
+  // Takvimi de güncelle (rozet değişir)
+  if (document.getElementById("screen-mood-calendar").classList.contains("active")) {
+    renderMoodCalendar();
+  }
+}
+
+function moodSheetEditDay(dateKey) {
+  closeModal();
+  navigate("daily-log", { date: dateKey });
 }
 
 /* ---------- 9d) ÖLÇÜMLER (KİLO + TANSİYON) ---------- */
@@ -5282,6 +5896,10 @@ function renderMeasurements() {
       ).join("");
   document.getElementById("weight-input").value = "";
 
+  // Kilo grafiği
+  const chartBox = document.getElementById("weight-chart-box");
+  if (chartBox) chartBox.innerHTML = renderWeightChart(state.weights || []);
+
   // Geçmiş tansiyon
   const bps = [...(state.bps || [])].sort((a, b) => parseDate(b.date) - parseDate(a.date));
   document.getElementById("bp-history").innerHTML = bps.length === 0
@@ -5297,6 +5915,65 @@ function renderMeasurements() {
   document.getElementById("bp-dia").value = "";
 }
 
+function renderWeightChart(weights) {
+  if (!weights || weights.length < 2) {
+    return '<div class="weight-chart-empty">📈 Grafik için en az 2 ölçüm gerekiyor</div>';
+  }
+  // Son 8 hafta filtresi
+  const today = startOfDay(new Date());
+  const cutoff = addDays(today, -56);
+  let recent = weights.filter(w => parseDate(w.date) >= cutoff);
+  if (recent.length < 2) recent = weights.slice(-8); // fallback
+  recent = [...recent].sort((a, b) => parseDate(a.date) - parseDate(b.date));
+  if (recent.length < 2) {
+    return '<div class="weight-chart-empty">📈 Grafik için en az 2 ölçüm gerekiyor</div>';
+  }
+
+  const W = 320, H = 140;
+  const padX = 22, padTop = 22, padBottom = 18;
+  const innerW = W - padX * 2;
+  const innerH = H - padTop - padBottom;
+
+  const minDate = parseDate(recent[0].date).getTime();
+  const maxDate = parseDate(recent[recent.length - 1].date).getTime();
+  const dateRange = Math.max(1, maxDate - minDate);
+
+  const kgVals = recent.map(w => parseFloat(w.kg));
+  const minKg = Math.min(...kgVals);
+  const maxKg = Math.max(...kgVals);
+  // Y eksen aralığı — en az 1 kg pencere
+  const span = Math.max(1, maxKg - minKg);
+  const yMin = minKg - span * 0.15;
+  const yMax = maxKg + span * 0.25;
+  const yRange = yMax - yMin;
+
+  const points = recent.map(w => {
+    const t = parseDate(w.date).getTime();
+    const x = padX + (recent.length === 1 ? innerW / 2 : (t - minDate) / dateRange * innerW);
+    const kg = parseFloat(w.kg);
+    const y = padTop + (1 - (kg - yMin) / yRange) * innerH;
+    return { x, y, kg };
+  });
+
+  const polyline = points.map(p => p.x.toFixed(1) + "," + p.y.toFixed(1)).join(" ");
+
+  let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" preserveAspectRatio="xMidYMid meet" style="display:block;">';
+  // Hafif grid çizgileri (3 yatay)
+  for (let i = 1; i <= 3; i++) {
+    const y = padTop + (innerH * i / 4);
+    svg += '<line x1="' + padX + '" y1="' + y.toFixed(1) + '" x2="' + (W - padX) + '" y2="' + y.toFixed(1) + '" stroke="#ECE6DC" stroke-width="1" stroke-dasharray="2,3"/>';
+  }
+  // Çizgi
+  svg += '<polyline points="' + polyline + '" fill="none" stroke="#E8B4B8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+  // Noktalar + üst yazı
+  points.forEach(p => {
+    svg += '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="4" fill="#D49497" stroke="white" stroke-width="1.5"/>';
+    svg += '<text x="' + p.x.toFixed(1) + '" y="' + (p.y - 9).toFixed(1) + '" font-size="11" fill="#7A7A85" text-anchor="middle" font-weight="600">' + p.kg.toFixed(1) + '</text>';
+  });
+  svg += '</svg>';
+  return '<div class="weight-chart">' + svg + '</div>';
+}
+
 function saveWeight() {
   const v = parseFloat(document.getElementById("weight-input").value);
   if (isNaN(v) || v < 30 || v > 250) { alert("Geçerli bir kilo gir (30-250 kg)."); return; }
@@ -5309,6 +5986,7 @@ function saveWeight() {
   });
   saveState();
   renderMeasurements();
+  showToast("✓ Kilo kaydedildi: " + v.toFixed(1) + " kg", 1800);
 }
 
 function deleteWeight(id) {
@@ -5331,9 +6009,10 @@ function saveBP() {
   });
   saveState();
   renderMeasurements();
-  // Kritik tansiyon uyarısı (preeklampsi)
+  showToast("✓ Tansiyon kaydedildi: " + sys + "/" + dia, 1800);
+  // Kritik tansiyon uyarısı (preeklampsi) — toast'tan sonra
   if (sys >= 140 || dia >= 90) {
-    setTimeout(() => alert("⚠ Tansiyon yüksek (≥140/90). Doktorla görüşmeyi düşün — preeklampsi riski olabilir."), 200);
+    setTimeout(() => alert("⚠ Tansiyon yüksek (≥140/90). Doktorla görüşmeyi düşün — preeklampsi riski olabilir."), 600);
   }
 }
 
@@ -5829,6 +6508,19 @@ function showWelcomeToast(emailOrName) {
   t.innerHTML = '<span class="ico">🤍</span><span>Giriş başarılı · ' + escapeHtml(emailOrName || "Hoş geldin") + '</span>';
   document.body.appendChild(t);
   setTimeout(() => { t.remove(); }, 3000);
+}
+
+// Genel kullanım toast — varsayılan 2200ms
+function showToast(msg, ms) {
+  ms = ms || 2200;
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.innerHTML = '<span class="ico">✓</span><span>' + escapeHtml(msg) + '</span>';
+  document.body.appendChild(t);
+  setTimeout(() => {
+    t.classList.add("fading");
+    setTimeout(() => t.remove(), 250);
+  }, ms);
 }
 
 /* ---------- 14) DATE PICKER (iOS-tarzı 3 kolonlu wheel) ---------- */
