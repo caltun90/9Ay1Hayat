@@ -10,6 +10,11 @@
   <meta name="format-detection" content="telephone=no" />
   <title>9 Ay 1 Hayat Olsun</title>
 
+  <!-- Logo / Ana Ekrana Ekle ikonları -->
+  <link rel="icon" type="image/png" href="icon.png" />
+  <link rel="apple-touch-icon" href="icon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="icon.png" />
+
   <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
@@ -1576,6 +1581,13 @@
       gap: 14px;
     }
     #splash .splash-emoji { font-size: 72px; line-height: 1; }
+    #splash .splash-logo {
+      width: 96px;
+      height: 96px;
+      border-radius: 22px;
+      box-shadow: 0 8px 20px rgba(232, 180, 184, 0.30);
+      display: block;
+    }
     #splash .splash-title {
       font-size: 18px; font-weight: 700;
       color: var(--text); letter-spacing: -0.01em;
@@ -1962,6 +1974,13 @@
       line-height: 1;
       filter: drop-shadow(0 6px 20px rgba(42,45,52,0.18));
     }
+    .onb-slide-top .icon-mega-logo {
+      width: 140px;
+      height: 140px;
+      border-radius: 30px;
+      box-shadow: 0 8px 24px rgba(42,45,52,0.18);
+      display: block;
+    }
     .onb-slide-top .deco {
       position: absolute;
       font-size: 36px;
@@ -2046,7 +2065,7 @@
 
 <!-- ============ SPLASH (giriş durumu yüklenirken) ============ -->
 <div id="splash">
-  <div class="splash-emoji">🤍</div>
+  <img src="icon.png" alt="9 Ay 1 Hayat" class="splash-logo" />
   <div class="splash-title">9 Ay 1 Hayat</div>
   <div class="splash-spinner"></div>
 </div>
@@ -2055,7 +2074,7 @@
 <div id="screen-auth" class="screen" style="padding: 0;">
   <div class="onboarding">
     <div class="onb-hero" style="padding-top: 60px;">
-      <div class="emoji">🤍</div>
+      <img src="icon.png" alt="9 Ay 1 Hayat" class="brand-logo" style="width:120px;height:120px;border-radius:24px;box-shadow:0 8px 20px rgba(232,180,184,0.3);margin-bottom:18px;" />
       <h1>9 Ay 1 Hayat Olsun</h1>
       <p>Hoş geldin. İki telefonun arasında verilerin senkron olması için Google hesabıyla girişe ihtiyaç var. Aynı hesabı sen ve eşin birlikte kullanırsanız her ikinizde de aynı veriler görünür.</p>
     </div>
@@ -2091,7 +2110,7 @@
               <div class="onb-slide-top tone-pink">
                 <span class="deco dl">✨</span>
                 <span class="deco dr">🤍</span>
-                <span class="icon-mega">🤍</span>
+                <img src="icon.png" alt="9 Ay 1 Hayat" class="icon-mega-logo" />
               </div>
               <div class="onb-slide-bot">
                 <div class="onb-slide-title">9 Ay 1 Hayat Olsun</div>
@@ -2480,7 +2499,7 @@
     <h3>Hakkında</h3>
     <div class="settings-row">
       <span class="label">Sürüm</span>
-      <span class="value">v0.8 — Welcome carousel + benzersiz hafta görseli + stat kart</span>
+      <span class="value">v1.0 — App ikonu (icon.png) auth/welcome/splash entegre, "Ana Ekrana Ekle" hazır</span>
     </div>
     <div class="settings-row">
       <span class="label">Yapım</span>
@@ -3355,7 +3374,7 @@ const WEEK_DATA = {
     babyLetter: "Akciğerlerim neredeyse tamam. Birkaç hafta daha sabret, sonra dış dünyada birlikteyiz."
   },
   35: {
-    fruit: "Bal kabağı", emoji: "🎃", size: "≈ 46.2 cm · 2.4 kg",
+    fruit: "Bal kabağı", emoji: SVG_FRUITS.bal_kabagi, size: "≈ 46.2 cm · 2.4 kg",
     baby: [
       "Bebek artık sıkı sıkıya yerleşmiş — fazla hareket alanı yok",
       "Yağ tabakası vücudu yuvarlaklaştırdı",
@@ -3371,7 +3390,7 @@ const WEEK_DATA = {
     babyLetter: "Daracık oldu burası! Tekme atmak zorlaşıyor ama hâlâ her gün sana selam veriyorum."
   },
   36: {
-    fruit: "Marul başı", emoji: "🥬", size: "≈ 47.4 cm · 2.6 kg",
+    fruit: "Marul başı", emoji: SVG_FRUITS.marul_basi, size: "≈ 47.4 cm · 2.6 kg",
     baby: [
       "Bebek 'tam dönem'e yaklaşıyor",
       "Lanugo neredeyse tamamen döküldü",
@@ -3387,7 +3406,7 @@ const WEEK_DATA = {
     babyLetter: "Tam-dönem yaklaşıyor. Hastane çantasını hazırla anne, her an kapına gelebilirim 😊"
   },
   37: {
-    fruit: "Pazı", emoji: "🥬", size: "≈ 48.6 cm · 2.86 kg",
+    fruit: "Pazı", emoji: SVG_FRUITS.pazi, size: "≈ 48.6 cm · 2.86 kg",
     baby: [
       "Erken-zamanında doğum sayılır — akciğerler hazır",
       "El kavrama gücü gelişti",
@@ -3419,7 +3438,7 @@ const WEEK_DATA = {
     babyLetter: "Her an gelebilirim artık. Yorulma anne, dinlen — son düzlükteyiz birlikte."
   },
   39: {
-    fruit: "Kavun (büyük)", emoji: "🍈", size: "≈ 50.7 cm · 3.3 kg",
+    fruit: "Kavun (büyük)", emoji: SVG_FRUITS.kavun, size: "≈ 50.7 cm · 3.3 kg",
     baby: [
       "Beyin gelişimi son hafta dahil devam ediyor",
       "Sürfaktan tam — bebek nefes almaya hazır",
