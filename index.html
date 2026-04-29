@@ -1373,6 +1373,162 @@
       transition: opacity .15s;
     }
     .water-glass.filled { opacity: 1; }
+    .water-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .water-extra-row {
+      background: var(--secondary-soft);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text);
+      flex-wrap: wrap;
+    }
+    .water-extra-row .extra-lbl {
+      font-weight: 700;
+      color: var(--secondary);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .water-extra-row .extra-glasses {
+      font-size: 16px;
+    }
+    .water-extra-row .extra-count {
+      font-weight: 700;
+      color: var(--text);
+      margin-left: auto;
+    }
+    .water-extra-row .extra-warn {
+      flex: 0 0 100%;
+      font-size: 12px;
+      color: #B86F3D;
+      margin-top: 2px;
+    }
+
+    /* ============ VİTAMİN — listeyi düzenle + İçtim butonu ============ */
+    .vit-edit-btn {
+      margin-left: auto;
+      background: var(--bg-soft);
+      color: var(--text-muted);
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .vit-edit-btn:active {
+      background: var(--primary-soft);
+      color: var(--primary-deep);
+    }
+    .vitamin-row .vit-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .vitamin-row .vit-info .name {
+      font-weight: 500;
+      color: var(--text);
+    }
+    .vitamin-row .vit-info .hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .vitamin-take-btn {
+      flex: 0 0 auto;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--bg-soft);
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      border: 1.5px solid transparent;
+      transition: all .15s;
+    }
+    .vitamin-take-btn:active { transform: scale(0.94); }
+    .vitamin-take-btn.taken {
+      background: var(--secondary-soft);
+      color: #4F6244;
+      border-color: var(--success);
+    }
+
+    /* Medication editor modal */
+    .med-modal h2 { margin-bottom: 6px; }
+    .med-list {
+      max-height: 50vh;
+      overflow-y: auto;
+      margin-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .med-list-row {
+      display: flex;
+      align-items: center;
+      padding: 12px 4px;
+      border-bottom: 1px solid var(--border);
+      gap: 10px;
+    }
+    .med-list-row .med-info { flex: 1; min-width: 0; }
+    .med-list-row .med-info b { font-size: 15px; color: var(--text); }
+    .med-list-row .med-info .small { color: var(--text-muted); margin-top: 2px; }
+    .med-list-row .med-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--bg-soft);
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+    .med-del-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--bg-soft);
+      color: var(--text-soft);
+      font-size: 18px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .med-del-btn:active {
+      background: #FAD0D0;
+      color: var(--danger);
+    }
+    .med-add-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .med-add-row input {
+      flex: 1;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 999px;
+      background: var(--bg-card);
+      color: #2A2D34;
+      outline: none;
+      font-size: 15px;
+      -webkit-appearance: none;
+    }
+    .med-add-row input:focus { border-color: var(--primary); }
+    .med-add-row .add-btn {
+      flex: 0 0 auto;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary-deep);
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .med-add-row .add-btn:active {
+      background: var(--primary);
+      color: white;
+    }
 
     .vitamin-row {
       display: flex;
@@ -2753,7 +2909,7 @@
     <h3>Hakkında</h3>
     <div class="settings-row">
       <span class="label">Sürüm</span>
-      <span class="value">v1.1 — Notlar inline expand · daily-log save · mood takvimi · kilo grafiği</span>
+      <span class="value">v1.2 — Su (15 cap) · özel vitamin/ilaç listesi · İçtim butonu · scroll fix · input fallback</span>
     </div>
     <div class="settings-row">
       <span class="label">Yapım</span>
@@ -2891,17 +3047,19 @@
       <span style="font-size: 18px;">💧</span> Su <span class="small" style="font-weight:400;">(hedef ~8 bardak)</span>
     </h3>
     <div class="water-row">
-      <button class="water-btn" onclick="dailyLogWaterChange(-1)" aria-label="Eksilt">−</button>
+      <button class="water-btn" id="water-minus-btn" onclick="dailyLogWaterChange(-1)" aria-label="Eksilt">−</button>
       <div class="water-display"><span id="water-count">0</span><span class="small">/8</span></div>
-      <button class="water-btn primary" onclick="dailyLogWaterChange(1)" aria-label="Arttır">+</button>
+      <button class="water-btn primary" id="water-plus-btn" onclick="dailyLogWaterChange(1)" aria-label="Arttır">+</button>
     </div>
     <div class="water-glasses" id="water-glasses"></div>
+    <div id="water-extra"></div>
   </div>
 
   <!-- Vitaminler -->
   <div class="card">
     <h3 style="font-size: 14px; color: var(--primary-deep); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
       <span style="font-size: 18px;">💊</span> Vitamin/ilaç
+      <button type="button" class="vit-edit-btn" onclick="medicationsOpenEditor()" aria-label="Listeyi düzenle">✏ Listeyi düzenle</button>
     </h3>
     <div id="vitamin-list"></div>
   </div>
@@ -2944,7 +3102,7 @@
   <div class="card">
     <h3 style="font-size: 14px; color: var(--primary-deep); margin-bottom: 12px;">⚖️ Kilo</h3>
     <div class="h-stack" style="gap: 10px;">
-      <input type="number" inputmode="decimal" step="0.1" min="40" max="200" id="weight-input" placeholder="Bugünkü kilo (kg)" class="measure-input" />
+      <input type="number" inputmode="decimal" step="0.1" min="40" max="200" id="weight-input" placeholder="Bugünkü kilo (kg)" class="measure-input" style="color:#2A2D34; -webkit-appearance:none; appearance:none; background:#FFFFFF;" />
       <button class="btn btn-primary" onclick="saveWeight()" style="min-width: 90px; min-height: 50px; flex: 0 0 auto;">Ekle</button>
     </div>
     <div id="weight-chart-box"></div>
@@ -2954,9 +3112,9 @@
   <div class="card">
     <h3 style="font-size: 14px; color: var(--primary-deep); margin-bottom: 12px;">❤️ Tansiyon</h3>
     <div class="h-stack" style="gap: 8px;">
-      <input type="number" inputmode="numeric" min="60" max="200" id="bp-sys" placeholder="Büyük (sis)" class="measure-input" />
+      <input type="number" inputmode="numeric" min="60" max="200" id="bp-sys" placeholder="Büyük (sis)" class="measure-input" style="color:#2A2D34; -webkit-appearance:none; appearance:none; background:#FFFFFF;" />
       <span class="small" style="flex: 0 0 auto;">/</span>
-      <input type="number" inputmode="numeric" min="40" max="120" id="bp-dia" placeholder="Küçük (dia)" class="measure-input" />
+      <input type="number" inputmode="numeric" min="40" max="120" id="bp-dia" placeholder="Küçük (dia)" class="measure-input" style="color:#2A2D34; -webkit-appearance:none; appearance:none; background:#FFFFFF;" />
       <button class="btn btn-primary" onclick="saveBP()" style="min-width: 80px; min-height: 50px; flex: 0 0 auto;">Ekle</button>
     </div>
     <div id="bp-history" style="margin-top: 14px;"></div>
@@ -3885,6 +4043,8 @@ function defaultState() {
     // v0.5
     hospitalBag: { mom: null, baby: null, dad: null }, // null = henüz inisiyalize edilmemiş
     babyNames: [],            // [{id, name, addedBy, votes: {cem, buse}}]
+    // v1.2 — kullanıcı kendi vitamin/ilaçlarını ekleyebilir
+    medicationsList: [],      // [{id, label, hint, custom: true}] — protokol VITAMIN_LIST'e ek
     createdAt: new Date().toISOString()
   };
 }
@@ -3944,7 +4104,9 @@ function getDailyLog(dateKey) {
 function relevantVitamins() {
   const info = getPregnancyInfo();
   const w = info ? info.currentWeek : 1;
-  return VITAMIN_LIST.filter(v => w >= v.weekStart && w <= v.weekEnd);
+  const protocol = VITAMIN_LIST.filter(v => w >= v.weekStart && w <= v.weekEnd);
+  const custom = (state.medicationsList || []);
+  return [...protocol, ...custom];
 }
 
 let state = loadState();
@@ -5517,7 +5679,7 @@ function renderDailyLog(params) {
   const moodRow = document.getElementById("mood-row");
   moodRow.innerHTML = MOOD_LEVELS.map(m => {
     const active = log.mood === m.level;
-    return '<button class="mood-btn' + (active ? ' active' : '') + '" onclick="dailyLogSetMood(' + m.level + ')">' +
+    return '<button class="mood-btn' + (active ? ' active' : '') + '" data-mood-level="' + m.level + '" onclick="dailyLogSetMood(' + m.level + ')">' +
       '<span class="emoji">' + m.emoji + '</span>' +
       '<span class="lbl">' + m.label + '</span>' +
     '</button>';
@@ -5527,7 +5689,7 @@ function renderDailyLog(params) {
   const symptomGrid = document.getElementById("symptom-grid");
   symptomGrid.innerHTML = SYMPTOM_LIST.map(s => {
     const active = log.symptoms.includes(s.id);
-    return '<button class="symptom-chip' + (active ? ' active' : '') + '" onclick="dailyLogToggleSymptom(\'' + s.id + '\')">' +
+    return '<button class="symptom-chip' + (active ? ' active' : '') + '" data-sym-id="' + s.id + '" onclick="dailyLogToggleSymptom(\'' + s.id + '\')">' +
       '<span class="icon">' + s.icon + '</span>' +
       '<span>' + s.label + '</span>' +
     '</button>';
@@ -5540,15 +5702,17 @@ function renderDailyLog(params) {
   const rel = relevantVitamins();
   const vitList = document.getElementById("vitamin-list");
   vitList.innerHTML = rel.length === 0
-    ? '<div class="small" style="text-align:center; padding: 12px;">Bu hafta için protokol vitamini yok. Doktorun ekstra önerirse manuel ekleyebilirsin.</div>'
+    ? '<div class="small" style="text-align:center; padding: 12px;">Listede aktif vitamin/ilaç yok. <b>✏ Listeyi düzenle</b> ile ekle.</div>'
     : rel.map(v => {
       const taken = log.vitamins.includes(v.id);
-      return '<div class="vitamin-row" onclick="dailyLogToggleVitamin(\'' + v.id + '\')">' +
-        '<div>' +
-          '<div class="name">' + v.label + '</div>' +
-          '<div class="hint">' + v.hint + '</div>' +
+      return '<div class="vitamin-row" data-vit-id="' + v.id + '">' +
+        '<div class="vit-info">' +
+          '<div class="name">' + escapeHtml(v.label) + '</div>' +
+          '<div class="hint">' + escapeHtml(v.hint || "") + '</div>' +
         '</div>' +
-        '<div class="check' + (taken ? ' checked' : '') + '">✓</div>' +
+        '<button type="button" class="vitamin-take-btn' + (taken ? ' taken' : '') + '" onclick="dailyLogToggleVitamin(\'' + v.id + '\')">' +
+          (taken ? '✓ İçildi' : '✓ İçtim') +
+        '</button>' +
       '</div>';
     }).join("");
 
@@ -5567,13 +5731,42 @@ function renderDailyLog(params) {
 
 function renderWaterDisplay() {
   const log = getDailyLog(dailyLogDate);
-  document.getElementById("water-count").textContent = log.waterGlasses;
+  const total = log.waterGlasses;
+  const main = Math.min(8, total);
+  const extra = Math.max(0, total - 8);
+
+  document.getElementById("water-count").textContent = total;
+
   const glassEl = document.getElementById("water-glasses");
   let glasses = "";
   for (let i = 0; i < 8; i++) {
-    glasses += '<span class="water-glass' + (i < log.waterGlasses ? ' filled' : '') + '">💧</span>';
+    glasses += '<span class="water-glass' + (i < main ? ' filled' : '') + '">💧</span>';
   }
   glassEl.innerHTML = glasses;
+
+  // Ek su satırı (8'den fazlası için)
+  const extraEl = document.getElementById("water-extra");
+  if (extraEl) {
+    if (extra > 0) {
+      const isMax = total >= 15;
+      let extraGlasses = "";
+      for (let i = 0; i < extra; i++) extraGlasses += "💧";
+      extraEl.innerHTML = '<div class="water-extra-row">' +
+        '<span class="extra-lbl">Ek su</span>' +
+        '<span class="extra-glasses">' + extraGlasses + '</span>' +
+        '<span class="extra-count">+' + extra + '</span>' +
+        (isMax ? '<div class="extra-warn">⚠ Hedef üstüne çıktın — fazla su da iyi gelmez, bugünlük tamam.</div>' : '') +
+      '</div>';
+    } else {
+      extraEl.innerHTML = "";
+    }
+  }
+
+  // + buton 15'te disable
+  const plusBtn = document.getElementById("water-plus-btn");
+  if (plusBtn) plusBtn.disabled = total >= 15;
+  const minusBtn = document.getElementById("water-minus-btn");
+  if (minusBtn) minusBtn.disabled = total <= 0;
 }
 
 function dailyLogSetMood(level) {
@@ -5581,7 +5774,12 @@ function dailyLogSetMood(level) {
   log.mood = log.mood === level ? null : level; // ikinci dokunuş = temizle
   dailyLogMarkDirty();
   saveState();
-  renderDailyLog({ date: dailyLogDate });
+  // Kısmi DOM güncellemesi — full re-render YAPMA (scroll korunur)
+  const newMood = log.mood;
+  document.querySelectorAll("#mood-row .mood-btn").forEach(btn => {
+    const lvl = parseInt(btn.dataset.moodLevel, 10);
+    btn.classList.toggle("active", lvl === newMood);
+  });
 }
 
 function dailyLogToggleSymptom(id) {
@@ -5591,12 +5789,16 @@ function dailyLogToggleSymptom(id) {
   else log.symptoms.push(id);
   dailyLogMarkDirty();
   saveState();
-  renderDailyLog({ date: dailyLogDate });
+  // Kısmi DOM güncellemesi — sadece bu chip'in active class'ı (scroll korunur)
+  const chip = document.querySelector('#symptom-grid .symptom-chip[data-sym-id="' + id + '"]');
+  if (chip) chip.classList.toggle("active", log.symptoms.includes(id));
 }
 
 function dailyLogWaterChange(delta) {
   const log = getDailyLog(dailyLogDate);
-  log.waterGlasses = Math.max(0, Math.min(20, log.waterGlasses + delta));
+  const next = Math.max(0, Math.min(15, log.waterGlasses + delta));
+  if (next === log.waterGlasses) return; // sınırda zaten
+  log.waterGlasses = next;
   dailyLogMarkDirty();
   saveState();
   renderWaterDisplay();
@@ -5605,11 +5807,21 @@ function dailyLogWaterChange(delta) {
 function dailyLogToggleVitamin(id) {
   const log = getDailyLog(dailyLogDate);
   const idx = log.vitamins.indexOf(id);
+  const willTake = idx < 0;
   if (idx >= 0) log.vitamins.splice(idx, 1);
   else log.vitamins.push(id);
   dailyLogMarkDirty();
   saveState();
-  renderDailyLog({ date: dailyLogDate });
+  // Kısmi DOM güncellemesi — sadece bu satırın butonu (scroll korunur)
+  const row = document.querySelector('#vitamin-list .vitamin-row[data-vit-id="' + id + '"]');
+  if (row) {
+    const btn = row.querySelector(".vitamin-take-btn");
+    if (btn) {
+      btn.classList.toggle("taken", willTake);
+      btn.textContent = willTake ? "✓ İçildi" : "✓ İçtim";
+    }
+  }
+  showToast(willTake ? "✓ Kaydedildi" : "Geri alındı", 1200);
 }
 
 function dailyLogToggleShare() {
@@ -5618,6 +5830,96 @@ function dailyLogToggleShare() {
   dailyLogMarkDirty();
   saveState();
   document.getElementById("share-toggle").classList.toggle("on", log.sharedWithCem);
+}
+
+/* ---------- 9c-bis) VİTAMİN/İLAÇ LİSTESİ EDİTÖRÜ ---------- */
+
+function medicationsOpenEditor() {
+  if (!state.medicationsList) state.medicationsList = [];
+  const root = document.getElementById("modal-root");
+
+  const protocolHtml = VITAMIN_LIST.map(v =>
+    '<div class="med-list-row">' +
+      '<div class="med-info">' +
+        '<b>' + escapeHtml(v.label) + '</b>' +
+        '<div class="small">' + escapeHtml(v.hint || "") + '</div>' +
+      '</div>' +
+      '<span class="med-tag">PROTOKOL</span>' +
+    '</div>'
+  ).join("");
+
+  const customHtml = state.medicationsList.map(m =>
+    '<div class="med-list-row">' +
+      '<div class="med-info">' +
+        '<b>' + escapeHtml(m.label) + '</b>' +
+        '<div class="small">Özel ekleme</div>' +
+      '</div>' +
+      '<button type="button" class="med-del-btn" onclick="medicationRemove(\'' + m.id + '\')" aria-label="Sil">×</button>' +
+    '</div>'
+  ).join("");
+
+  root.innerHTML =
+    '<div class="modal-backdrop" id="modal-bd">' +
+      '<div class="modal med-modal" onclick="event.stopPropagation()">' +
+        '<h2>💊 Vitamin & ilaç listesi</h2>' +
+        '<p>Protokol vitaminleri otomatik gözükür. Doktorun önerdiği ekstra şeyleri (örn. Magnezyum) buraya ekleyebilirsin.</p>' +
+        '<div class="med-list" id="med-list">' + protocolHtml + customHtml + '</div>' +
+        '<div class="med-add-row">' +
+          '<input type="text" id="med-add-input" placeholder="örn. Magnezyum, B12, Probiyotik..." onkeydown="if(event.key===\'Enter\'){event.preventDefault();medicationAdd();}" />' +
+          '<button type="button" class="add-btn" onclick="medicationAdd()">+ Ekle</button>' +
+        '</div>' +
+        '<div class="actions" style="margin-top: 14px;">' +
+          '<button class="btn btn-primary" id="med-modal-done">Tamam</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  document.getElementById("modal-bd").onclick = closeModal;
+  document.getElementById("med-modal-done").onclick = () => {
+    closeModal();
+    // Bugün ekranındaysa vitamin listesini yenile
+    if (document.getElementById("screen-daily-log").classList.contains("active")) {
+      renderDailyLog({ date: dailyLogDate });
+    }
+  };
+  setTimeout(() => {
+    const inp = document.getElementById("med-add-input");
+    if (inp) inp.focus();
+  }, 200);
+}
+
+function medicationAdd() {
+  const inp = document.getElementById("med-add-input");
+  if (!inp) return;
+  const label = (inp.value || "").trim();
+  if (!label) { inp.focus(); return; }
+  if (!state.medicationsList) state.medicationsList = [];
+  // Aynı isim varsa ekleme
+  const lc = label.toLowerCase();
+  if (state.medicationsList.some(m => m.label.toLowerCase() === lc)) {
+    showToast("Bu isim zaten listede", 1500);
+    return;
+  }
+  if (VITAMIN_LIST.some(v => v.label.toLowerCase() === lc)) {
+    showToast("Bu protokolde zaten var", 1500);
+    return;
+  }
+  state.medicationsList.push({
+    id: "med_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+    label: label,
+    hint: "Özel ekleme",
+    custom: true
+  });
+  saveState();
+  showToast("✓ Eklendi: " + label, 1500);
+  // Modal'ı yeniden çiz (yeni satır görünsün)
+  medicationsOpenEditor();
+}
+
+function medicationRemove(id) {
+  if (!state.medicationsList) return;
+  state.medicationsList = state.medicationsList.filter(m => m.id !== id);
+  saveState();
+  medicationsOpenEditor();
 }
 
 function dailyLogChangeDate() {
@@ -5784,8 +6086,9 @@ function showMoodSheet(dateKey) {
     const s = SYMPTOM_LIST.find(x => x.id === id);
     return s ? '<span class="tag-chip">' + s.icon + ' ' + escapeHtml(s.label) + '</span>' : '';
   }).filter(Boolean).join("");
+  const allMeds = [...VITAMIN_LIST, ...(state.medicationsList || [])];
   const vits = (log.vitamins || []).map(id => {
-    const v = VITAMIN_LIST.find(x => x.id === id);
+    const v = allMeds.find(x => x.id === id);
     return v ? escapeHtml(v.label) : null;
   }).filter(Boolean).join(", ");
 
