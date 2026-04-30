@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#FAF7F2" />
+  <meta name="theme-color" content="#FCEFEF" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="9 Ay 1 Hayat" />
@@ -22,7 +22,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, enableIndexedDbPersistence, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, enableIndexedDbPersistence, serverTimestamp, arrayUnion, arrayRemove, deleteField } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
 
     const firebaseConfig = {
@@ -60,7 +60,7 @@
         GoogleAuthProvider,
         signInWithPopup, signInWithRedirect,
         onAuthStateChanged, signOut,
-        doc, setDoc, getDoc, updateDoc, onSnapshot, serverTimestamp, arrayUnion,
+        doc, setDoc, getDoc, updateDoc, onSnapshot, serverTimestamp, arrayUnion, arrayRemove, deleteField,
         storageRef, uploadBytes, getDownloadURL, deleteObject
       };
       window.dispatchEvent(new Event("fb-ready"));
@@ -70,12 +70,12 @@
   <style>
     /* ============ TEMA & TEMEL ============ */
     :root {
-      --bg: #FAF7F2;
+      --bg: #FCEFEF;
       --bg-card: #FFFFFF;
-      --bg-soft: #F2EDE5;
-      --primary: #E8B4B8;
-      --primary-deep: #D49497;
-      --primary-soft: #F5DCDE;
+      --bg-soft: #F7DDDC;
+      --primary: #DD7E92;
+      --primary-deep: #BC5F73;
+      --primary-soft: #F8C4CF;
       --secondary: #A8B89E;
       --secondary-soft: #E2EAD9;
       --text: #2A2D34;
@@ -84,7 +84,7 @@
       --warn: #F2B880;
       --success: #7FB069;
       --danger: #C97070;
-      --border: #ECE6DC;
+      --border: #F0D7D9;
       --shadow: 0 2px 12px rgba(42, 45, 52, 0.06);
       --shadow-lg: 0 8px 28px rgba(42, 45, 52, 0.10);
       --radius: 18px;
@@ -221,6 +221,42 @@
       background: transparent;
       color: var(--danger);
       border: 1.5px solid var(--danger);
+    }
+
+    .btn-warn {
+      background: var(--warn);
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(242, 184, 128, 0.45);
+    }
+    .btn-warn:active { background: #ECA968; }
+
+    .family-code-row {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+    }
+    .family-code-pill {
+      flex: 1;
+      font-family: "SF Mono", "Menlo", "Consolas", monospace;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 8px;
+      padding-left: 8px;
+      text-align: center;
+      color: var(--text);
+      background: var(--bg-soft);
+      border: 1.5px dashed var(--primary);
+      border-radius: var(--radius-sm);
+      padding-top: 14px;
+      padding-bottom: 14px;
+      user-select: all;
+    }
+    .family-code-copy {
+      width: 56px;
+      flex: 0 0 auto;
+      padding: 14px 0;
+      font-size: 18px;
+      min-height: auto;
     }
 
     /* ============ ANA EKRAN — DASHBOARD ============ */
@@ -1186,7 +1222,7 @@
 
     /* Bebekten mektup kartı */
     .baby-letter {
-      background: linear-gradient(135deg, #FFF5F6 0%, #F5DCDE 100%);
+      background: linear-gradient(135deg, #FFF5F6 0%, #F8C4CF 100%);
       border-radius: var(--radius-lg);
       padding: 22px 22px;
       margin-bottom: 14px;
@@ -2874,7 +2910,7 @@
         <div class="desc">Eşinden aldığın 6 haneli aile kodunu gir, ortak veriye bağlan.</div>
       </div>
     </div>
-    <button class="back-link" onclick="fsSignOut()">↩︎ Çıkış yap</button>
+    <button class="back-link" id="fs-choose-back" onclick="fsBackOrSignOut()">↩︎ Çıkış yap</button>
   </div>
 
   <!-- 2) Yeni aile yaratılıyor (loading) -->
@@ -3290,8 +3326,12 @@
   <div class="settings-section">
     <h3>Bu telefon kimin?</h3>
     <div class="settings-row">
-      <span class="label">Rol</span>
+      <span class="label">Sen</span>
       <span class="value" id="settings-role">—</span>
+    </div>
+    <div class="settings-row" id="settings-partner-row" style="display:none;">
+      <span class="label">Eşin</span>
+      <span class="value" id="settings-partner">—</span>
     </div>
     <div style="padding: 4px 18px 12px;">
       <div class="small">Rol seçimi sabitti. Değiştirmek için <i>Tüm verileri sıfırla</i> gerekir.</div>
@@ -3324,9 +3364,36 @@
       <span class="label">Senkron durumu</span>
       <span class="value" id="settings-sync-status">Aktif ✓</span>
     </div>
-    <div class="settings-row" id="settings-family-row" style="display:none;" onclick="settingsShareFamilyCode()">
-      <span class="label">Aile kodu</span>
-      <span class="value" id="settings-family-code" style="font-family: 'SF Mono', Menlo, Consolas, monospace; letter-spacing: 2px;">—</span>
+  </div>
+
+  <!-- AİLE KARTI -->
+  <div class="settings-section" id="settings-family-card" style="display:none;">
+    <h3>👨‍👩‍👶 Aile</h3>
+
+    <!-- Bağlıyken: kod + üye sayısı + paylaş + çık -->
+    <div id="family-card-connected" style="display:none; padding: 12px 18px 18px;">
+      <div class="small" style="margin-bottom:8px;">Aile kodun:</div>
+      <div class="family-code-row">
+        <div class="family-code-pill" id="family-card-code">— — — — — —</div>
+        <button class="btn btn-secondary family-code-copy" onclick="settingsCopyCode()" aria-label="Kopyala">📋</button>
+      </div>
+      <div class="small" style="margin: 10px 2px 14px;">Bu kodu eşinle paylaş — aynı aileye katılabilsin.</div>
+      <div class="small" id="family-card-members" style="margin: 0 2px 14px; color: var(--text-muted);">Üyeler: —</div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button class="btn btn-primary" onclick="settingsShareFamilyCode()">💑 Eşinle paylaş</button>
+        <button class="btn btn-warn" onclick="settingsLeaveFamily()">🚪 Aileden çık</button>
+      </div>
+    </div>
+
+    <!-- Bağlı değilken: yeni aile / kod gir -->
+    <div id="family-card-disconnected" style="display:none; padding: 12px 18px 18px;">
+      <div class="small" style="margin-bottom:14px;">
+        Şu anda bir aileye bağlı değilsin. Verilerin sadece bu cihazda saklanıyor; eşinle senkron olmuyor.
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button class="btn btn-primary" onclick="settingsCreateFamily()">👨‍👩‍👶 Yeni aile oluştur</button>
+        <button class="btn btn-secondary" onclick="settingsJoinFamily()">💑 Eşim zaten kullanıyor → Kod gir</button>
+      </div>
     </div>
   </div>
 
@@ -3350,7 +3417,7 @@
     <h3>Hakkında</h3>
     <div class="settings-row">
       <span class="label">Sürüm</span>
-      <span class="value">v0.2.6 — 2026-04-30 · Notlara fotoğraf</span>
+      <span class="value">v0.2.5.1 — 2026-04-30 · Aile yönetimi</span>
     </div>
     <div class="settings-row">
       <span class="label">Yapım</span>
@@ -4478,12 +4545,10 @@ const STORAGE_KEY = "9ay1hayat:v1";
 
 function defaultState() {
   return {
-    version: 2,
+    version: 3,
     setupComplete: false,
-    role: null,               // "father" | "mother" — bir kez seçilir, geri alınamaz
     lmpDate: null,            // ISO YYYY-MM-DD
     eddDate: null,            // ISO YYYY-MM-DD (computed)
-    activeUser: "cem",        // role'den türetilir; ileride kaldırılabilir
     notes: [],                // [{id, createdAt, updatedAt, author, text, tags}]
     appointments: [],         // v0.3: doktor randevuları
     autoApptGenerated: false, // şablonlar bir kez üretildi mi
@@ -4718,11 +4783,11 @@ function navigate(name, params) {
     name = "onboarding";
   }
   // Eski sürümden gelmiş kullanıcı: setupComplete olsa bile rol yoksa onboarding'e döndür
-  if (!isPreSetupScreen && !state.role) {
+  if (!isPreSetupScreen && !myRole) {
     name = "onboarding";
   }
   // Baba rolünde anneye özel ekranlar → home'a yönlendir
-  if (state.role === "father" && (name === "daily-log" || name === "measurements")) {
+  if (myRole === "father" && (name === "daily-log" || name === "measurements")) {
     name = "home";
   }
 
@@ -4836,11 +4901,17 @@ function onbSelectRole(btn) {
   }
 }
 
-function onbRoleContinue() {
+async function onbRoleContinue() {
   if (!onbState.roleSelected) return;
-  state.role = onbState.roleSelected;
-  state.activeUser = state.role === "father" ? "cem" : "buse";
-  saveState();
+  setMyRole(onbState.roleSelected); // local + localStorage
+  // Online ise users/{uid}.role'a da yaz; offline'sa sessizce geç
+  if (currentUser && window.fb) {
+    try {
+      await writeMyRoleToCloud(currentUser.uid, onbState.roleSelected);
+    } catch (err) {
+      console.warn("Rol cloud'a yazılamadı (sonra retry edilecek):", err);
+    }
+  }
   // Eski sürümden upgrade: LMP zaten varsa direkt home'a
   if (state.setupComplete && state.lmpDate) {
     navigate("home");
@@ -5031,7 +5102,7 @@ function renderHome() {
   if (!info) { navigate("onboarding"); return; }
 
   // Rol bazlı quick-grid filtreleme: baba için Bugün/Ölçümler gizli
-  const isFather = state.role === "father";
+  const isFather = myRole === "father";
   document.querySelectorAll("#screen-home .quick-grid .quick-btn").forEach(btn => {
     const onclick = btn.getAttribute("onclick") || "";
     const isMomOnly = onclick.includes("daily-log") || onclick.includes("measurements");
@@ -5039,7 +5110,7 @@ function renderHome() {
   });
 
   // Selamlama — role'den türet
-  const userName = state.role === "mother" ? "Buse" : "Cem";
+  const userName = getMyDisplayName();
   const hour = new Date().getHours();
   let greeting = "Merhaba";
   if (hour < 6) greeting = "İyi geceler";
@@ -5093,7 +5164,7 @@ function renderBuseSummaryCard() {
   const existing = document.getElementById("buse-summary-card");
   if (existing) existing.remove();
 
-  if (state.role !== "father") return;
+  if (myRole !== "father") return;
 
   // Son 3 günün loglarını topla, paylaşılmış olanları analiz et
   const today = new Date();
@@ -5442,7 +5513,7 @@ function closeNoteEditor() {
 function renderNoteEditor(params) {
   const id = (params && params.id) || null;
   const todayIso = toIso(new Date());
-  const defaultAuthor = state.role === "mother" ? "buse" : "cem";
+  const defaultAuthor = getMyAuthorKey();
 
   if (id) {
     const note = state.notes.find(n => n.id === id);
@@ -5594,7 +5665,7 @@ function saveNote() {
   const nowDate = new Date();
   const updatedAt = nowDate.toISOString();
   // Yazar her zaman role'den türetilir (toggle kaldırıldı)
-  const author = state.role === "mother" ? "buse" : "cem";
+  const author = getMyAuthorKey();
 
   if (editorState.id) {
     const n = state.notes.find(x => x.id === editorState.id);
@@ -6015,8 +6086,8 @@ function renderSettings() {
   // Rol
   const roleEl = document.getElementById("settings-role");
   if (roleEl) {
-    if (state.role === "father") roleEl.textContent = "👨 Cem · baba";
-    else if (state.role === "mother") roleEl.textContent = "🤰 Buse · anne";
+    if (myRole === "father") roleEl.textContent = "👨 Cem · baba";
+    else if (myRole === "mother") roleEl.textContent = "🤰 Buse · anne";
     else roleEl.textContent = "—";
   }
 
@@ -6035,8 +6106,6 @@ function renderSettings() {
   const acctValue = document.getElementById("settings-account-value");
   const acctRow = document.getElementById("settings-account-row");
   const syncRow = document.getElementById("settings-sync-row");
-  const famRow = document.getElementById("settings-family-row");
-  const famCodeEl = document.getElementById("settings-family-code");
 
   if (currentUser) {
     acctLabel.textContent = "Hesap";
@@ -6048,12 +6117,6 @@ function renderSettings() {
     };
     acctRow.classList.add("clickable");
     syncRow.style.display = "flex";
-    if (currentFamilyCode) {
-      famRow.style.display = "flex";
-      famCodeEl.textContent = currentFamilyCode;
-    } else {
-      famRow.style.display = "none";
-    }
   } else {
     acctLabel.textContent = "Bulut";
     acctValue.textContent = "Bulutsuz mod";
@@ -6061,26 +6124,190 @@ function renderSettings() {
       navigate("auth");
     };
     syncRow.style.display = "none";
-    if (famRow) famRow.style.display = "none";
+  }
+
+  // Aile kartı
+  renderFamilyCard();
+
+  // Eşin rolü — async; cevap gelince satırı doldurur (sync render'ı bloklamayız)
+  refreshPartnerRole().then(renderPartnerRoleRow).catch(() => {});
+}
+
+async function refreshPartnerRole() {
+  if (!currentFamilyCode || !currentUser || !window.fb) {
+    partnerRole = null;
+    return;
+  }
+  try {
+    const ref = window.fb.doc(window.fb.db, "families", currentFamilyCode);
+    const snap = await window.fb.getDoc(ref);
+    if (!snap.exists()) { partnerRole = null; return; }
+    const others = (snap.data().members || []).filter(uid => uid !== currentUser.uid);
+    if (!others.length) { partnerRole = null; return; }
+    const pProfile = await readUserProfile(others[0]);
+    partnerRole = (pProfile && (pProfile.role === "father" || pProfile.role === "mother"))
+      ? pProfile.role : null;
+  } catch (e) {
+    console.warn("partnerRole okunamadı:", e);
+    partnerRole = null;
+  }
+}
+
+function renderPartnerRoleRow() {
+  const row = document.getElementById("settings-partner-row");
+  const val = document.getElementById("settings-partner");
+  if (!row || !val) return;
+  const label = partnerRole === "father" ? "👨 Cem · baba"
+              : partnerRole === "mother" ? "🤰 Buse · anne"
+              : null;
+  if (label) {
+    val.textContent = label;
+    row.style.display = "flex";
+  } else {
+    row.style.display = "none";
+  }
+}
+
+function renderFamilyCard() {
+  const card = document.getElementById("settings-family-card");
+  const connected = document.getElementById("family-card-connected");
+  const disconnected = document.getElementById("family-card-disconnected");
+  if (!card || !connected || !disconnected) return;
+
+  // Aile kartı sadece giriş yapmış kullanıcı için anlamlı
+  if (!currentUser) {
+    card.style.display = "none";
+    return;
+  }
+  card.style.display = "block";
+
+  if (currentFamilyCode) {
+    connected.style.display = "block";
+    disconnected.style.display = "none";
+
+    const codeEl = document.getElementById("family-card-code");
+    if (codeEl) codeEl.textContent = currentFamilyCode.split("").join(" ");
+
+    const membersEl = document.getElementById("family-card-members");
+    if (membersEl) {
+      const total = (currentFamilyMembers && currentFamilyMembers.length) || 1;
+      let suffix = "";
+      const meIn = currentUser && currentFamilyMembers.indexOf(currentUser.uid) !== -1;
+      if (total === 1) {
+        suffix = meIn ? "  (sadece sen)" : "";
+      } else if (total === 2) {
+        suffix = meIn ? "  (sen + eşin)" : "";
+      }
+      membersEl.textContent = "Üyeler: " + total + " / 2" + suffix;
+    }
+  } else {
+    connected.style.display = "none";
+    disconnected.style.display = "block";
+  }
+}
+
+function settingsCopyCode() {
+  if (!currentFamilyCode) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(currentFamilyCode).then(() => {
+      showToast("Kod kopyalandı: " + currentFamilyCode, 2000);
+    }).catch(() => {
+      showToast("Kod kopyalanamadı, lütfen elle yaz", 2500);
+    });
+  } else {
+    showToast("Kod kopyalanamadı, lütfen elle yaz", 2500);
   }
 }
 
 function settingsShareFamilyCode() {
   if (!currentFamilyCode) return;
-  const text = "9 Ay 1 Hayat — aile kodumuz: " + currentFamilyCode;
+  const text = "9 Ay 1 Hayat — aile kodumuz: " + currentFamilyCode + "\nUygulamayı aç → Google ile giriş → \"Eşim zaten kullanıyor\" → kodu gir.";
   if (navigator.share) {
     navigator.share({ title: "9 Ay 1 Hayat — aile kodu", text: text }).catch(() => {});
-  } else if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(currentFamilyCode).then(() => {
-      showToast("Kod kopyalandı: " + currentFamilyCode, 2000);
-    });
+  } else {
+    settingsCopyCode();
   }
+}
+
+function settingsCreateFamily() {
+  fsLaunchedFrom = "settings";
+  fsGoTo("choose");
+  navigate("family-setup");
+  // Direkt create akışına başlat
+  setTimeout(() => fsStartCreate(), 50);
+}
+
+function settingsJoinFamily() {
+  fsLaunchedFrom = "settings";
+  fsGoTo("join");
+  navigate("family-setup");
+}
+
+async function settingsLeaveFamily() {
+  if (!currentUser || !currentFamilyCode) return;
+  const code = currentFamilyCode;
+  showConfirm(
+    "Aileden çıkmak istediğine emin misin?",
+    "Bu cihazdaki verilerin (notlar, ayarlar, fotoğraflar) silinmez — sadece eşinle senkron olmayı bırakır. Eşin senin değişikliklerini artık görmez. Tekrar aynı aileye katılmak istersen kodu yine girebilirsin.",
+    async () => {
+      if (!navigator.onLine) {
+        showToast("İnternet bağlantısı yok, lütfen tekrar dene", 2800);
+        return;
+      }
+      try {
+        const uid = currentUser.uid;
+
+        // Bekleyen yazımları kapat
+        if (cloudWriteTimer) { clearTimeout(cloudWriteTimer); cloudWriteTimer = null; }
+
+        // 1) Aile dokümanından üyeyi çıkar
+        const famRef = window.fb.doc(window.fb.db, "families", code);
+        await window.fb.updateDoc(famRef, {
+          members: window.fb.arrayRemove(uid)
+          // lastUpdate/cloudUpdatedAt değiştirmiyoruz — kuralda members.size==N-1 gerek
+        });
+
+        // 2) Kullanıcı profilinden familyCode'u sil
+        const userRef = window.fb.doc(window.fb.db, "users", uid);
+        await window.fb.updateDoc(userRef, {
+          familyCode: window.fb.deleteField()
+        });
+
+        // Edge case: son üyeydim → orphan kalıyor
+        const wasLastMember = (currentFamilyMembers || []).length <= 1
+          || ((currentFamilyMembers || []).length === 1 && currentFamilyMembers[0] === uid);
+        if (wasLastMember) {
+          console.log("Aile artık üyesiz, doc orphan kalıyor: " + code);
+        }
+
+        // 3) Listener'ı durdur, global state temizle (lokal veri DOKUNULMAZ)
+        if (unsubscribeStateListener) { unsubscribeStateListener(); unsubscribeStateListener = null; }
+        currentFamilyCode = null;
+        currentFamilyMembers = [];
+
+        showToast("Aileden çıkıldı ✓", 2200);
+
+        // 4) Aile Kurulumu ekranına yönlendir
+        fsLaunchedFrom = "settings";
+        fsGoTo("choose");
+        navigate("family-setup");
+      } catch (err) {
+        console.error("Aileden çıkma hatası:", err);
+        const errCode = (err && err.code) || "";
+        if (errCode === "permission-denied" || /permission/i.test(err.message || "")) {
+          showToast("Yetki hatası: Firestore kuralları güncellenmemiş olabilir", 4000);
+        } else {
+          showToast("Aileden çıkılırken bir sorun oluştu, tekrar dene", 3000);
+        }
+      }
+    }
+  );
 }
 
 
 function renderMore() {
   const info = getPregnancyInfo();
-  const isFather = state.role === "father";
+  const isFather = myRole === "father";
   // Rol bazlı: baba için Bugün/Ölçümler gizli
   document.querySelectorAll("#screen-more .more-grid .more-item").forEach(btn => {
     const onclick = btn.getAttribute("onclick") || "";
@@ -6476,7 +6703,7 @@ function nameAdd() {
   state.babyNames.push({
     id: "n_" + Date.now() + "_" + Math.random().toString(36).slice(2,5),
     name: name,
-    addedBy: state.role === "mother" ? "buse" : "cem",
+    addedBy: getMyAuthorKey(),
     votes: { cem: null, buse: null },
     createdAt: new Date().toISOString()
   });
@@ -6826,7 +7053,7 @@ const TR_MONTHS_FULL = [
 let moodCalViewDate = null; // Date — görüntülenen ayın ilk günü
 
 function moodCalGoBack() {
-  if (state.role === "mother") navigate("daily-log");
+  if (myRole === "mother") navigate("daily-log");
   else navigate("more");
 }
 
@@ -6849,7 +7076,7 @@ function renderMoodCalendar() {
     const t = new Date();
     moodCalViewDate = new Date(t.getFullYear(), t.getMonth(), 1);
   }
-  const isFather = state.role === "father";
+  const isFather = myRole === "father";
   const year = moodCalViewDate.getFullYear();
   const month = moodCalViewDate.getMonth();
   const today = startOfDay(new Date());
@@ -6954,7 +7181,7 @@ function renderMoodCalendar() {
 function showMoodSheet(dateKey) {
   const log = (state.dailyLogs && state.dailyLogs[dateKey]) || null;
   if (!log) return;
-  const isFather = state.role === "father";
+  const isFather = myRole === "father";
   if (isFather && !log.sharedWithCem) return;
 
   const mood = log.mood ? MOOD_LEVELS.find(x => x.level === log.mood) : null;
@@ -7140,13 +7367,13 @@ function renderWeightChart(weights) {
   // Hafif grid çizgileri (3 yatay)
   for (let i = 1; i <= 3; i++) {
     const y = padTop + (innerH * i / 4);
-    svg += '<line x1="' + padX + '" y1="' + y.toFixed(1) + '" x2="' + (W - padX) + '" y2="' + y.toFixed(1) + '" stroke="#ECE6DC" stroke-width="1" stroke-dasharray="2,3"/>';
+    svg += '<line x1="' + padX + '" y1="' + y.toFixed(1) + '" x2="' + (W - padX) + '" y2="' + y.toFixed(1) + '" stroke="#F0D7D9" stroke-width="1" stroke-dasharray="2,3"/>';
   }
   // Çizgi
-  svg += '<polyline points="' + polyline + '" fill="none" stroke="#E8B4B8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+  svg += '<polyline points="' + polyline + '" fill="none" stroke="#DD7E92" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
   // Noktalar + üst yazı
   points.forEach(p => {
-    svg += '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="4" fill="#D49497" stroke="white" stroke-width="1.5"/>';
+    svg += '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="4" fill="#BC5F73" stroke="white" stroke-width="1.5"/>';
     svg += '<text x="' + p.x.toFixed(1) + '" y="' + (p.y - 9).toFixed(1) + '" font-size="11" fill="#7A7A85" text-anchor="middle" font-weight="600">' + p.kg.toFixed(1) + '</text>';
   });
   svg += '</svg>';
@@ -7478,15 +7705,53 @@ function escapeHtml(s) {
 
 let currentUser = null;
 let currentFamilyCode = null;          // Bağlı olunan paylaşımlı aile kodu
+let currentFamilyMembers = [];         // En son bilinen üye listesi (UI için)
 let unsubscribeStateListener = null;
 let cloudWriteTimer = null;
 let suppressNextLocalSave = false; // realtime listener'dan gelen update'ler için
+
+// Kişiye özel rol — ASLA aile dokümanına yazılmaz, asla state objesinde tutulmaz
+let myRole = null;        // "father" | "mother" — bu cihaz/kullanıcı için
+let partnerRole = null;   // (opsiyonel) eşin rolü, sadece görüntüleme için
+
+const MY_ROLE_LS_KEY = "9ay1hayat:myRole"; // offline fallback (cloud'a girmeden devam için)
+
+function getMyRole() {
+  return myRole;
+}
+
+function getMyDisplayName() {
+  return myRole === "mother" ? "Buse" : "Cem";
+}
+
+function getMyAuthorKey() {
+  return myRole === "mother" ? "buse" : "cem";
+}
+
+function setMyRole(role) {
+  myRole = role;
+  try {
+    if (role) localStorage.setItem(MY_ROLE_LS_KEY, role);
+    else localStorage.removeItem(MY_ROLE_LS_KEY);
+  } catch (e) {}
+}
+
+function loadMyRoleFromLocal() {
+  try {
+    const v = localStorage.getItem(MY_ROLE_LS_KEY);
+    if (v === "father" || v === "mother") myRole = v;
+  } catch (e) {}
+}
 
 // Karışmayan karakterler — 0/O, 1/I/L hariç
 const FAMILY_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 // State içinden bulut'a yazmadığımız anahtarlar (cloud-only metadata)
 const FAMILY_META_KEYS = ["members", "createdBy", "cloudUpdatedAt"];
+
+// Kişiye özel — ASLA aile dokümanına yazılmaz, ASLA aile dokümanından okunup local'e basılmaz.
+// Bu liste, eski sürümlerden gelen kirli localStorage'a karşı defansif bir filtredir.
+const LOCAL_ONLY_KEYS = ["role", "activeUser"];
 
 function saveStateLocal() {
   try {
@@ -7540,11 +7805,20 @@ async function writeUserProfile(uid, familyCode) {
   }, { merge: true });
 }
 
+// Sadece kullanıcının rolünü users/{uid}'ye yazar — familyCode'dan bağımsız.
+async function writeMyRoleToCloud(uid, role) {
+  if (!window.fb || !uid || !role) return;
+  const ref = window.fb.doc(window.fb.db, "users", uid);
+  await window.fb.setDoc(ref, { role, roleUpdatedAt: Date.now() }, { merge: true });
+}
+
 // State objesinden cloud için temiz veri üret (member/createdBy gibi metadata'yı koru)
 function stateForCloud() {
   const out = {};
   Object.keys(state).forEach(k => {
-    if (FAMILY_META_KEYS.indexOf(k) === -1) out[k] = state[k];
+    if (FAMILY_META_KEYS.indexOf(k) === -1 && LOCAL_ONLY_KEYS.indexOf(k) === -1) {
+      out[k] = state[k];
+    }
   });
   return out;
 }
@@ -7576,12 +7850,15 @@ async function loadFamilyState(familyCode) {
     const snap = await window.fb.getDoc(ref);
     if (snap.exists()) {
       const data = snap.data();
+      currentFamilyMembers = Array.isArray(data.members) ? data.members.slice() : [];
       const localUpdate = state.lastUpdate || 0;
       const cloudUpdate = data.lastUpdate || 0;
       if (cloudUpdate >= localUpdate) {
         // Bulut daha yeni: bulut kazanır (members/createdBy gibi metadata'yı state'e karıştırma)
         Object.keys(data).forEach(k => {
-          if (FAMILY_META_KEYS.indexOf(k) === -1 && k !== "cloudUpdatedAt") {
+          if (FAMILY_META_KEYS.indexOf(k) === -1
+              && LOCAL_ONLY_KEYS.indexOf(k) === -1
+              && k !== "cloudUpdatedAt") {
             state[k] = data[k];
           }
         });
@@ -7605,21 +7882,94 @@ async function loadFamilyState(familyCode) {
   }
 }
 
+// Eski sürümlerden gelmiş kullanıcılar için: rolü users/{uid}'ye taşı,
+// aile dokümanından role+activeUser alanlarını sil. Idempotent.
+async function migrateRoleAwayFromFamilyDoc(familyCode, uid) {
+  if (!window.fb || !familyCode || !uid) return;
+
+  // 1) Önce: zaten myRole dolu mu (routeAfterAuth profile'dan setMyRole yaptı)?
+  let resolvedRole = myRole;
+
+  // 2) Cloud users dokümanına bir daha bak (yarış durumlarına karşı)
+  if (!resolvedRole) {
+    const profile = await readUserProfile(uid);
+    if (profile && (profile.role === "father" || profile.role === "mother")) {
+      resolvedRole = profile.role;
+      setMyRole(resolvedRole);
+    }
+  }
+
+  // 3) Hâlâ yoksa: localStorage'taki state objesinde eski "role" alanını ara
+  //    (defaultState'ten kaldırdık ama eski kayıtlarda olabilir)
+  if (!resolvedRole) {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && (parsed.role === "father" || parsed.role === "mother")) {
+          resolvedRole = parsed.role;
+          setMyRole(resolvedRole);
+          try { await writeMyRoleToCloud(uid, resolvedRole); } catch (e) {}
+        }
+      }
+    } catch (e) {}
+  }
+
+  // 4) Aile dokümanından role + activeUser alanlarını sil
+  try {
+    const ref = window.fb.doc(window.fb.db, "families", familyCode);
+    const patch = {};
+    if (window.fb.deleteField) {
+      patch.role = window.fb.deleteField();
+      patch.activeUser = window.fb.deleteField();
+    } else {
+      patch.role = null;
+      patch.activeUser = null;
+    }
+    patch.lastUpdate = Date.now();
+    if (window.fb.serverTimestamp) patch.cloudUpdatedAt = window.fb.serverTimestamp();
+    await window.fb.updateDoc(ref, patch);
+  } catch (err) {
+    console.warn("Aile dokümanından role temizleme hatası:", err);
+  }
+
+  // 5) Local state'ten de varsa temizle (eski sürümden upgrade için)
+  if ("role" in state) { delete state["role"]; }
+  if ("activeUser" in state) { delete state["activeUser"]; }
+  saveStateLocal();
+}
+
 function startStateListener(familyCode) {
   if (!window.fb || !familyCode) return;
   if (unsubscribeStateListener) unsubscribeStateListener();
   const ref = window.fb.doc(window.fb.db, "families", familyCode);
   unsubscribeStateListener = window.fb.onSnapshot(ref, (snap) => {
-    if (snap.metadata.hasPendingWrites) return; // kendi yazımızın echo'su, atla
     if (!snap.exists()) return;
     const data = snap.data();
+
+    // Üye listesini her snapshot'ta güncelle (settings ekranına yansısın)
+    const newMembers = Array.isArray(data.members) ? data.members.slice() : [];
+    const membersChanged = JSON.stringify(newMembers) !== JSON.stringify(currentFamilyMembers);
+    currentFamilyMembers = newMembers;
+
+    if (snap.metadata.hasPendingWrites) {
+      // Kendi yazımızın echo'su — state'i güncelleme, ama members değişmişse settings yenilensin
+      if (membersChanged) refreshFamilyCard();
+      return;
+    }
+
     const localUpdate = state.lastUpdate || 0;
     const cloudUpdate = data.lastUpdate || 0;
-    if (cloudUpdate <= localUpdate) return;
+    if (cloudUpdate <= localUpdate) {
+      if (membersChanged) refreshFamilyCard();
+      return;
+    }
 
     // Diğer cihazdan güncel veri geldi — state'i güncelle ve ekranı yenile
     Object.keys(data).forEach(k => {
-      if (FAMILY_META_KEYS.indexOf(k) === -1 && k !== "cloudUpdatedAt") {
+      if (FAMILY_META_KEYS.indexOf(k) === -1
+          && LOCAL_ONLY_KEYS.indexOf(k) === -1
+          && k !== "cloudUpdatedAt") {
         state[k] = data[k];
       }
     });
@@ -7628,6 +7978,13 @@ function startStateListener(familyCode) {
   }, (err) => {
     console.warn("Listener hatası:", err);
   });
+}
+
+// Settings'teki "Aile" kartını yenile (sadece settings ekranı aktifken)
+function refreshFamilyCard() {
+  const screen = document.querySelector(".screen.active");
+  if (!screen || screen.id !== "screen-settings") return;
+  if (typeof renderSettings === "function") renderSettings();
 }
 
 // Kullanıcının lokal verisi anlamlı mı? (notlar, lmp, randevu, kilo vb.)
@@ -7673,9 +8030,11 @@ async function applyFamilyDataIntoState(familyData, opts) {
   const mergeLocal = opts && opts.mergeLocal;
   const localSnapshot = mergeLocal ? JSON.parse(JSON.stringify(state)) : null;
 
-  // Önce bulutu state'e bas (metadata hariç)
+  // Önce bulutu state'e bas (metadata + kişiye özel alanlar hariç)
   Object.keys(familyData || {}).forEach(k => {
-    if (FAMILY_META_KEYS.indexOf(k) === -1 && k !== "cloudUpdatedAt") {
+    if (FAMILY_META_KEYS.indexOf(k) === -1
+        && LOCAL_ONLY_KEYS.indexOf(k) === -1
+        && k !== "cloudUpdatedAt") {
       state[k] = familyData[k];
     }
   });
@@ -7684,7 +8043,7 @@ async function applyFamilyDataIntoState(familyData, opts) {
     // Notları birleştir
     state.notes = mergeNotes(localSnapshot.notes, state.notes);
     // Çatışma logu (skaler alanlar): tek-değer alanlar bulut kazandı
-    const scalarKeys = ["lmpDate", "eddDate", "role", "setupComplete"];
+    const scalarKeys = ["lmpDate", "eddDate", "setupComplete"];
     scalarKeys.forEach(k => {
       if (localSnapshot[k] && familyData[k] && localSnapshot[k] !== familyData[k]) {
         console.log("[merge çatışma]", k, "local=", localSnapshot[k], "→ aile=", familyData[k]);
@@ -7790,34 +8149,72 @@ async function signOutOfApp() {
   }
   if (unsubscribeStateListener) { unsubscribeStateListener(); unsubscribeStateListener = null; }
   currentFamilyCode = null;
+  currentFamilyMembers = [];
   await window.fb.signOut(window.fb.auth);
   // currentUser onAuthStateChanged ile null olacak ve auth ekranına gideceğiz
 }
 
 /* ---------- 13b) Auth sonrası yönlendirme + AİLE KURULUMU ---------- */
 
+// Aile kurulumunun nereden tetiklendiği — "onboarding" (default, ilk giriş) ya da "settings"
+let fsLaunchedFrom = "onboarding";
+
 // Auth başarılı olduğunda çağırılır. users/{uid} okur, aile varsa direkt home,
 // yoksa aile-kurulumu ekranına yönlendirir.
 async function routeAfterAuth(user) {
   hideSplash();
   const profile = await readUserProfile(user.uid);
+  // Rolü cloud'dan al — bu cihaza özel, asla aile dokümanına yazma
+  if (profile && (profile.role === "father" || profile.role === "mother")) {
+    setMyRole(profile.role);
+  }
   if (profile && profile.familyCode) {
     currentFamilyCode = profile.familyCode;
     try {
       await loadFamilyState(currentFamilyCode);
+      // Aile yüklendikten sonra: eski role/activeUser alanlarını temizle
+      await migrateRoleAwayFromFamilyDoc(currentFamilyCode, user.uid);
       startStateListener(currentFamilyCode);
     } catch (e) { console.warn(e); }
     navigateToHomeOrOnboarding();
   } else {
-    // Aile yok — kurulum ekranına git
+    // Aile yok — kurulum ekranına git (onboarding default'u)
+    fsLaunchedFrom = "onboarding";
     fsGoTo("choose");
     navigate("family-setup");
   }
 }
 
+// Aile kurulumu başarıyla tamamlandığında nereye gidilecek?
+function fsAfterSuccess() {
+  const from = fsLaunchedFrom;
+  fsLaunchedFrom = "onboarding";
+  if (from === "settings") {
+    navigate("settings");
+  } else {
+    navigateToHomeOrOnboarding();
+  }
+}
+
 // === Aile kurulumu ekran-içi navigasyon ===
+function fsBackOrSignOut() {
+  if (fsLaunchedFrom === "settings") {
+    fsLaunchedFrom = "onboarding";
+    navigate("settings");
+  } else {
+    fsSignOut();
+  }
+}
+
 function fsGoTo(step) {
   const steps = ["choose", "creating", "created", "join", "joining"];
+  // Choose ekranı için geri butonunu duruma göre değiştir
+  if (step === "choose") {
+    const backBtn = document.getElementById("fs-choose-back");
+    if (backBtn) {
+      backBtn.textContent = (fsLaunchedFrom === "settings") ? "← Ayarlara dön" : "↩︎ Çıkış yap";
+    }
+  }
   steps.forEach(s => {
     const el = document.getElementById("fs-step-" + s);
     if (el) el.style.display = (s === step) ? "flex" : "none";
@@ -7865,19 +8262,23 @@ async function readLegacyFamilyDoc(uid) {
 async function fsStartCreate() {
   if (!currentUser) return;
   fsGoTo("creating");
+  let stage = "init";
   try {
+    stage = "generateCode";
+    console.log("[fsStartCreate] generateCode başlıyor...");
     const code = await generateFamilyCode();
+    console.log("[fsStartCreate] kod üretildi:", code);
     const uid = currentUser.uid;
 
-    // Önce eski families/{uid} dokümanından veri çek (Cem'in önceki bulutu)
+    stage = "readLegacy";
+    console.log("[fsStartCreate] readLegacy başlıyor (families/" + uid + ")");
     const legacy = await readLegacyFamilyDoc(uid);
+    console.log("[fsStartCreate] readLegacy tamam, legacy doc:", legacy ? "var" : "yok");
     let baseData = stateForCloud();
     if (legacy) {
-      // Lokalden daha güncel olabilir → en yeni lastUpdate kazansın
       const localUpdate = state.lastUpdate || 0;
       const legacyUpdate = legacy.lastUpdate || 0;
       if (legacyUpdate > localUpdate) {
-        // Legacy bulutu state'e bas
         Object.keys(legacy).forEach(k => {
           if (FAMILY_META_KEYS.indexOf(k) === -1 && k !== "cloudUpdatedAt") {
             state[k] = legacy[k];
@@ -7888,7 +8289,8 @@ async function fsStartCreate() {
       }
     }
 
-    // Yeni aile dokümanı oluştur
+    stage = "createFamilyDoc";
+    console.log("[fsStartCreate] createFamilyDoc başlıyor (families/" + code + ")");
     const famRef = window.fb.doc(window.fb.db, "families", code);
     await window.fb.setDoc(famRef, Object.assign({}, baseData, {
       members: [uid],
@@ -7896,21 +8298,47 @@ async function fsStartCreate() {
       lastUpdate: Date.now(),
       cloudUpdatedAt: window.fb.serverTimestamp ? window.fb.serverTimestamp() : Date.now()
     }));
+    console.log("[fsStartCreate] createFamilyDoc tamam");
 
-    // Kullanıcı profili
+    stage = "writeUserProfile";
+    console.log("[fsStartCreate] writeUserProfile başlıyor (users/" + uid + ")");
     await writeUserProfile(uid, code);
+    console.log("[fsStartCreate] writeUserProfile tamam");
 
     currentFamilyCode = code;
     startStateListener(code);
 
-    // Kodu göster
     const codeEl = document.getElementById("fs-created-code");
     if (codeEl) codeEl.textContent = code.split("").join(" ");
     fsGoTo("created");
   } catch (err) {
-    console.error("Aile oluşturma hatası:", err);
-    showToast("Bağlantı sırasında bir sorun oluştu, sayfayı yenile", 3500);
+    console.error("[fsStartCreate HATA] stage=" + stage, err);
+    const errCode = (err && err.code) || "";
+    const errMsg = (err && err.message) || String(err);
+    let userMsg = "Bağlantı sırasında bir sorun oluştu";
+    if (errCode === "permission-denied" || /permission/i.test(errMsg)) {
+      userMsg = "Yetki hatası: Firestore güvenlik kuralları yayınlanmamış olabilir. Firebase Console → Firestore → Rules sekmesinden yeni kuralları publish et.";
+    } else if (!navigator.onLine) {
+      userMsg = "İnternet bağlantısı yok, lütfen tekrar dene";
+    } else if (errCode) {
+      userMsg = "Hata (" + stage + "): " + errCode;
+    } else if (errMsg) {
+      userMsg = "Hata (" + stage + "): " + errMsg.slice(0, 120);
+    }
     fsGoTo("choose");
+    // Choose ekranında hatayı sabit göster (toast kaybolur, böyle daha kalıcı)
+    const chooseEl = document.getElementById("fs-step-choose");
+    if (chooseEl) {
+      let banner = document.getElementById("fs-error-banner");
+      if (!banner) {
+        banner = document.createElement("div");
+        banner.id = "fs-error-banner";
+        banner.style.cssText = "background:#FDE7E7;color:#A23A3A;border:1px solid #F2B5B5;border-radius:14px;padding:12px 14px;margin:14px 0;font-size:13px;line-height:1.5;";
+        chooseEl.insertBefore(banner, chooseEl.firstChild);
+      }
+      banner.textContent = "⚠ " + userMsg;
+    }
+    showToast(userMsg, 4500);
   }
 }
 
@@ -7940,7 +8368,7 @@ function fsShareCode() {
 }
 
 function fsContinueToHome() {
-  navigateToHomeOrOnboarding();
+  fsAfterSuccess();
 }
 
 // === KOD GİREREK AİLEYE KATIL ===
@@ -7982,7 +8410,7 @@ async function fsTryJoin() {
       await writeUserProfile(uid, code);
       await applyFamilyDataIntoState(famData, { mergeLocal: false });
       startStateListener(code);
-      navigateToHomeOrOnboarding();
+      fsAfterSuccess();
       showToast("Aileye bağlandın ✓", 2000);
       return;
     }
@@ -8059,7 +8487,7 @@ async function fsCompleteJoin(code, famRef, famData, mergeLocal) {
     currentFamilyCode = code;
     startStateListener(code);
 
-    navigateToHomeOrOnboarding();
+    fsAfterSuccess();
     showToast("Aileye katıldın ✓", 2200);
   } catch (err) {
     console.error("fsCompleteJoin hatası:", err);
@@ -8083,12 +8511,12 @@ function continueLocalOnly() {
 
 function navigateToHomeOrOnboarding() {
   // Eski sürümden gelmiş ama rol seçmemişse → role onboarding adımına götür
-  if (state.setupComplete && state.lmpDate && !state.role) {
+  if (state.setupComplete && state.lmpDate && !myRole) {
     navigate("onboarding");
     onbGoTo("role");
     return;
   }
-  if (state.setupComplete && state.lmpDate && state.role) {
+  if (state.setupComplete && state.lmpDate && myRole) {
     if (!state.autoApptGenerated) {
       maybeGenerateAppointments();
       saveState();
@@ -8353,6 +8781,9 @@ function init() {
   // Auth listener'ı sadece bir kere kur
   if (__authListenerAttached) return;
   __authListenerAttached = true;
+
+  // Rolü localStorage'tan yükle (offline fallback) — auth listener'dan önce
+  loadMyRoleFromLocal();
 
   // Auth state'i izle (ilk fire'da mevcut state ile gelir)
   window.fb.onAuthStateChanged(window.fb.auth, async (user) => {
