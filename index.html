@@ -594,6 +594,12 @@
     }
     .author-chip.cem { background: var(--secondary-soft); color: #4F6244; }
     .author-chip.buse { background: var(--primary-soft); color: var(--primary-deep); }
+    /* Düzenleyen rozeti — biraz daha sönük, "ikincil" hissi */
+    .author-chip.edited {
+      margin-left: 4px;
+      opacity: 0.85;
+      font-weight: 400;
+    }
 
     .fab {
       position: fixed;
@@ -4549,7 +4555,7 @@ function defaultState() {
     setupComplete: false,
     lmpDate: null,            // ISO YYYY-MM-DD
     eddDate: null,            // ISO YYYY-MM-DD (computed)
-    notes: [],                // [{id, createdAt, updatedAt, author, text, tags}]
+    notes: [],                // [{id, createdAt, updatedAt, author, lastEditedBy?, text, tags, photos}]
     appointments: [],         // v0.3: doktor randevuları
     autoApptGenerated: false, // şablonlar bir kez üretildi mi
     // v0.2 final — bulut + doktor + anne modu
@@ -5296,10 +5302,9 @@ function renderLastNote() {
     return;
   }
   const n = sorted[0];
-  const authorName = n.author === "cem" ? "Cem" : "Buse";
   box.innerHTML =
     '<div class="meta">' +
-      '<span class="author-chip">' + authorName + '</span>' +
+      renderAuthorBlock(n) +
       '<span>' + fmtDateTime(n.createdAt) + '</span>' +
     '</div>' +
     '<div class="text">' + escapeHtml(n.text) + '</div>';
@@ -5447,7 +5452,6 @@ function renderNotesList() {
   }
 
   list.innerHTML = sorted.map(n => {
-    const authorName = n.author === "cem" ? "Cem" : "Buse";
     const tags = (n.tags || []).map(t => '<span class="tag-chip">#' + escapeHtml(t) + '</span>').join("");
     const photos = Array.isArray(n.photos) ? n.photos.filter(p => p && p.url) : [];
     let photosHtml = "";
@@ -5465,7 +5469,7 @@ function renderNotesList() {
     return '<div class="note-item" data-note-id="' + n.id + '" onclick="toggleNoteExpand(this)">' +
       '<button class="note-edit-btn" onclick="event.stopPropagation();openNoteEditor(\'' + n.id + '\')" aria-label="Düzenle">✏</button>' +
       '<div class="meta-row">' +
-        '<span class="author-chip ' + n.author + '">' + authorName + '</span>' +
+        renderAuthorBlock(n) +
         '<span>' + fmtDateTime(n.createdAt) + '</span>' +
       '</div>' +
       (n.text ? '<div class="text">' + escapeHtml(n.text) + '</div>' : '') +
@@ -5564,16 +5568,45 @@ function editorOpenDatePicker() {
   });
 }
 
+// Notun yazar/düzenleyen bilgisini chip(ler) olarak HTML üretir.
+// - Sadece yazar varsa: <Cem>
+// - Yazar + farklı düzenleyen: <Cem yazdı · Buse düzenledi>
+function renderAuthorBlock(n) {
+  const authorKey = n.author || "cem";
+  const authorName = authorKey === "cem" ? "Cem" : "Buse";
+
+  if (n.lastEditedBy && n.lastEditedBy !== authorKey) {
+    const editorKey = n.lastEditedBy;
+    const editorName = editorKey === "cem" ? "Cem" : "Buse";
+    const authorChip = '<span class="author-chip ' + authorKey + '">' + authorName + ' yazdı</span>';
+    const editorChip = '<span class="author-chip ' + editorKey + ' edited">' + editorName + ' düzenledi</span>';
+    return authorChip + editorChip;
+  }
+  // Tek yazar: kısa hâl — sadece isim, eski tasarımı bozmayalım
+  return '<span class="author-chip ' + authorKey + '">' + authorName + '</span>';
+}
+
 function editorRenderAuthor() {
   const display = document.getElementById("editor-author-display");
-  if (display) {
-    const name = editorState.author === "cem" ? "Cem" : "Buse";
-    const emoji = editorState.author === "cem" ? "👨" : "🤰";
-    display.innerHTML = '<div style="display:flex; align-items:center; gap:10px;">' +
-      '<span style="font-size:22px;">' + emoji + '</span>' +
-      '<div><b>' + name + '</b><div class="small">Rol seçiminden otomatik atandı</div></div>' +
-      '</div>';
+  if (!display) return;
+  const authorKey = editorState.author || getMyAuthorKey();
+  const name = authorKey === "cem" ? "Cem" : "Buse";
+  const emoji = authorKey === "cem" ? "👨" : "🤰";
+  const me = getMyAuthorKey();
+  const isExistingByOther = !!editorState.id && me !== authorKey;
+  let subline;
+  if (!editorState.id) {
+    subline = "Sen yazıyorsun (rolünden otomatik)";
+  } else if (isExistingByOther) {
+    const myName = me === "cem" ? "Cem" : "Buse";
+    subline = "Sen (" + myName + ") düzenliyorsun — yazar değişmeyecek";
+  } else {
+    subline = "Kendi notunu düzenliyorsun";
   }
+  display.innerHTML = '<div style="display:flex; align-items:center; gap:10px;">' +
+    '<span style="font-size:22px;">' + emoji + '</span>' +
+    '<div><b>' + name + ' yazdı</b><div class="small">' + subline + '</div></div>' +
+    '</div>';
 }
 
 function editorAddTag(t) {
@@ -5664,14 +5697,19 @@ function saveNote() {
   const [y, m, d] = dateVal.split("-").map(Number);
   const nowDate = new Date();
   const updatedAt = nowDate.toISOString();
-  // Yazar her zaman role'den türetilir (toggle kaldırıldı)
-  const author = getMyAuthorKey();
+  // Şu an düzenleyen kişi (yeni not için yazar, mevcut not için lastEditedBy adayı)
+  const me = getMyAuthorKey();
 
   if (editorState.id) {
     const n = state.notes.find(x => x.id === editorState.id);
     if (n) {
       n.text = text;
-      n.author = author;
+      // n.author DEĞİŞMEZ — orijinal yazar korunur.
+      // Düzenleyen kişi yazardan farklıysa lastEditedBy yaz; aynıysa dokunma
+      // (geçmiş "X bir kez düzenlemişti" bilgisi silinmesin).
+      if (n.author && me !== n.author) {
+        n.lastEditedBy = me;
+      }
       n.tags = editorState.tags;
       n.photos = persistedPhotos;
       // Tarih değişmişse: yeni tarihe orijinal saat-dakikayı koru;
@@ -5692,7 +5730,8 @@ function saveNote() {
       id: noteId,
       createdAt: created.toISOString(),
       updatedAt: updatedAt,
-      author: author,
+      author: me,
+      // lastEditedBy: yeni notta tanımsız — sadece farklı kişi düzenleyince yazılır
       text: text,
       tags: editorState.tags,
       photos: persistedPhotos
