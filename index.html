@@ -8,6 +8,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="9 Ay 1 Hayat" />
   <meta name="format-detection" content="telephone=no" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>9 Ay 1 Hayat Olsun</title>
 
   <!-- Logo / Ana Ekrana Ekle ikonları -->
@@ -19,7 +22,8 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, onSnapshot, enableIndexedDbPersistence, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, enableIndexedDbPersistence, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBzKvMR-x4bbjl1JsIKsFuRN_DOJywU2fQ",
@@ -33,6 +37,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const storage = getStorage(app);
 
     enableIndexedDbPersistence(db).catch(() => {});
 
@@ -51,11 +56,12 @@
       } catch(e) { console.warn("Redirect result err:", e); }
 
       window.fb = {
-        auth, db,
+        auth, db, storage,
         GoogleAuthProvider,
         signInWithPopup, signInWithRedirect,
         onAuthStateChanged, signOut,
-        doc, setDoc, getDoc, onSnapshot, serverTimestamp
+        doc, setDoc, getDoc, updateDoc, onSnapshot, serverTimestamp, arrayUnion,
+        storageRef, uploadBytes, getDownloadURL, deleteObject
       };
       window.dispatchEvent(new Event("fb-ready"));
     })();
@@ -2502,6 +2508,312 @@
       background: var(--primary);
       width: 24px;
     }
+
+    /* ============ AİLE KURULUMU ============ */
+    .family-setup {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: calc(28px + var(--safe-top)) 22px calc(24px + var(--safe-bottom));
+      background: linear-gradient(180deg, #FAF2F0 0%, var(--bg) 60%);
+    }
+    .family-setup h1 {
+      font-size: 26px;
+      line-height: 1.25;
+      margin: 18px 0 10px;
+      color: var(--text);
+    }
+    .family-setup p.lead {
+      color: var(--text-muted);
+      font-size: 15px;
+      line-height: 1.55;
+      margin: 0 0 26px;
+    }
+    .family-setup .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 6px;
+    }
+    .family-setup .choice-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 18px 16px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: transform .15s, border-color .15s, box-shadow .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .family-setup .choice-card:active {
+      transform: scale(0.98);
+      border-color: var(--primary);
+    }
+    .family-setup .choice-card .ico {
+      font-size: 32px;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .family-setup .choice-card .ttl {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+    .family-setup .choice-card .desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .family-code-display {
+      font-family: "SF Mono", "Menlo", "Consolas", monospace;
+      font-size: 38px;
+      font-weight: 700;
+      letter-spacing: 14px;
+      padding-left: 14px;
+      text-align: center;
+      color: var(--text);
+      background: var(--bg-soft);
+      border: 1.5px dashed var(--primary);
+      border-radius: var(--radius);
+      padding-top: 22px;
+      padding-bottom: 22px;
+      margin: 18px 0 14px;
+      user-select: all;
+      word-spacing: 0;
+    }
+    @media (max-width: 360px) {
+      .family-code-display { font-size: 30px; letter-spacing: 10px; padding-left: 10px; }
+    }
+
+    .family-code-input {
+      width: 100%;
+      font-family: "SF Mono", "Menlo", "Consolas", monospace;
+      font-size: 30px;
+      letter-spacing: 10px;
+      padding-left: 10px;
+      text-align: center;
+      text-transform: uppercase;
+      padding-top: 18px;
+      padding-bottom: 18px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      color: var(--text);
+      outline: none;
+      transition: border-color .15s;
+    }
+    .family-code-input:focus {
+      border-color: var(--primary);
+    }
+    .family-setup .err-msg {
+      color: var(--danger);
+      font-size: 14px;
+      min-height: 20px;
+      margin: 6px 2px 0;
+      text-align: center;
+    }
+    .family-setup .back-link {
+      background: none;
+      border: 0;
+      color: var(--text-muted);
+      font-size: 14px;
+      padding: 8px;
+      cursor: pointer;
+      margin-top: 8px;
+      text-align: center;
+    }
+    .family-setup .info-banner {
+      background: var(--secondary-soft);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #4d5848;
+      line-height: 1.5;
+      margin: 10px 0 4px;
+    }
+    .family-setup-spinner {
+      width: 28px; height: 28px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto;
+    }
+
+    /* ============ FOTOĞRAF: editor + liste + lightbox ============ */
+    .photo-add-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 18px;
+      background: var(--primary-soft);
+      color: var(--primary-deep);
+      border: 1.5px dashed var(--primary);
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform .1s, background .15s;
+    }
+    .photo-add-btn:active { transform: scale(0.97); background: var(--primary); color: #fff; }
+    .photo-add-btn[disabled] { opacity: 0.5; cursor: default; }
+    .photo-add-btn .ico { font-size: 18px; }
+
+    .editor-photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .editor-photo-tile {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      background: var(--bg-soft);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .editor-photo-tile img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block;
+    }
+    .editor-photo-tile .pt-spin {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.55);
+    }
+    .editor-photo-tile .pt-spin .sp {
+      width: 24px; height: 24px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    .editor-photo-tile .pt-x {
+      position: absolute;
+      top: 5px; right: 5px;
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: rgba(42,45,52,0.78);
+      color: #fff;
+      border: none;
+      font-size: 14px;
+      line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .editor-photo-tile .pt-x:active { background: var(--danger); }
+    .editor-photo-tile.errored {
+      outline: 2px solid var(--danger);
+      outline-offset: -2px;
+    }
+    .editor-photo-tile .pt-err {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 4px;
+      color: var(--danger);
+      font-size: 11px;
+      text-align: center;
+      padding: 4px;
+      background: rgba(255,255,255,0.85);
+    }
+
+    .note-photos-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      flex-wrap: nowrap;
+      overflow: hidden;
+    }
+    .note-photo-thumb {
+      width: 72px; height: 72px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--bg-soft);
+      flex-shrink: 0;
+      position: relative;
+      cursor: pointer;
+    }
+    .note-photo-thumb img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .note-photo-thumb .more-overlay {
+      position: absolute; inset: 0;
+      background: rgba(42,45,52,0.55);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700;
+    }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed; inset: 0;
+      background: rgba(20, 22, 28, 0.96);
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+      touch-action: pan-y;
+    }
+    .lightbox.active { display: flex; }
+    .lightbox-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: calc(14px + var(--safe-top)) 16px 10px;
+      color: #fff;
+      font-size: 14px;
+    }
+    .lightbox-close {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      border: 0;
+      font-size: 20px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .lightbox-close:active { background: rgba(255,255,255,0.22); }
+    .lightbox-stage {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .lightbox-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      user-select: none;
+      -webkit-user-drag: none;
+      transition: opacity .15s;
+    }
+    .lightbox-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.14);
+      color: #fff;
+      border: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .lightbox-nav:active { background: rgba(255,255,255,0.28); }
+    .lightbox-nav.prev { left: 12px; }
+    .lightbox-nav.next { right: 12px; }
+    .lightbox-nav[disabled] { opacity: 0.25; cursor: default; }
+    .lightbox-counter {
+      text-align: center;
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+      padding: 10px 0 calc(14px + var(--safe-bottom));
+    }
   </style>
 </head>
 <body>
@@ -2538,6 +2850,87 @@
       <button class="btn btn-ghost" onclick="continueLocalOnly()">Bulutsuz devam et (sadece bu cihaz)</button>
       <div id="auth-error" class="small" style="color: var(--danger); text-align:center; min-height: 18px;"></div>
     </div>
+  </div>
+</div>
+
+<!-- ============ AİLE KURULUMU (eşleştirme) ============ -->
+<div id="screen-family-setup" class="screen" style="padding: 0;">
+  <!-- 1) Seçim ekranı -->
+  <div class="family-setup" id="fs-step-choose">
+    <div style="text-align:center;">
+      <img src="icon.png" alt="" style="width:84px;height:84px;border-radius:20px;box-shadow:0 8px 20px rgba(232,180,184,0.3);" />
+    </div>
+    <h1>Aileyi kuralım 🌱</h1>
+    <p class="lead">Senin telefonun ile eşinin telefonu aynı verileri görsün diye küçük bir kurulum kaldı. Aşağıdan birini seç:</p>
+    <div class="choices">
+      <div class="choice-card" onclick="fsStartCreate()">
+        <span class="ico">👨‍👩‍👶</span>
+        <div class="ttl">Yeni aile oluştur</div>
+        <div class="desc">6 haneli bir aile kodu üret. Sonra eşinle paylaş, o telefonundan kodu girsin.</div>
+      </div>
+      <div class="choice-card" onclick="fsGoTo('join')">
+        <span class="ico">💑</span>
+        <div class="ttl">Eşim zaten kullanıyor → Kod gir</div>
+        <div class="desc">Eşinden aldığın 6 haneli aile kodunu gir, ortak veriye bağlan.</div>
+      </div>
+    </div>
+    <button class="back-link" onclick="fsSignOut()">↩︎ Çıkış yap</button>
+  </div>
+
+  <!-- 2) Yeni aile yaratılıyor (loading) -->
+  <div class="family-setup" id="fs-step-creating" style="display:none; justify-content:center; text-align:center;">
+    <div class="family-setup-spinner"></div>
+    <h1 style="text-align:center;">Aile kodu oluşturuluyor…</h1>
+    <p class="lead" style="text-align:center;">Bir saniye, bulutla konuşuyorum.</p>
+  </div>
+
+  <!-- 3) Yeni aile başarıyla oluştu — kod göster -->
+  <div class="family-setup" id="fs-step-created" style="display:none;">
+    <div style="text-align:center;">
+      <span style="font-size:54px;">🎉</span>
+    </div>
+    <h1 style="text-align:center;">Aile kodun hazır!</h1>
+    <p class="lead" style="text-align:center;">Bu kodu eşine ilet. Onun telefonundan girince ikiniz de aynı verileri görmeye başlarsınız.</p>
+    <div class="family-code-display" id="fs-created-code">— — — — — —</div>
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-secondary" onclick="fsCopyCode()" style="flex:1;">📋 Kopyala</button>
+      <button class="btn btn-primary" onclick="fsShareCode()" style="flex:1;">📤 Paylaş</button>
+    </div>
+    <div class="info-banner" style="margin-top:18px;">💡 Kodu kaybedersen: Ayarlar → Bulut bölümünde tekrar görebilirsin.</div>
+    <div style="flex:1;"></div>
+    <button class="btn btn-primary" onclick="fsContinueToHome()" style="margin-top:18px;">Devam et →</button>
+  </div>
+
+  <!-- 4) Kod gir -->
+  <div class="family-setup" id="fs-step-join" style="display:none;">
+    <div style="text-align:center;">
+      <span style="font-size:54px;">💑</span>
+    </div>
+    <h1 style="text-align:center;">Aile koduna bağlan</h1>
+    <p class="lead" style="text-align:center;">Eşinin telefonunda görünen 6 haneli kodu gir.</p>
+    <input
+      type="text"
+      class="family-code-input"
+      id="fs-join-input"
+      maxlength="6"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="characters"
+      spellcheck="false"
+      inputmode="text"
+      placeholder="● ● ● ● ● ●"
+      oninput="fsOnCodeInput(event)"
+    />
+    <div class="err-msg" id="fs-join-err"></div>
+    <button class="btn btn-primary" onclick="fsTryJoin()" id="fs-join-btn" style="margin-top:14px;">Bağlan</button>
+    <button class="back-link" onclick="fsGoTo('choose')">← Geri</button>
+  </div>
+
+  <!-- 5) Bağlanılıyor (loading) -->
+  <div class="family-setup" id="fs-step-joining" style="display:none; justify-content:center; text-align:center;">
+    <div class="family-setup-spinner"></div>
+    <h1 style="text-align:center;">Aileye bağlanılıyor…</h1>
+    <p class="lead" style="text-align:center;">Veriler birleştiriliyor.</p>
   </div>
 </div>
 
@@ -2855,6 +3248,16 @@
   </div>
 
   <div class="editor-section">
+    <span class="editor-label">Fotoğraflar</span>
+    <button type="button" class="photo-add-btn" id="editor-photo-add-btn" onclick="editorPickPhotos()">
+      <span class="ico">📷</span><span>Fotoğraf ekle</span>
+    </button>
+    <input type="file" id="editor-photo-input" accept="image/*" multiple style="display:none;" onchange="editorOnPhotosPicked(event)" />
+    <div class="editor-photo-grid" id="editor-photo-grid"></div>
+    <div class="small" id="editor-photo-hint" style="margin-top:8px; display:none;">Yüklenirken uygulamada gezinebilirsin, fotoğraflar arka planda yüklenir.</div>
+  </div>
+
+  <div class="editor-section">
     <span class="editor-label">Etiketler</span>
     <div class="tag-input-row" id="editor-tags-row">
       <input type="text" id="editor-tag-input" placeholder="Etiket yaz ve + Ekle'ye bas" onkeydown="editorTagKey(event)" />
@@ -2921,6 +3324,10 @@
       <span class="label">Senkron durumu</span>
       <span class="value" id="settings-sync-status">Aktif ✓</span>
     </div>
+    <div class="settings-row" id="settings-family-row" style="display:none;" onclick="settingsShareFamilyCode()">
+      <span class="label">Aile kodu</span>
+      <span class="value" id="settings-family-code" style="font-family: 'SF Mono', Menlo, Consolas, monospace; letter-spacing: 2px;">—</span>
+    </div>
   </div>
 
   <div class="settings-section">
@@ -2943,7 +3350,7 @@
     <h3>Hakkında</h3>
     <div class="settings-row">
       <span class="label">Sürüm</span>
-      <span class="value">v1.2.3 — Notlar word-break + horizontal scroll fix + 3-satır clamp</span>
+      <span class="value">v0.2.6 — 2026-04-30 · Notlara fotoğraf</span>
     </div>
     <div class="settings-row">
       <span class="label">Yapım</span>
@@ -3331,6 +3738,20 @@
 
 <!-- ============ MODAL CONTAINER ============ -->
 <div id="modal-root"></div>
+
+<!-- ============ LIGHTBOX (fotoğraf görüntüleyici) ============ -->
+<div id="lightbox" class="lightbox" onclick="lightboxBackdropClick(event)">
+  <div class="lightbox-header">
+    <span id="lightbox-title">Fotoğraf</span>
+    <button class="lightbox-close" onclick="closeLightbox()" aria-label="Kapat">✕</button>
+  </div>
+  <div class="lightbox-stage" id="lightbox-stage">
+    <button class="lightbox-nav prev" id="lightbox-prev" onclick="event.stopPropagation();lightboxNav(-1)" aria-label="Önceki">‹</button>
+    <img class="lightbox-img" id="lightbox-img" alt="" />
+    <button class="lightbox-nav next" id="lightbox-next" onclick="event.stopPropagation();lightboxNav(1)" aria-label="Sonraki">›</button>
+  </div>
+  <div class="lightbox-counter" id="lightbox-counter">— / —</div>
+</div>
 
 <script>
 /* =====================================================
@@ -4162,12 +4583,12 @@ function saveState() {
   } catch (e) {
     console.error("localStorage write hatası", e);
   }
-  // Bulut sync — sadece signed-in ise
-  if (typeof currentUser !== "undefined" && currentUser && window.fb) {
+  // Bulut sync — sadece signed-in + ailesi olan kullanıcı için
+  if (typeof currentUser !== "undefined" && currentUser && currentFamilyCode && window.fb) {
     state.lastUpdate = Date.now();
     if (typeof cloudWriteTimer !== "undefined" && cloudWriteTimer) clearTimeout(cloudWriteTimer);
     cloudWriteTimer = setTimeout(() => {
-      pushStateToCloud(currentUser.uid).catch(err => console.warn("Cloud yazma hatası", err));
+      pushStateToCloud(currentFamilyCode).catch(err => console.warn("Cloud yazma hatası", err));
       cloudWriteTimer = null;
     }, 800);
   }
@@ -4288,15 +4709,16 @@ function weekToLmp(weekNum) {
 
 /* ---------- 4) NAVİGASYON ---------- */
 
-const SCREENS = ["auth", "onboarding", "home", "week-detail", "notes", "note-editor", "settings", "appointments", "appointment-detail", "daily-log", "mood-calendar", "measurements", "kicks", "hospital-bag", "names", "more"];
+const SCREENS = ["auth", "family-setup", "onboarding", "home", "week-detail", "notes", "note-editor", "settings", "appointments", "appointment-detail", "daily-log", "mood-calendar", "measurements", "kicks", "hospital-bag", "names", "more"];
 
 function navigate(name, params) {
-  // Auth ekranı her zaman erişilebilir
-  if (name !== "auth" && !state.setupComplete && name !== "onboarding") {
+  // Auth & family-setup ekranları her zaman erişilebilir (bypass setup checks)
+  const isPreSetupScreen = (name === "auth" || name === "family-setup" || name === "onboarding");
+  if (!isPreSetupScreen && !state.setupComplete) {
     name = "onboarding";
   }
   // Eski sürümden gelmiş kullanıcı: setupComplete olsa bile rol yoksa onboarding'e döndür
-  if (name !== "auth" && name !== "onboarding" && !state.role) {
+  if (!isPreSetupScreen && !state.role) {
     name = "onboarding";
   }
   // Baba rolünde anneye özel ekranlar → home'a yönlendir
@@ -4956,14 +5378,28 @@ function renderNotesList() {
   list.innerHTML = sorted.map(n => {
     const authorName = n.author === "cem" ? "Cem" : "Buse";
     const tags = (n.tags || []).map(t => '<span class="tag-chip">#' + escapeHtml(t) + '</span>').join("");
+    const photos = Array.isArray(n.photos) ? n.photos.filter(p => p && p.url) : [];
+    let photosHtml = "";
+    if (photos.length > 0) {
+      const visible = photos.slice(0, 3);
+      const extra = photos.length - visible.length;
+      photosHtml = '<div class="note-photos-row">' + visible.map((p, i) => {
+        const isLastWithMore = (i === visible.length - 1 && extra > 0);
+        return '<div class="note-photo-thumb" onclick="event.stopPropagation();openLightbox(\'' + n.id + '\',' + i + ')">' +
+          '<img loading="lazy" src="' + escapeHtml(p.url) + '" alt="" />' +
+          (isLastWithMore ? '<div class="more-overlay">+' + extra + '</div>' : '') +
+        '</div>';
+      }).join("") + '</div>';
+    }
     return '<div class="note-item" data-note-id="' + n.id + '" onclick="toggleNoteExpand(this)">' +
       '<button class="note-edit-btn" onclick="event.stopPropagation();openNoteEditor(\'' + n.id + '\')" aria-label="Düzenle">✏</button>' +
       '<div class="meta-row">' +
         '<span class="author-chip ' + n.author + '">' + authorName + '</span>' +
         '<span>' + fmtDateTime(n.createdAt) + '</span>' +
       '</div>' +
-      '<div class="text">' + escapeHtml(n.text) + '</div>' +
-      '<button type="button" class="note-expand-btn" onclick="event.stopPropagation();toggleNoteExpand(this.closest(\'.note-item\'))">Devamını oku ↓</button>' +
+      (n.text ? '<div class="text">' + escapeHtml(n.text) + '</div>' : '') +
+      (n.text ? '<button type="button" class="note-expand-btn" onclick="event.stopPropagation();toggleNoteExpand(this.closest(\'.note-item\'))">Devamını oku ↓</button>' : '') +
+      photosHtml +
       (tags ? '<div class="tags">' + tags + '</div>' : '') +
     '</div>';
   }).join("");
@@ -4989,13 +5425,17 @@ function toggleNoteExpand(el) {
   if (btn) btn.textContent = expanded ? "Daralt ↑" : "Devamını oku ↓";
 }
 
-let editorState = { id: null, author: "cem", text: "", tags: [], date: null };
+let editorState = { id: null, author: "cem", text: "", tags: [], date: null, photos: [] };
+// Editor için kalıcı id (yeni notlarda da Storage path'i için stabil bir id)
+let editorEphemeralNoteId = null;
 
 function openNoteEditor(noteId) {
   navigate("note-editor", { id: noteId });
 }
 
 function closeNoteEditor() {
+  // Kullanıcı kaydet'e basmadan çıkıyor — yarım yüklenmiş fotoğraflar çöp kalmasın
+  cleanupOrphanEditorPhotos();
   navigate("notes");
 }
 
@@ -5007,18 +5447,22 @@ function renderNoteEditor(params) {
   if (id) {
     const note = state.notes.find(n => n.id === id);
     if (!note) {
-      editorState = { id: null, author: defaultAuthor, text: "", tags: [], date: todayIso };
+      editorState = { id: null, author: defaultAuthor, text: "", tags: [], date: todayIso, photos: [] };
+      editorEphemeralNoteId = "n_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7);
     } else {
       editorState = {
         id: note.id,
         author: note.author || defaultAuthor,
         text: note.text,
         tags: [...(note.tags || [])],
-        date: (note.createdAt || "").slice(0, 10) || todayIso
+        date: (note.createdAt || "").slice(0, 10) || todayIso,
+        photos: Array.isArray(note.photos) ? note.photos.map(p => Object.assign({}, p)) : []
       };
+      editorEphemeralNoteId = note.id;
     }
   } else {
-    editorState = { id: null, author: defaultAuthor, text: "", tags: [], date: todayIso };
+    editorState = { id: null, author: defaultAuthor, text: "", tags: [], date: todayIso, photos: [] };
+    editorEphemeralNoteId = "n_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7);
   }
 
   document.getElementById("editor-title").textContent = id ? "Notu düzenle" : "Yeni not";
@@ -5027,6 +5471,7 @@ function renderNoteEditor(params) {
   document.getElementById("editor-delete-btn").style.display = id ? "flex" : "none";
   editorRenderAuthor();
   editorRenderTags();
+  editorRenderPhotos();
   setTimeout(() => {
     if (!id) document.getElementById("editor-text").focus();
   }, 200);
@@ -5132,8 +5577,16 @@ function editorTagKey(e) {
 
 function saveNote() {
   const text = document.getElementById("editor-text").value.trim();
-  if (!text) {
-    alert("Not boş olamaz.");
+  // Hâlâ yüklenen fotoğraflar varsa kullanıcıyı uyar
+  const stillUploading = (editorState.photos || []).some(p => p && p.uploading);
+  if (stillUploading) {
+    showToast("Fotoğraflar hâlâ yükleniyor, lütfen bekle", 2500);
+    return;
+  }
+  // Sadece fotoğraf eklenmiş not olabilir; metin boşsa ve fotoğraf da yoksa engelle
+  const persistedPhotos = (editorState.photos || []).filter(p => p && p.url && !p.errored);
+  if (!text && persistedPhotos.length === 0) {
+    alert("Not boş olamaz (yazı ya da fotoğraf ekle).");
     return;
   }
   const dateVal = document.getElementById("editor-date").dataset.iso || toIso(new Date());
@@ -5149,6 +5602,7 @@ function saveNote() {
       n.text = text;
       n.author = author;
       n.tags = editorState.tags;
+      n.photos = persistedPhotos;
       // Tarih değişmişse: yeni tarihe orijinal saat-dakikayı koru;
       // Tarih aynı ise: createdAt değişmez.
       const origDate = new Date(n.createdAt);
@@ -5162,26 +5616,395 @@ function saveNote() {
   } else {
     // Yeni not: seçilen tarih + şu anki saat
     const created = new Date(y, m - 1, d, nowDate.getHours(), nowDate.getMinutes(), nowDate.getSeconds());
+    const noteId = editorEphemeralNoteId || ("n_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7));
     state.notes.push({
-      id: "n_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+      id: noteId,
       createdAt: created.toISOString(),
       updatedAt: updatedAt,
       author: author,
       text: text,
-      tags: editorState.tags
+      tags: editorState.tags,
+      photos: persistedPhotos
     });
+    editorState.id = noteId;
   }
+  // Yüklenmiş ama editorState'e işlenmiş fotoğrafları artık "kaydedilmiş" sayıyoruz —
+  // closeNoteEditor cleanup'ı yapamasın diye listeyi temizliyoruz.
+  editorEphemeralNoteId = null;
+  editorState.photos = [];
   saveState();
   navigate("notes");
 }
 
 function deleteNote() {
   if (!editorState.id) return;
-  showConfirm("Notu silmek istediğine emin misin?", "Bu işlem geri alınamaz.", () => {
-    state.notes = state.notes.filter(n => n.id !== editorState.id);
+  showConfirm("Notu silmek istediğine emin misin?", "Bu işlem geri alınamaz. Fotoğraflar da silinir.", async () => {
+    const note = state.notes.find(n => n.id === editorState.id);
+    const noteId = editorState.id;
+    state.notes = state.notes.filter(n => n.id !== noteId);
+    // Sürdürülmüş fotoğrafları Storage'dan da kaldır (best-effort)
+    if (note && Array.isArray(note.photos)) {
+      note.photos.forEach(p => { deleteStoragePhoto(p).catch(()=>{}); });
+    }
+    editorEphemeralNoteId = null;
+    editorState.photos = [];
     saveState();
     navigate("notes");
   });
+}
+
+/* ---------- 8b) NOT FOTOĞRAFLARI ---------- */
+
+const PHOTO_MAX_DIM = 1600;
+const PHOTO_JPEG_QUALITY = 0.85;
+const PHOTO_MAX_BYTES = 10 * 1024 * 1024; // 10 MB
+
+function editorPickPhotos() {
+  if (!currentUser || !currentFamilyCode) {
+    showToast("Fotoğraf eklemek için önce aileye bağlan", 2500);
+    return;
+  }
+  if (!navigator.onLine) {
+    showToast("İnternet bağlantısı yok, fotoğraf yüklenemedi", 2500);
+    return;
+  }
+  const inp = document.getElementById("editor-photo-input");
+  if (inp) {
+    inp.value = ""; // aynı dosyayı tekrar seçebilmek için
+    inp.click();
+  }
+}
+
+function editorOnPhotosPicked(ev) {
+  const files = Array.from(ev.target.files || []);
+  if (!files.length) return;
+  files.forEach(f => editorAddOnePhoto(f));
+}
+
+function editorAddOnePhoto(file) {
+  if (!file) return;
+  if (!/^image\//.test(file.type) && !/\.(heic|heif)$/i.test(file.name || "")) {
+    showToast("Sadece fotoğraf ekleyebilirsin", 2500);
+    return;
+  }
+  if (file.size > PHOTO_MAX_BYTES) {
+    showToast("Fotoğraf çok büyük, lütfen daha küçük bir tane seç", 3000);
+    return;
+  }
+  // Local placeholder objesi
+  const localId = "p_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7);
+  const previewUrl = URL.createObjectURL(file);
+  const placeholder = {
+    id: localId,
+    localPreviewUrl: previewUrl,
+    uploading: true,
+    url: null,
+    storagePath: null
+  };
+  editorState.photos.push(placeholder);
+  editorRenderPhotos();
+  // Yüklemeyi başlat (fire-and-forget)
+  uploadEditorPhoto(file, localId).catch(err => {
+    console.warn("Fotoğraf yükleme hatası:", err);
+  });
+}
+
+async function uploadEditorPhoto(file, localId) {
+  const noteId = editorEphemeralNoteId || editorState.id;
+  if (!noteId) {
+    markEditorPhotoErrored(localId, "Hata");
+    return;
+  }
+  if (!currentFamilyCode || !currentUser || !window.fb || !window.fb.storage) {
+    markEditorPhotoErrored(localId, "Bulut yok");
+    return;
+  }
+
+  // 1) Compress et (canvas) — başarısız olursa orijinali yükle
+  let blob;
+  try {
+    blob = await compressImage(file);
+  } catch (e) {
+    console.warn("Compress hatası, orijinali yüklüyorum:", e);
+    blob = file;
+  }
+
+  // 2) Storage'a at
+  try {
+    const photoStorageId = "ph_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7);
+    const path = "families/" + currentFamilyCode + "/notes/" + noteId + "/" + photoStorageId + ".jpg";
+    const ref = window.fb.storageRef(window.fb.storage, path);
+    const metadata = { contentType: blob.type || "image/jpeg" };
+    const snap = await window.fb.uploadBytes(ref, blob, metadata);
+    const url = await window.fb.getDownloadURL(snap.ref);
+
+    // editorState'teki placeholder'ı güncelle (kullanıcı silmiş olabilir)
+    const idx = editorState.photos.findIndex(p => p.id === localId);
+    if (idx === -1) {
+      // Kullanıcı silmiş — yüklenmiş objeyi de geri al
+      try { await window.fb.deleteObject(window.fb.storageRef(window.fb.storage, path)); } catch(_) {}
+      return;
+    }
+
+    // Önceki preview blob URL'sini serbest bırak
+    if (editorState.photos[idx].localPreviewUrl) {
+      try { URL.revokeObjectURL(editorState.photos[idx].localPreviewUrl); } catch(_) {}
+    }
+
+    const dims = await readImageDims(blob).catch(() => ({ width: 0, height: 0 }));
+
+    editorState.photos[idx] = {
+      id: photoStorageId,
+      url: url,
+      storagePath: path,
+      width: dims.width || 0,
+      height: dims.height || 0,
+      sizeBytes: blob.size || 0,
+      uploadedAt: Date.now(),
+      uploadedBy: currentUser.uid
+    };
+    editorRenderPhotos();
+  } catch (err) {
+    console.error("Upload error:", err);
+    markEditorPhotoErrored(localId, navigator.onLine ? "Hata" : "Bağlantı yok");
+    if (!navigator.onLine) {
+      showToast("İnternet bağlantısı yok, fotoğraf yüklenemedi", 2500);
+    } else {
+      showToast("Fotoğraf yüklenirken bir sorun oldu, tekrar dene", 2500);
+    }
+  }
+}
+
+function markEditorPhotoErrored(localId, label) {
+  const idx = editorState.photos.findIndex(p => p.id === localId);
+  if (idx === -1) return;
+  editorState.photos[idx].uploading = false;
+  editorState.photos[idx].errored = true;
+  editorState.photos[idx].errorLabel = label || "Hata";
+  editorRenderPhotos();
+}
+
+// Canvas tabanlı sıkıştırma. iPhone HEIC dosyalarını da decode edebilir (Safari).
+async function compressImage(file) {
+  // Eğer dosya çok küçük (< ~600KB) ve zaten image/jpeg ise sıkıştırmaya gerek yok
+  if (file.size < 600 * 1024 && /jpeg|jpg/i.test(file.type)) {
+    return file;
+  }
+  const img = await loadImage(file);
+  let { width, height } = img;
+  if (!width || !height) throw new Error("Görsel boyutu okunamadı");
+  // En uzun kenarı PHOTO_MAX_DIM'e ölçekle
+  if (width > PHOTO_MAX_DIM || height > PHOTO_MAX_DIM) {
+    const scale = PHOTO_MAX_DIM / Math.max(width, height);
+    width = Math.round(width * scale);
+    height = Math.round(height * scale);
+  }
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0, width, height);
+  // Object URL revoke
+  if (img.__objUrl) { try { URL.revokeObjectURL(img.__objUrl); } catch(_){} }
+  return await new Promise((resolve, reject) => {
+    canvas.toBlob((b) => {
+      if (b) resolve(b);
+      else reject(new Error("toBlob null"));
+    }, "image/jpeg", PHOTO_JPEG_QUALITY);
+  });
+}
+
+function loadImage(fileOrBlob) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(fileOrBlob);
+    const img = new Image();
+    img.onload = () => { img.__objUrl = url; resolve(img); };
+    img.onerror = () => { try{URL.revokeObjectURL(url);}catch(_){} reject(new Error("Görsel yüklenemedi")); };
+    img.src = url;
+  });
+}
+
+async function readImageDims(blob) {
+  const img = await loadImage(blob);
+  const dims = { width: img.naturalWidth || img.width, height: img.naturalHeight || img.height };
+  if (img.__objUrl) { try { URL.revokeObjectURL(img.__objUrl); } catch(_){} }
+  return dims;
+}
+
+function editorRenderPhotos() {
+  const grid = document.getElementById("editor-photo-grid");
+  const hint = document.getElementById("editor-photo-hint");
+  if (!grid) return;
+  const photos = editorState.photos || [];
+  grid.innerHTML = photos.map((p, i) => {
+    const src = p.url || p.localPreviewUrl || "";
+    const tile = '<div class="editor-photo-tile' + (p.errored ? ' errored' : '') + '" data-idx="' + i + '">' +
+      '<img loading="lazy" src="' + escapeHtml(src) + '" alt="" onclick="editorPreviewPhoto(' + i + ')" />' +
+      (p.uploading ? '<div class="pt-spin"><div class="sp"></div></div>' : '') +
+      (p.errored ? '<div class="pt-err"><span>' + escapeHtml(p.errorLabel || "Hata") + '</span><span style="font-size:10px;">tekrar dene</span></div>' : '') +
+      '<button type="button" class="pt-x" aria-label="Sil" onclick="event.stopPropagation();editorRemovePhoto(' + i + ')">✕</button>' +
+    '</div>';
+    return tile;
+  }).join("");
+  if (hint) hint.style.display = photos.some(p => p.uploading) ? "block" : "none";
+}
+
+function editorPreviewPhoto(idx) {
+  const photos = editorState.photos || [];
+  if (idx < 0 || idx >= photos.length) return;
+  const p = photos[idx];
+  if (!p || (!p.url && !p.localPreviewUrl)) return;
+  // Editor için lightbox: yüklenmiş VE preview olanları göster
+  __lightboxList = photos.map(x => ({
+    url: x.url || x.localPreviewUrl,
+    label: ""
+  })).filter(x => x.url);
+  __lightboxIdx = Math.min(idx, __lightboxList.length - 1);
+  showLightbox();
+}
+
+async function editorRemovePhoto(idx) {
+  const photos = editorState.photos || [];
+  if (idx < 0 || idx >= photos.length) return;
+  const p = photos[idx];
+  // Listeden çıkar
+  editorState.photos.splice(idx, 1);
+  editorRenderPhotos();
+  // Local preview URL'sini serbest bırak
+  if (p && p.localPreviewUrl) {
+    try { URL.revokeObjectURL(p.localPreviewUrl); } catch(_) {}
+  }
+  // Storage'da varsa sil
+  if (p && p.storagePath) {
+    deleteStoragePhoto(p).catch(()=>{});
+  }
+}
+
+async function deleteStoragePhoto(photoObj) {
+  if (!photoObj || !photoObj.storagePath) return;
+  if (!window.fb || !window.fb.storage) return;
+  try {
+    const ref = window.fb.storageRef(window.fb.storage, photoObj.storagePath);
+    await window.fb.deleteObject(ref);
+  } catch (err) {
+    console.warn("Storage delete hatası (yok sayılıyor):", err);
+  }
+}
+
+// Editor kaydedilmeden kapatılırsa: kayıtlı not olmasaydı bu fotoğraflar boşa gidiyor.
+// Gerçekten yüklenmiş ama henüz state.notes'a yazılmamış olanları sil.
+function cleanupOrphanEditorPhotos() {
+  const photos = editorState.photos || [];
+  if (!photos.length) return;
+  const isExistingNote = !!(editorState.id && state.notes.find(n => n.id === editorState.id));
+  // Mevcut not düzenleniyor → kullanıcı kaydet'e basmadan çıkıyor, değişiklikleri at,
+  // ama ekledikleri bulutta kalmasın diye sadece bu sırada eklenen YENİ fotoğrafları sil.
+  if (isExistingNote) {
+    const existing = state.notes.find(n => n.id === editorState.id);
+    const savedIds = new Set((existing.photos || []).map(p => p.storagePath).filter(Boolean));
+    photos.forEach(p => {
+      if (p.storagePath && !savedIds.has(p.storagePath)) {
+        deleteStoragePhoto(p).catch(()=>{});
+      }
+      if (p.localPreviewUrl) { try { URL.revokeObjectURL(p.localPreviewUrl); } catch(_){} }
+    });
+  } else {
+    // Yeni not — kaydetmedi, hepsi orphan
+    photos.forEach(p => {
+      if (p.storagePath) deleteStoragePhoto(p).catch(()=>{});
+      if (p.localPreviewUrl) { try { URL.revokeObjectURL(p.localPreviewUrl); } catch(_){} }
+    });
+  }
+  editorState.photos = [];
+}
+
+/* ---------- 8c) LIGHTBOX (foto görüntüleyici) ---------- */
+
+let __lightboxList = []; // [{url, label}]
+let __lightboxIdx = 0;
+let __lightboxTouchStartX = 0;
+let __lightboxTouchStartY = 0;
+
+function openLightbox(noteId, startIdx) {
+  const note = state.notes.find(n => n.id === noteId);
+  if (!note || !Array.isArray(note.photos)) return;
+  const photos = note.photos.filter(p => p && p.url);
+  if (!photos.length) return;
+  __lightboxList = photos.map((p, i) => ({
+    url: p.url,
+    label: (i + 1) + " / " + photos.length
+  }));
+  __lightboxIdx = Math.max(0, Math.min(startIdx || 0, photos.length - 1));
+  showLightbox();
+}
+
+function showLightbox() {
+  const lb = document.getElementById("lightbox");
+  if (!lb) return;
+  lb.classList.add("active");
+  lightboxRender();
+  // Touch kaydırma
+  const stage = document.getElementById("lightbox-stage");
+  if (stage && !stage.__bound) {
+    stage.addEventListener("touchstart", lightboxTouchStart, { passive: true });
+    stage.addEventListener("touchend", lightboxTouchEnd, { passive: true });
+    stage.__bound = true;
+  }
+  document.addEventListener("keydown", lightboxKey);
+}
+
+function closeLightbox() {
+  const lb = document.getElementById("lightbox");
+  if (!lb) return;
+  lb.classList.remove("active");
+  document.removeEventListener("keydown", lightboxKey);
+}
+
+function lightboxBackdropClick(ev) {
+  // Sadece doğrudan backdrop'a tıklanırsa kapat (resmin/butonların üstüne değil)
+  if (ev.target && ev.target.id === "lightbox") closeLightbox();
+}
+
+function lightboxKey(ev) {
+  if (ev.key === "Escape") closeLightbox();
+  else if (ev.key === "ArrowLeft") lightboxNav(-1);
+  else if (ev.key === "ArrowRight") lightboxNav(1);
+}
+
+function lightboxNav(delta) {
+  if (!__lightboxList.length) return;
+  __lightboxIdx = Math.max(0, Math.min(__lightboxIdx + delta, __lightboxList.length - 1));
+  lightboxRender();
+}
+
+function lightboxRender() {
+  const img = document.getElementById("lightbox-img");
+  const counter = document.getElementById("lightbox-counter");
+  const prev = document.getElementById("lightbox-prev");
+  const next = document.getElementById("lightbox-next");
+  const cur = __lightboxList[__lightboxIdx];
+  if (!cur) return;
+  img.src = cur.url;
+  counter.textContent = (__lightboxIdx + 1) + " / " + __lightboxList.length;
+  prev.toggleAttribute("disabled", __lightboxIdx <= 0);
+  next.toggleAttribute("disabled", __lightboxIdx >= __lightboxList.length - 1);
+}
+
+function lightboxTouchStart(ev) {
+  const t = ev.touches[0];
+  __lightboxTouchStartX = t.clientX;
+  __lightboxTouchStartY = t.clientY;
+}
+
+function lightboxTouchEnd(ev) {
+  const t = (ev.changedTouches && ev.changedTouches[0]) || null;
+  if (!t) return;
+  const dx = t.clientX - __lightboxTouchStartX;
+  const dy = t.clientY - __lightboxTouchStartY;
+  // Yatay swipe — dikey kaydırma değil
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+    lightboxNav(dx < 0 ? 1 : -1);
+  }
 }
 
 /* ---------- 9) AYARLAR ---------- */
@@ -5212,6 +6035,8 @@ function renderSettings() {
   const acctValue = document.getElementById("settings-account-value");
   const acctRow = document.getElementById("settings-account-row");
   const syncRow = document.getElementById("settings-sync-row");
+  const famRow = document.getElementById("settings-family-row");
+  const famCodeEl = document.getElementById("settings-family-code");
 
   if (currentUser) {
     acctLabel.textContent = "Hesap";
@@ -5223,6 +6048,12 @@ function renderSettings() {
     };
     acctRow.classList.add("clickable");
     syncRow.style.display = "flex";
+    if (currentFamilyCode) {
+      famRow.style.display = "flex";
+      famCodeEl.textContent = currentFamilyCode;
+    } else {
+      famRow.style.display = "none";
+    }
   } else {
     acctLabel.textContent = "Bulut";
     acctValue.textContent = "Bulutsuz mod";
@@ -5230,6 +6061,19 @@ function renderSettings() {
       navigate("auth");
     };
     syncRow.style.display = "none";
+    if (famRow) famRow.style.display = "none";
+  }
+}
+
+function settingsShareFamilyCode() {
+  if (!currentFamilyCode) return;
+  const text = "9 Ay 1 Hayat — aile kodumuz: " + currentFamilyCode;
+  if (navigator.share) {
+    navigator.share({ title: "9 Ay 1 Hayat — aile kodu", text: text }).catch(() => {});
+  } else if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(currentFamilyCode).then(() => {
+      showToast("Kod kopyalandı: " + currentFamilyCode, 2000);
+    });
   }
 }
 
@@ -6528,11 +7372,15 @@ function resetAllPrompt() {
     message,
     async () => {
       localStorage.removeItem(STORAGE_KEY);
-      // Buluttaki veriyi de temizle
-      if (currentUser && window.fb) {
+      // Buluttaki aile verisini temizle — members/createdBy korunur
+      if (currentUser && currentFamilyCode && window.fb) {
         try {
-          const ref = window.fb.doc(window.fb.db, "families", currentUser.uid);
-          await window.fb.setDoc(ref, { members: [currentUser.uid], lastUpdate: Date.now() });
+          const ref = window.fb.doc(window.fb.db, "families", currentFamilyCode);
+          const fresh = defaultState();
+          fresh.lastUpdate = Date.now();
+          await window.fb.updateDoc(ref, Object.assign({}, fresh, {
+            cloudUpdatedAt: window.fb.serverTimestamp ? window.fb.serverTimestamp() : Date.now()
+          }));
         } catch (err) { console.warn(err); }
       }
       state = defaultState();
@@ -6626,12 +7474,19 @@ function escapeHtml(s) {
     .replace(/'/g, "&#039;");
 }
 
-/* ---------- 13) FIREBASE — AUTH & CLOUD SYNC (v0.2) ---------- */
+/* ---------- 13) FIREBASE — AUTH & CLOUD SYNC (v0.2.5 — aile eşleştirme) ---------- */
 
 let currentUser = null;
+let currentFamilyCode = null;          // Bağlı olunan paylaşımlı aile kodu
 let unsubscribeStateListener = null;
 let cloudWriteTimer = null;
 let suppressNextLocalSave = false; // realtime listener'dan gelen update'ler için
+
+// Karışmayan karakterler — 0/O, 1/I/L hariç
+const FAMILY_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+// State içinden bulut'a yazmadığımız anahtarlar (cloud-only metadata)
+const FAMILY_META_KEYS = ["members", "createdBy", "cloudUpdatedAt"];
 
 function saveStateLocal() {
   try {
@@ -6641,40 +7496,108 @@ function saveStateLocal() {
   }
 }
 
-async function pushStateToCloud(uid) {
+function randomFamilyCode() {
+  let s = "";
+  for (let i = 0; i < 6; i++) {
+    s += FAMILY_CODE_ALPHABET.charAt(Math.floor(Math.random() * FAMILY_CODE_ALPHABET.length));
+  }
+  return s;
+}
+
+// Çakışmayı kontrol ederek üret — max 5 deneme
+async function generateFamilyCode() {
+  if (!window.fb) throw new Error("Firebase hazır değil");
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const code = randomFamilyCode();
+    const ref = window.fb.doc(window.fb.db, "families", code);
+    const snap = await window.fb.getDoc(ref);
+    if (!snap.exists()) return code;
+  }
+  // Hâlâ çakışıyorsa: 7 haneye uzat
+  return randomFamilyCode() + FAMILY_CODE_ALPHABET.charAt(Math.floor(Math.random() * FAMILY_CODE_ALPHABET.length));
+}
+
+async function readUserProfile(uid) {
+  if (!window.fb || !uid) return null;
+  try {
+    const ref = window.fb.doc(window.fb.db, "users", uid);
+    const snap = await window.fb.getDoc(ref);
+    return snap.exists() ? snap.data() : null;
+  } catch (err) {
+    console.warn("users/{uid} okuma hatası:", err);
+    return null;
+  }
+}
+
+async function writeUserProfile(uid, familyCode) {
   if (!window.fb || !uid) return;
-  const ref = window.fb.doc(window.fb.db, "families", uid);
-  // Doc'un var olduğundan emin ol — yoksa oluştur (rules: create allowed for any auth)
-  const dataToSave = Object.assign({}, state, {
-    members: [uid],
+  const ref = window.fb.doc(window.fb.db, "users", uid);
+  const displayName = (currentUser && (currentUser.displayName || currentUser.email)) || "";
+  await window.fb.setDoc(ref, {
+    familyCode,
+    displayName,
+    joinedAt: Date.now()
+  }, { merge: true });
+}
+
+// State objesinden cloud için temiz veri üret (member/createdBy gibi metadata'yı koru)
+function stateForCloud() {
+  const out = {};
+  Object.keys(state).forEach(k => {
+    if (FAMILY_META_KEYS.indexOf(k) === -1) out[k] = state[k];
+  });
+  return out;
+}
+
+async function pushStateToCloud(familyCode) {
+  if (!window.fb || !familyCode) return;
+  const ref = window.fb.doc(window.fb.db, "families", familyCode);
+  // updateDoc: sadece state alanlarını ezer, members/createdBy korunur
+  const dataToSave = Object.assign({}, stateForCloud(), {
     lastUpdate: Date.now(),
     cloudUpdatedAt: window.fb.serverTimestamp ? window.fb.serverTimestamp() : Date.now()
   });
-  await window.fb.setDoc(ref, dataToSave);
+  try {
+    await window.fb.updateDoc(ref, dataToSave);
+  } catch (err) {
+    // Doc yoksa updateDoc patlar — setDoc(merge) ile geri düş
+    if (err && (err.code === "not-found" || /No document to update/i.test(err.message || ""))) {
+      await window.fb.setDoc(ref, dataToSave, { merge: true });
+    } else {
+      throw err;
+    }
+  }
 }
 
-async function loadFamilyState(uid) {
-  if (!window.fb) return;
+async function loadFamilyState(familyCode) {
+  if (!window.fb || !familyCode) return;
   try {
-    const ref = window.fb.doc(window.fb.db, "families", uid);
+    const ref = window.fb.doc(window.fb.db, "families", familyCode);
     const snap = await window.fb.getDoc(ref);
     if (snap.exists()) {
       const data = snap.data();
-      // Bulutta güncel veri var, mevcut state'i değiştir
       const localUpdate = state.lastUpdate || 0;
       const cloudUpdate = data.lastUpdate || 0;
       if (cloudUpdate >= localUpdate) {
-        // Bulut daha yeni: bulut kazanır
+        // Bulut daha yeni: bulut kazanır (members/createdBy gibi metadata'yı state'e karıştırma)
         Object.keys(data).forEach(k => {
-          if (k !== "cloudUpdatedAt") state[k] = data[k];
+          if (FAMILY_META_KEYS.indexOf(k) === -1 && k !== "cloudUpdatedAt") {
+            state[k] = data[k];
+          }
         });
       } else {
         // Local daha yeni: bulutu güncelle
-        await pushStateToCloud(uid);
+        await pushStateToCloud(familyCode);
       }
     } else {
-      // Yeni kullanıcı — local'i buluta yükle (migration)
-      await pushStateToCloud(uid);
+      // Beklenmedik: aile dokümanı yok ama oraya bağlanmaya çalışıyoruz.
+      // Yeni doküman olarak yarat — kullanıcının verisini kaybetme.
+      await window.fb.setDoc(ref, Object.assign({}, stateForCloud(), {
+        members: [currentUser ? currentUser.uid : null].filter(Boolean),
+        createdBy: currentUser ? currentUser.uid : null,
+        lastUpdate: Date.now(),
+        cloudUpdatedAt: window.fb.serverTimestamp ? window.fb.serverTimestamp() : Date.now()
+      }));
     }
     saveStateLocal();
   } catch (err) {
@@ -6682,10 +7605,10 @@ async function loadFamilyState(uid) {
   }
 }
 
-function startStateListener(uid) {
-  if (!window.fb) return;
+function startStateListener(familyCode) {
+  if (!window.fb || !familyCode) return;
   if (unsubscribeStateListener) unsubscribeStateListener();
-  const ref = window.fb.doc(window.fb.db, "families", uid);
+  const ref = window.fb.doc(window.fb.db, "families", familyCode);
   unsubscribeStateListener = window.fb.onSnapshot(ref, (snap) => {
     if (snap.metadata.hasPendingWrites) return; // kendi yazımızın echo'su, atla
     if (!snap.exists()) return;
@@ -6696,13 +7619,79 @@ function startStateListener(uid) {
 
     // Diğer cihazdan güncel veri geldi — state'i güncelle ve ekranı yenile
     Object.keys(data).forEach(k => {
-      if (k !== "cloudUpdatedAt") state[k] = data[k];
+      if (FAMILY_META_KEYS.indexOf(k) === -1 && k !== "cloudUpdatedAt") {
+        state[k] = data[k];
+      }
     });
     saveStateLocal();
     rerenderCurrentScreen();
   }, (err) => {
     console.warn("Listener hatası:", err);
   });
+}
+
+// Kullanıcının lokal verisi anlamlı mı? (notlar, lmp, randevu, kilo vb.)
+function hasMeaningfulLocalData() {
+  if (state.lmpDate || state.eddDate) return true;
+  if (Array.isArray(state.notes) && state.notes.length > 0) return true;
+  if (Array.isArray(state.appointments) && state.appointments.length > 0) return true;
+  if (Array.isArray(state.weights) && state.weights.length > 0) return true;
+  if (Array.isArray(state.bps) && state.bps.length > 0) return true;
+  if (Array.isArray(state.kickSessions) && state.kickSessions.length > 0) return true;
+  if (Array.isArray(state.babyNames) && state.babyNames.length > 0) return true;
+  if (state.dailyLogs && Object.keys(state.dailyLogs).length > 0) return true;
+  if (state.setupComplete) return true;
+  return false;
+}
+
+// Notları timestamp'a göre dedupe + birleştir
+function mergeNotes(localNotes, cloudNotes) {
+  const seen = new Map();
+  const all = [].concat(cloudNotes || [], localNotes || []);
+  all.forEach(n => {
+    if (!n) return;
+    const key = n.id || (n.createdAt + "|" + (n.text || "").slice(0, 40));
+    const existing = seen.get(key);
+    if (!existing) {
+      seen.set(key, n);
+    } else {
+      // En yeni updatedAt kazanır
+      const eU = existing.updatedAt || existing.createdAt || 0;
+      const nU = n.updatedAt || n.createdAt || 0;
+      if (nU > eU) seen.set(key, n);
+    }
+  });
+  return Array.from(seen.values()).sort((a, b) => {
+    const ta = (a.createdAt || "");
+    const tb = (b.createdAt || "");
+    return ta < tb ? -1 : ta > tb ? 1 : 0;
+  });
+}
+
+// Kullanıcı ailesine katılıyor — bulut state'i kazanır, sadece notlar birleştirilir
+async function applyFamilyDataIntoState(familyData, opts) {
+  const mergeLocal = opts && opts.mergeLocal;
+  const localSnapshot = mergeLocal ? JSON.parse(JSON.stringify(state)) : null;
+
+  // Önce bulutu state'e bas (metadata hariç)
+  Object.keys(familyData || {}).forEach(k => {
+    if (FAMILY_META_KEYS.indexOf(k) === -1 && k !== "cloudUpdatedAt") {
+      state[k] = familyData[k];
+    }
+  });
+
+  if (mergeLocal && localSnapshot) {
+    // Notları birleştir
+    state.notes = mergeNotes(localSnapshot.notes, state.notes);
+    // Çatışma logu (skaler alanlar): tek-değer alanlar bulut kazandı
+    const scalarKeys = ["lmpDate", "eddDate", "role", "setupComplete"];
+    scalarKeys.forEach(k => {
+      if (localSnapshot[k] && familyData[k] && localSnapshot[k] !== familyData[k]) {
+        console.log("[merge çatışma]", k, "local=", localSnapshot[k], "→ aile=", familyData[k]);
+      }
+    });
+  }
+  saveStateLocal();
 }
 
 function rerenderCurrentScreen() {
@@ -6744,11 +7733,8 @@ async function signInWithGoogle() {
       currentUser = result.user;
       try { localStorage.removeItem("9ay1hayat:declinedCloud"); } catch(e) {}
       try {
-        await loadFamilyState(result.user.uid);
-        startStateListener(result.user.uid);
+        await routeAfterAuth(result.user);
       } catch (e) { console.warn(e); }
-      hideSplash();
-      navigateToHomeOrOnboarding();
     }
     // Toast: onAuthStateChanged henüz fire etmediyse __justSignedIn dolu, sonra orada gösterilir.
     // Fire ettiyse ama toast gösterilmediyse burada elle göster.
@@ -6798,11 +7784,289 @@ async function signOutOfApp() {
   if (!window.fb || !currentUser) return;
   if (cloudWriteTimer) {
     clearTimeout(cloudWriteTimer);
-    await pushStateToCloud(currentUser.uid).catch(()=>{});
+    if (currentFamilyCode) {
+      await pushStateToCloud(currentFamilyCode).catch(()=>{});
+    }
   }
   if (unsubscribeStateListener) { unsubscribeStateListener(); unsubscribeStateListener = null; }
+  currentFamilyCode = null;
   await window.fb.signOut(window.fb.auth);
   // currentUser onAuthStateChanged ile null olacak ve auth ekranına gideceğiz
+}
+
+/* ---------- 13b) Auth sonrası yönlendirme + AİLE KURULUMU ---------- */
+
+// Auth başarılı olduğunda çağırılır. users/{uid} okur, aile varsa direkt home,
+// yoksa aile-kurulumu ekranına yönlendirir.
+async function routeAfterAuth(user) {
+  hideSplash();
+  const profile = await readUserProfile(user.uid);
+  if (profile && profile.familyCode) {
+    currentFamilyCode = profile.familyCode;
+    try {
+      await loadFamilyState(currentFamilyCode);
+      startStateListener(currentFamilyCode);
+    } catch (e) { console.warn(e); }
+    navigateToHomeOrOnboarding();
+  } else {
+    // Aile yok — kurulum ekranına git
+    fsGoTo("choose");
+    navigate("family-setup");
+  }
+}
+
+// === Aile kurulumu ekran-içi navigasyon ===
+function fsGoTo(step) {
+  const steps = ["choose", "creating", "created", "join", "joining"];
+  steps.forEach(s => {
+    const el = document.getElementById("fs-step-" + s);
+    if (el) el.style.display = (s === step) ? "flex" : "none";
+  });
+  if (step === "join") {
+    const inp = document.getElementById("fs-join-input");
+    if (inp) {
+      inp.value = "";
+      const errEl = document.getElementById("fs-join-err");
+      if (errEl) errEl.textContent = "";
+      setTimeout(() => inp.focus(), 200);
+    }
+  }
+}
+
+function fsOnCodeInput(ev) {
+  const inp = ev.target;
+  // Sadece izinli karakterleri tut, büyük harfe çevir
+  let v = (inp.value || "").toUpperCase();
+  v = v.split("").filter(ch => FAMILY_CODE_ALPHABET.indexOf(ch) !== -1).join("");
+  inp.value = v.slice(0, 6);
+  const errEl = document.getElementById("fs-join-err");
+  if (errEl) errEl.textContent = "";
+}
+
+async function fsSignOut() {
+  await signOutOfApp();
+  navigate("auth");
+}
+
+// Kullanıcının önceki families/{uid} dokümanından migrate edilebilecek veriyi getirir.
+async function readLegacyFamilyDoc(uid) {
+  if (!window.fb || !uid) return null;
+  try {
+    const ref = window.fb.doc(window.fb.db, "families", uid);
+    const snap = await window.fb.getDoc(ref);
+    return snap.exists() ? snap.data() : null;
+  } catch (err) {
+    console.warn("Legacy doküman okuma hatası:", err);
+    return null;
+  }
+}
+
+// === YENİ AİLE OLUŞTUR ===
+async function fsStartCreate() {
+  if (!currentUser) return;
+  fsGoTo("creating");
+  try {
+    const code = await generateFamilyCode();
+    const uid = currentUser.uid;
+
+    // Önce eski families/{uid} dokümanından veri çek (Cem'in önceki bulutu)
+    const legacy = await readLegacyFamilyDoc(uid);
+    let baseData = stateForCloud();
+    if (legacy) {
+      // Lokalden daha güncel olabilir → en yeni lastUpdate kazansın
+      const localUpdate = state.lastUpdate || 0;
+      const legacyUpdate = legacy.lastUpdate || 0;
+      if (legacyUpdate > localUpdate) {
+        // Legacy bulutu state'e bas
+        Object.keys(legacy).forEach(k => {
+          if (FAMILY_META_KEYS.indexOf(k) === -1 && k !== "cloudUpdatedAt") {
+            state[k] = legacy[k];
+          }
+        });
+        saveStateLocal();
+        baseData = stateForCloud();
+      }
+    }
+
+    // Yeni aile dokümanı oluştur
+    const famRef = window.fb.doc(window.fb.db, "families", code);
+    await window.fb.setDoc(famRef, Object.assign({}, baseData, {
+      members: [uid],
+      createdBy: uid,
+      lastUpdate: Date.now(),
+      cloudUpdatedAt: window.fb.serverTimestamp ? window.fb.serverTimestamp() : Date.now()
+    }));
+
+    // Kullanıcı profili
+    await writeUserProfile(uid, code);
+
+    currentFamilyCode = code;
+    startStateListener(code);
+
+    // Kodu göster
+    const codeEl = document.getElementById("fs-created-code");
+    if (codeEl) codeEl.textContent = code.split("").join(" ");
+    fsGoTo("created");
+  } catch (err) {
+    console.error("Aile oluşturma hatası:", err);
+    showToast("Bağlantı sırasında bir sorun oluştu, sayfayı yenile", 3500);
+    fsGoTo("choose");
+  }
+}
+
+function fsCopyCode() {
+  const raw = currentFamilyCode || "";
+  if (!raw) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(raw).then(() => {
+      showToast("Kod kopyalandı: " + raw, 2000);
+    }).catch(() => {
+      showToast("Kopyalanamadı, elle seç ve kopyala", 2500);
+    });
+  } else {
+    showToast("Kopyalanamadı, elle seç ve kopyala", 2500);
+  }
+}
+
+function fsShareCode() {
+  const raw = currentFamilyCode || "";
+  if (!raw) return;
+  const text = "9 Ay 1 Hayat — aile kodumuz: " + raw + "\nUygulamayı aç → Google ile giriş → \"Eşim zaten kullanıyor\" → kodu gir.";
+  if (navigator.share) {
+    navigator.share({ title: "9 Ay 1 Hayat — aile kodu", text: text }).catch(() => {});
+  } else {
+    fsCopyCode();
+  }
+}
+
+function fsContinueToHome() {
+  navigateToHomeOrOnboarding();
+}
+
+// === KOD GİREREK AİLEYE KATIL ===
+async function fsTryJoin() {
+  if (!currentUser) return;
+  const inp = document.getElementById("fs-join-input");
+  const errEl = document.getElementById("fs-join-err");
+  if (!inp) return;
+  const code = (inp.value || "").toUpperCase().trim();
+
+  if (code.length !== 6) {
+    if (errEl) errEl.textContent = "Lütfen 6 haneli kodu eksiksiz gir";
+    return;
+  }
+  if (!navigator.onLine) {
+    if (errEl) errEl.textContent = "İnternet bağlantısı yok, lütfen tekrar dene";
+    return;
+  }
+
+  fsGoTo("joining");
+
+  try {
+    const famRef = window.fb.doc(window.fb.db, "families", code);
+    const famSnap = await window.fb.getDoc(famRef);
+
+    if (!famSnap.exists()) {
+      fsGoTo("join");
+      if (errEl) errEl.textContent = "Bu kod bulunamadı, lütfen tekrar kontrol et";
+      return;
+    }
+
+    const famData = famSnap.data();
+    const members = Array.isArray(famData.members) ? famData.members : [];
+    const uid = currentUser.uid;
+
+    // Zaten o ailenin üyesiysem → direkt bağlan
+    if (members.indexOf(uid) !== -1) {
+      currentFamilyCode = code;
+      await writeUserProfile(uid, code);
+      await applyFamilyDataIntoState(famData, { mergeLocal: false });
+      startStateListener(code);
+      navigateToHomeOrOnboarding();
+      showToast("Aileye bağlandın ✓", 2000);
+      return;
+    }
+
+    if (members.length >= 2) {
+      fsGoTo("join");
+      if (errEl) errEl.textContent = "Bu aile zaten 2 üye dolu, başka aile kuramazsın";
+      return;
+    }
+
+    // Lokal anlamlı veri var mı? → kullanıcıya sor
+    if (hasMeaningfulLocalData()) {
+      // Onay diyaloğu için kurulumu beklet
+      fsGoTo("join");
+      const summary = describeLocalDataShort();
+      showConfirm(
+        "Verilerini birleştirelim mi?",
+        "Senin telefonunda " + summary + " var. Aileye katılınca eşinin verisi temel olur, senin notların da birleştirilir. Devam edelim mi?",
+        () => fsCompleteJoin(code, famRef, famData, true)
+      );
+      return;
+    }
+
+    // Anlamlı veri yok — sessizce katıl
+    await fsCompleteJoin(code, famRef, famData, false);
+  } catch (err) {
+    console.error("Aileye katılma hatası:", err);
+    fsGoTo("join");
+    if (errEl) {
+      if (!navigator.onLine) {
+        errEl.textContent = "İnternet bağlantısı yok, lütfen tekrar dene";
+      } else {
+        errEl.textContent = "Bağlantı sırasında bir sorun oluştu, sayfayı yenile";
+      }
+    }
+  }
+}
+
+function describeLocalDataShort() {
+  const parts = [];
+  if (Array.isArray(state.notes) && state.notes.length) parts.push(state.notes.length + " not");
+  if (state.lmpDate) parts.push("son adet tarihi");
+  if (state.dailyLogs && Object.keys(state.dailyLogs).length) parts.push(Object.keys(state.dailyLogs).length + " günlük kaydı");
+  if (Array.isArray(state.weights) && state.weights.length) parts.push(state.weights.length + " kilo ölçümü");
+  if (Array.isArray(state.bps) && state.bps.length) parts.push(state.bps.length + " tansiyon");
+  if (Array.isArray(state.babyNames) && state.babyNames.length) parts.push(state.babyNames.length + " bebek ismi");
+  if (parts.length === 0) parts.push("bazı ayarlar");
+  return parts.slice(0, 4).join(", ");
+}
+
+async function fsCompleteJoin(code, famRef, famData, mergeLocal) {
+  fsGoTo("joining");
+  try {
+    const uid = currentUser.uid;
+
+    // Bulut → state (varsa lokal notlar birleştirilir)
+    await applyFamilyDataIntoState(famData, { mergeLocal });
+
+    // Üye listesine ekle
+    await window.fb.updateDoc(famRef, {
+      members: window.fb.arrayUnion(uid),
+      lastUpdate: Date.now(),
+      cloudUpdatedAt: window.fb.serverTimestamp ? window.fb.serverTimestamp() : Date.now()
+    });
+
+    // Eğer notları birleştirdiysek → birleşik state'i buluta yaz
+    if (mergeLocal) {
+      // updateDoc rules: members'a yeni eklendik, artık yazma yetkimiz var
+      await pushStateToCloud(code);
+    }
+
+    await writeUserProfile(uid, code);
+
+    currentFamilyCode = code;
+    startStateListener(code);
+
+    navigateToHomeOrOnboarding();
+    showToast("Aileye katıldın ✓", 2200);
+  } catch (err) {
+    console.error("fsCompleteJoin hatası:", err);
+    fsGoTo("join");
+    const errEl = document.getElementById("fs-join-err");
+    if (errEl) errEl.textContent = "Bağlantı sırasında bir sorun oluştu, sayfayı yenile";
+  }
 }
 
 function continueLocalOnly() {
@@ -7096,13 +8360,12 @@ function init() {
     if (user) {
       try { localStorage.removeItem("9ay1hayat:declinedCloud"); } catch(e) {}
       try {
-        await loadFamilyState(user.uid);
-        startStateListener(user.uid);
+        await routeAfterAuth(user);
       } catch (err) {
         console.warn(err);
+        hideSplash();
+        navigate("auth");
       }
-      hideSplash();
-      navigateToHomeOrOnboarding();
       // Yeni giriş yaptıysa welcome toast göster
       if (window.__justSignedIn) {
         showWelcomeToast(window.__justSignedIn);
@@ -7110,6 +8373,7 @@ function init() {
       }
     } else {
       // Hesap girişli değil
+      currentFamilyCode = null;
       const declined = localStorage.getItem("9ay1hayat:declinedCloud") === "1";
       hideSplash();
       if (declined && state.setupComplete && state.lmpDate) {
