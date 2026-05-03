@@ -554,6 +554,356 @@
       display: none !important;
     }
 
+    /* ============ SORU DEFTERİ ============ */
+    .qb-entry-card {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+      color: var(--text);
+    }
+    .qb-entry-card:active { opacity: 0.85; }
+    .qb-entry-ico { font-size: 24px; line-height: 1; }
+    .qb-entry-text { flex: 1; min-width: 0; }
+    .qb-entry-title { font-size: 15px; font-weight: 700; color: var(--primary-deep); }
+    .qb-entry-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .qb-entry-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .qb-entry-arrow { color: var(--text-soft); font-size: 22px; line-height: 1; }
+
+    .qb-compose {
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .qb-textarea {
+      width: 100%;
+      min-height: 56px;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 15px;
+      line-height: 1.45;
+      resize: vertical;
+      outline: none;
+    }
+    .qb-textarea:focus { border-color: var(--primary); }
+    .qb-compose-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .qb-hint {
+      flex: 1;
+      font-size: 12px;
+      color: var(--text-muted);
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .qb-add-btn { padding: 9px 18px; min-height: 40px; }
+
+    .qb-toast {
+      background: var(--secondary-soft);
+      color: var(--text);
+      border-left: 3px solid var(--secondary);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .qb-toast.show { opacity: 1; }
+
+    .qb-section-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 18px 4px 10px;
+    }
+    .qb-section-ico { font-size: 18px; }
+    .qb-section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary-deep);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .qb-section-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .qb-section-empty {
+      font-size: 13px;
+      color: var(--text-muted);
+      padding: 10px 12px;
+      background: var(--bg-card);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-sm);
+    }
+    .qb-info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .qb-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+    .qb-card-text {
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--text);
+    }
+    .qb-card-meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .qb-meta-sep { color: var(--text-soft); }
+    .qb-date { color: var(--text-muted); }
+    .qb-del-btn {
+      margin-left: auto;
+      background: transparent;
+      border: none;
+      color: var(--text-soft);
+      font-size: 18px;
+      line-height: 1;
+      padding: 4px 10px;
+      cursor: pointer;
+      border-radius: 999px;
+    }
+    .qb-del-btn:hover, .qb-del-btn:active { background: var(--bg-soft); color: var(--danger); }
+    .qb-move-btn {
+      background: var(--bg-soft);
+      color: var(--primary-deep);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 11px;
+      cursor: pointer;
+    }
+    .qb-move-btn:active { opacity: 0.85; }
+
+    .author-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .author-chip.cem {
+      background: var(--secondary-soft);
+      color: var(--secondary);
+    }
+    .author-chip.buse {
+      background: var(--primary-soft);
+      color: var(--primary-deep);
+    }
+
+    .qb-answer {
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: var(--bg-soft);
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--primary);
+      position: relative;
+    }
+    .qb-answer-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary-deep);
+      margin-bottom: 4px;
+    }
+    .qb-answer-text {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text);
+      white-space: pre-wrap;
+    }
+    .qb-answer-edit {
+      margin-top: 6px;
+      background: transparent;
+      border: none;
+      color: var(--primary-deep);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 2px 0;
+    }
+    .qb-answer-edit:hover { text-decoration: underline; }
+    .qb-answer-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 10px;
+      background: transparent;
+      border: none;
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 0;
+    }
+    .qb-answer-cta:hover { color: var(--primary-deep); }
+
+    .qb-answer-edit-wrap {
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: var(--bg-soft);
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--primary);
+    }
+    .qb-answer-input {
+      width: 100%;
+      min-height: 70px;
+      padding: 8px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.45;
+      resize: vertical;
+      outline: none;
+    }
+    .qb-answer-input:focus { border-color: var(--primary); }
+    .qb-answer-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .qb-answer-actions .btn { padding: 7px 16px; min-height: 36px; font-size: 14px; }
+
+    .qb-past-group { margin-bottom: 8px; }
+    .qb-past-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--text);
+      text-align: left;
+    }
+    .qb-past-arrow { color: var(--text-soft); font-size: 12px; }
+    .qb-past-label { flex: 1; font-size: 14px; font-weight: 600; }
+    .qb-past-count { font-size: 12px; color: var(--text-muted); }
+    .qb-past-body {
+      padding: 10px 0 0 0;
+    }
+    .qb-past-body[hidden] { display: none !important; }
+
+    .qb-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+    .qb-empty-ico { font-size: 48px; margin-bottom: 10px; }
+    .qb-empty-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary-deep);
+      margin-bottom: 6px;
+    }
+    .qb-empty-sub { font-size: 14px; line-height: 1.5; }
+    .qb-empty-inline {
+      padding: 10px 0 4px;
+      color: var(--text-muted);
+    }
+
+    .appt-questions-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .qb-mini-card {
+      margin-top: 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 12px 14px;
+    }
+    .qb-mini-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary-deep);
+      margin-bottom: 8px;
+    }
+    .qb-mini-row {
+      display: flex;
+      gap: 8px;
+    }
+    .qb-mini-row input {
+      flex: 1;
+      padding: 9px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 999px;
+      background: var(--bg-card);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      min-height: 40px;
+    }
+    .qb-mini-row input:focus { border-color: var(--primary); }
+    .qb-mini-btn { padding: 7px 14px; min-height: 40px; font-size: 14px; }
+    .qb-mini-feedback {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .qb-mini-ok { color: var(--secondary); font-weight: 600; }
+    .qb-mini-link {
+      color: var(--primary-deep);
+      text-decoration: underline;
+      cursor: pointer;
+      font-weight: 600;
+      margin-left: 6px;
+    }
+
     .appt-banner {
       background: linear-gradient(135deg, var(--warn) 0%, #F8D6B0 100%);
       border-radius: var(--radius);
@@ -3302,6 +3652,15 @@
   </div>
 
   <div id="week-baby-letter"></div>
+
+  <div class="qb-mini-card">
+    <div class="qb-mini-label">📓 Doktora sormak istediğin var mı?</div>
+    <div class="qb-mini-row">
+      <input type="text" id="week-qb-input" placeholder="Buraya yaz..." oninput="weekQbValidate()" onkeydown="if(event.key==='Enter'){event.preventDefault();weekQbAdd();}" />
+      <button type="button" class="btn btn-primary qb-mini-btn" id="week-qb-btn" onclick="weekQbAdd()" disabled>+ Ekle</button>
+    </div>
+    <div id="week-qb-feedback" class="qb-mini-feedback" hidden></div>
+  </div>
 </div>
 
 <!-- ============ NOTLAR LİSTE ============ -->
@@ -3505,6 +3864,16 @@
     Aşağıdaki randevular son adet tarihine göre otomatik kuruldu. Her birinin tarihini, doktor/hastane bilgisini, sorularını ve sonucunu girebilirsin.
   </div>
 
+  <button type="button" class="qb-entry-card" onclick="navigate('question-book')">
+    <span class="qb-entry-ico">📓</span>
+    <div class="qb-entry-text">
+      <div class="qb-entry-title">Soru Defteri</div>
+      <div class="qb-entry-sub" id="qb-entry-sub">Aklına geleni yaz, randevuda hazır olsun</div>
+    </div>
+    <span class="qb-entry-badge" id="qb-entry-badge" hidden></span>
+    <span class="qb-entry-arrow">›</span>
+  </button>
+
   <div id="appointments-pending"></div>
 
   <h3 style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin: 24px 0 10px; padding: 0 4px;">Tamamlananlar</h3>
@@ -3558,15 +3927,13 @@
   </div>
 
   <div class="editor-section">
-    <span class="editor-label">Doktora soracaklarım</span>
-    <div class="card" style="padding: 12px; margin-bottom: 0;">
-      <div id="appt-questions-list"></div>
-      <div class="h-stack" style="gap: 8px; margin-top: 8px;">
-        <input type="text" id="appt-question-input" placeholder="Yeni soru ekle"
-          style="flex:1; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 999px; outline: none; background: var(--bg-card); color: var(--text);"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();apptAddQuestion();}" />
-        <button class="btn-ghost" onclick="apptAddQuestion()" style="padding: 10px 18px; color: var(--primary-deep); font-weight: 600;">Ekle</button>
-      </div>
+    <span class="editor-label">📓 Bu randevu için sorular</span>
+    <div id="appt-questions-section" class="appt-questions-section"></div>
+    <div class="h-stack qb-inline-add" style="gap: 8px; margin-top: 10px;">
+      <input type="text" id="appt-q-inline-input" placeholder="Yeni soru ekle"
+        style="flex:1; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 999px; outline: none; background: var(--bg-card); color: var(--text);"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();apptInlineAddQuestion();}" />
+      <button class="btn-ghost" onclick="apptInlineAddQuestion()" style="padding: 10px 18px; color: var(--primary-deep); font-weight: 600;">Ekle</button>
     </div>
   </div>
 
@@ -3582,6 +3949,37 @@
 
   <div class="spacer-24"></div>
   <button id="appt-delete-btn" class="btn btn-danger" onclick="apptDelete()">Bu randevuyu sil</button>
+  <div class="spacer-24"></div>
+</div>
+
+<!-- ============ SORU DEFTERİ ============ -->
+<div id="screen-question-book" class="screen">
+  <div class="screen-header">
+    <button onclick="navigate('appointments')" aria-label="Geri">←</button>
+    <h1>Soru Defteri</h1>
+    <span style="width: 40px;"></span>
+  </div>
+
+  <div class="qb-compose card">
+    <textarea id="qb-input" class="qb-textarea" rows="2" placeholder="Sormak istediğin bir şey?" oninput="qbValidateInput()"></textarea>
+    <div class="qb-compose-row">
+      <span id="qb-next-hint" class="qb-hint"></span>
+      <button id="qb-add-btn" class="btn btn-primary qb-add-btn" onclick="qbAddFromMain()" disabled>+ Ekle</button>
+    </div>
+  </div>
+
+  <div id="qb-toast" class="qb-toast" hidden></div>
+
+  <div id="qb-upcoming"></div>
+  <div id="qb-unassigned"></div>
+  <div id="qb-past"></div>
+
+  <div id="qb-empty" class="qb-empty" hidden>
+    <div class="qb-empty-ico">📓</div>
+    <div class="qb-empty-title">Henüz soru eklenmedi</div>
+    <div class="qb-empty-sub">Aklına gelenleri buraya yaz, randevu zamanında doktoruna sormayı unutma.</div>
+  </div>
+
   <div class="spacer-24"></div>
 </div>
 
@@ -3837,6 +4235,11 @@
       <span class="ico">📛</span>
       <div class="lbl">İsim listesi</div>
       <div class="sub">İkili oylama</div>
+    </button>
+    <button class="more-item" onclick="navigate('question-book')">
+      <span class="ico">📓</span>
+      <div class="lbl">Soru Defteri</div>
+      <div class="sub">Doktora soracaklarınız</div>
     </button>
     <button class="more-item" onclick="navigate('settings')">
       <span class="ico">⚙️</span>
@@ -4984,6 +5387,7 @@ function defaultState() {
     notes: [],                // [{id, createdAt, updatedAt, author, lastEditedBy?, text, tags, photos}]
     appointments: [],         // v0.3: doktor randevuları
     autoApptGenerated: false, // şablonlar bir kez üretildi mi
+    questions: [],            // [{id, text, answer, askedBy, appointmentId, createdAt, answeredAt}]
     // v0.2 final — bulut + doktor + anne modu
     dailyLogs: {},            // { "YYYY-MM-DD": { mood, symptoms[], waterGlasses, vitamins[], note, sharedWithCem } }
     weights: [],              // [{id, date, kg, sharedWithCem}]
@@ -5206,7 +5610,7 @@ function weekToLmp(weekNum) {
 
 /* ---------- 4) NAVİGASYON ---------- */
 
-const SCREENS = ["auth", "family-setup", "onboarding", "home", "week-detail", "notes", "note-editor", "settings", "appointments", "appointment-detail", "daily-log", "mood-calendar", "measurements", "kicks", "hospital-bag", "names", "more"];
+const SCREENS = ["auth", "family-setup", "onboarding", "home", "week-detail", "notes", "note-editor", "settings", "appointments", "appointment-detail", "question-book", "daily-log", "mood-calendar", "measurements", "kicks", "hospital-bag", "names", "more"];
 
 function navigate(name, params) {
   // Auth & family-setup ekranları her zaman erişilebilir (bypass setup checks)
@@ -5248,6 +5652,7 @@ function navigate(name, params) {
     case "settings": renderSettings(); break;
     case "appointments": renderAppointments(); break;
     case "appointment-detail": renderApptDetail(params); break;
+    case "question-book": renderQuestionBook(); break;
     case "daily-log": renderDailyLog(params); break;
     case "mood-calendar": renderMoodCalendar(); break;
     case "measurements": renderMeasurements(); break;
@@ -5525,6 +5930,391 @@ function getNextAppointment() {
     return overdue.length > 0 ? overdue[0].a : null;
   }
   return upcoming[0].a;
+}
+
+/* ---------- SORU DEFTERİ ---------- */
+
+function getNextAppointmentId() {
+  // Sadece bugün/sonrası ve done=false — orphan-prevent için overdue düşmesin
+  if (!state.appointments || state.appointments.length === 0) return null;
+  const today = startOfDay(new Date());
+  const upcoming = state.appointments
+    .filter(a => !a.done && a.scheduledDate)
+    .map(a => ({ a, d: parseDate(a.scheduledDate) }))
+    .filter(x => x.d >= today)
+    .sort((x, y) => x.d - y.d);
+  return upcoming.length > 0 ? upcoming[0].a.id : null;
+}
+
+function ensureQuestions() {
+  if (!Array.isArray(state.questions)) state.questions = [];
+  return state.questions;
+}
+
+function addQuestion(text) {
+  const t = (text || "").trim();
+  if (!t) return null;
+  ensureQuestions();
+  const q = {
+    id: "q_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+    text: t,
+    answer: "",
+    askedBy: getMyAuthorKey(),
+    appointmentId: getNextAppointmentId(),
+    createdAt: new Date().toISOString(),
+    answeredAt: null
+  };
+  state.questions.push(q);
+  saveState();
+  return q;
+}
+
+function deleteQuestion(id) {
+  ensureQuestions();
+  state.questions = state.questions.filter(q => q.id !== id);
+  saveState();
+}
+
+function setQuestionAnswer(id, answer) {
+  ensureQuestions();
+  const q = state.questions.find(x => x.id === id);
+  if (!q) return;
+  const trimmed = (answer || "").trim();
+  q.answer = trimmed;
+  if (trimmed && !q.answeredAt) q.answeredAt = new Date().toISOString();
+  if (!trimmed) q.answeredAt = null;
+  saveState();
+}
+
+function moveQuestionToAppointment(qid, apptId) {
+  ensureQuestions();
+  const q = state.questions.find(x => x.id === qid);
+  if (!q) return;
+  q.appointmentId = apptId || null;
+  saveState();
+}
+
+function questionsForAppointment(apptId) {
+  ensureQuestions();
+  return state.questions.filter(q => q.appointmentId === apptId);
+}
+
+function unassignedQuestions() {
+  ensureQuestions();
+  return state.questions.filter(q => q.appointmentId === null);
+}
+
+function orphanQuestionsForAppointment(apptId) {
+  // Randevu silindiğinde bağlı soruları null'a çevir
+  ensureQuestions();
+  state.questions.forEach(q => {
+    if (q.appointmentId === apptId) q.appointmentId = null;
+  });
+}
+
+function authorChip(askedBy) {
+  if (askedBy === "buse") return '<span class="author-chip buse">🤰 Buse</span>';
+  return '<span class="author-chip cem">👨 Cem</span>';
+}
+
+function questionCardHtml(q, opts) {
+  opts = opts || {};
+  const showAnswer = opts.showAnswer !== false; // varsayılan: göster
+  const answered = q.answer && q.answer.trim().length > 0;
+  const dateText = fmtShortDate(q.createdAt);
+  let answerBlock = "";
+  if (showAnswer) {
+    if (answered) {
+      answerBlock =
+        '<div class="qb-answer">' +
+          '<div class="qb-answer-label">Doktor cevabı:</div>' +
+          '<div class="qb-answer-text">' + escapeHtml(q.answer) + '</div>' +
+          '<button type="button" class="qb-answer-edit" onclick="qbEditAnswer(\'' + q.id + '\')">Düzenle</button>' +
+        '</div>';
+    } else {
+      answerBlock =
+        '<button type="button" class="qb-answer-cta" onclick="qbEditAnswer(\'' + q.id + '\')">💬 Cevap ekle</button>';
+    }
+  }
+  return '<div class="qb-card" data-qid="' + q.id + '">' +
+    '<div class="qb-card-text">' + escapeHtml(q.text) + '</div>' +
+    '<div class="qb-card-meta">' +
+      authorChip(q.askedBy) +
+      (dateText ? '<span class="qb-meta-sep">·</span><span class="qb-date">' + dateText + '</span>' : '') +
+      (q.appointmentId === null ? '<button type="button" class="qb-move-btn" onclick="qbMovePrompt(\'' + q.id + '\')">📌 Randevuya taşı</button>' : '') +
+      '<button type="button" class="qb-del-btn" onclick="qbDelete(\'' + q.id + '\')" aria-label="Sil">⋮</button>' +
+    '</div>' +
+    answerBlock +
+  '</div>';
+}
+
+function qbValidateInput() {
+  const inp = document.getElementById("qb-input");
+  const btn = document.getElementById("qb-add-btn");
+  if (!inp || !btn) return;
+  btn.disabled = !inp.value.trim();
+}
+
+function qbAddFromMain() {
+  const inp = document.getElementById("qb-input");
+  const text = inp.value.trim();
+  if (!text) return;
+  const q = addQuestion(text);
+  inp.value = "";
+  qbValidateInput();
+  qbShowToast(q.appointmentId ? "✓ Bir sonraki randevuya eklendi" : "✓ Eklendi (atanmamış — randevu yok)");
+  renderQuestionBook();
+}
+
+function qbShowToast(msg) {
+  const el = document.getElementById("qb-toast");
+  if (!el) return;
+  el.textContent = msg;
+  el.hidden = false;
+  el.classList.add("show");
+  clearTimeout(el._t);
+  el._t = setTimeout(() => {
+    el.classList.remove("show");
+    setTimeout(() => { el.hidden = true; }, 250);
+  }, 2400);
+}
+
+function qbDelete(qid) {
+  if (!confirm("Bu soru silinsin mi?")) return;
+  deleteQuestion(qid);
+  if (document.getElementById("screen-question-book").classList.contains("active")) {
+    renderQuestionBook();
+  }
+  if (document.getElementById("screen-appointment-detail").classList.contains("active")) {
+    apptRenderQuestionsSection();
+  }
+}
+
+function qbEditAnswer(qid) {
+  const q = (state.questions || []).find(x => x.id === qid);
+  if (!q) return;
+  const card = document.querySelector('.qb-card[data-qid="' + qid + '"]');
+  if (!card) return;
+  // Mevcut cevap UI'sını çıkar, textarea + Kaydet aç
+  const oldAnswer = card.querySelector(".qb-answer, .qb-answer-cta");
+  if (oldAnswer) oldAnswer.remove();
+  const wrap = document.createElement("div");
+  wrap.className = "qb-answer-edit-wrap";
+  wrap.innerHTML =
+    '<div class="qb-answer-label">Doktor cevabı:</div>' +
+    '<textarea class="qb-answer-input" rows="3"></textarea>' +
+    '<div class="qb-answer-actions">' +
+      '<button type="button" class="btn-ghost qb-cancel">İptal</button>' +
+      '<button type="button" class="btn btn-primary qb-save" disabled>Kaydet</button>' +
+    '</div>';
+  card.appendChild(wrap);
+  const ta = wrap.querySelector(".qb-answer-input");
+  ta.value = q.answer || "";
+  const saveBtn = wrap.querySelector(".qb-save");
+  saveBtn.disabled = !ta.value.trim();
+  ta.focus();
+  ta.addEventListener("input", () => { saveBtn.disabled = !ta.value.trim(); });
+  wrap.querySelector(".qb-cancel").addEventListener("click", () => {
+    if (document.getElementById("screen-question-book").classList.contains("active")) {
+      renderQuestionBook();
+    } else if (document.getElementById("screen-appointment-detail").classList.contains("active")) {
+      apptRenderQuestionsSection();
+    }
+  });
+  saveBtn.addEventListener("click", () => {
+    const v = ta.value.trim();
+    if (!v) return;
+    setQuestionAnswer(qid, v);
+    if (document.getElementById("screen-question-book").classList.contains("active")) {
+      renderQuestionBook();
+    } else if (document.getElementById("screen-appointment-detail").classList.contains("active")) {
+      apptRenderQuestionsSection();
+    }
+  });
+}
+
+function qbMovePrompt(qid) {
+  const today = startOfDay(new Date());
+  const upcoming = (state.appointments || [])
+    .filter(a => !a.done && a.scheduledDate)
+    .map(a => ({ a, d: parseDate(a.scheduledDate) }))
+    .filter(x => x.d >= today)
+    .sort((x, y) => x.d - y.d)
+    .map(x => x.a);
+  if (upcoming.length === 0) {
+    alert("Taşınabilecek bir gelecek randevu yok. Önce randevu ekle.");
+    return;
+  }
+  const lines = upcoming.map((a, i) => (i + 1) + ") " + (a.title || "Randevu") + " — " + fmtShortDate(a.scheduledDate));
+  const promptText = "Hangi randevuya taşınsın?\n\n" + lines.join("\n") + "\n\nNumara yaz:";
+  const choice = prompt(promptText, "1");
+  if (!choice) return;
+  const idx = parseInt(choice, 10) - 1;
+  if (isNaN(idx) || idx < 0 || idx >= upcoming.length) return;
+  moveQuestionToAppointment(qid, upcoming[idx].id);
+  renderQuestionBook();
+}
+
+function renderQuestionBook() {
+  ensureQuestions();
+  const all = state.questions;
+  const upcoming = document.getElementById("qb-upcoming");
+  const unassigned = document.getElementById("qb-unassigned");
+  const past = document.getElementById("qb-past");
+  const empty = document.getElementById("qb-empty");
+  const nextHint = document.getElementById("qb-next-hint");
+
+  // Compose hint — bir sonraki randevu varsa
+  const nextApptId = getNextAppointmentId();
+  const nextAppt = nextApptId ? (state.appointments || []).find(a => a.id === nextApptId) : null;
+  if (nextHint) {
+    if (nextAppt) {
+      nextHint.textContent = "→ " + (nextAppt.title || "Randevu") + " · " + fmtShortDate(nextAppt.scheduledDate);
+    } else {
+      nextHint.textContent = "Yaklaşan randevu yok — atanmamış olarak eklenecek";
+    }
+  }
+
+  if (all.length === 0) {
+    upcoming.innerHTML = "";
+    unassigned.innerHTML = "";
+    past.innerHTML = "";
+    empty.hidden = false;
+    return;
+  }
+  empty.hidden = true;
+
+  // Yaklaşan: sadece nextAppt'a bağlı sorular (en yakın gelecek randevu)
+  const today = startOfDay(new Date());
+  if (nextAppt) {
+    const qs = questionsForAppointment(nextAppt.id);
+    upcoming.innerHTML =
+      '<div class="qb-section-head">' +
+        '<span class="qb-section-ico">📅</span>' +
+        '<div>' +
+          '<div class="qb-section-title">Yaklaşan: ' + escapeHtml(fmtShortDate(nextAppt.scheduledDate)) + (nextAppt.doctor ? ' (' + escapeHtml(nextAppt.doctor) + ')' : '') + '</div>' +
+          '<div class="qb-section-sub">' + escapeHtml(nextAppt.title || "Randevu") + ' · ' + qs.length + ' soru</div>' +
+        '</div>' +
+      '</div>' +
+      (qs.length ? qs.map(q => questionCardHtml(q)).join("") : '<div class="qb-section-empty">Bu randevu için henüz soru yok.</div>');
+  } else {
+    upcoming.innerHTML =
+      '<div class="qb-info-card">📅 Yaklaşan randevu yok. Randevu eklediğinde sorular otomatik oraya bağlanacak.</div>';
+  }
+
+  // Atanmamış: appointmentId === null
+  const orphan = unassignedQuestions();
+  if (orphan.length > 0) {
+    unassigned.innerHTML =
+      '<div class="qb-section-head">' +
+        '<span class="qb-section-ico">⏳</span>' +
+        '<div>' +
+          '<div class="qb-section-title">Atanmamış (' + orphan.length + ')</div>' +
+          '<div class="qb-section-sub">Bir randevuya bağlı değil</div>' +
+        '</div>' +
+      '</div>' +
+      orphan.map(q => questionCardHtml(q)).join("");
+  } else {
+    unassigned.innerHTML = "";
+  }
+
+  // Geçmiş randevular: tarihi bugünden önce ya da done=true randevular
+  const apptList = (state.appointments || []).slice();
+  const pastAppts = apptList
+    .filter(a => a.scheduledDate && (parseDate(a.scheduledDate) < today || a.done))
+    .filter(a => !nextAppt || a.id !== nextAppt.id) // yakındakini iki kez gösterme
+    .map(a => ({ a, qs: questionsForAppointment(a.id) }))
+    .filter(x => x.qs.length > 0)
+    .sort((x, y) => parseDate(y.a.scheduledDate) - parseDate(x.a.scheduledDate));
+
+  if (pastAppts.length > 0) {
+    past.innerHTML =
+      '<div class="qb-section-head">' +
+        '<span class="qb-section-ico">✅</span>' +
+        '<div>' +
+          '<div class="qb-section-title">Geçmiş Randevular (' + pastAppts.length + ')</div>' +
+          '<div class="qb-section-sub">Tıkla aç-kapa</div>' +
+        '</div>' +
+      '</div>' +
+      pastAppts.map((x, i) => {
+        const id = "qb-past-" + i;
+        return '<div class="qb-past-group">' +
+          '<button type="button" class="qb-past-toggle" aria-expanded="false" aria-controls="' + id + '" onclick="qbTogglePast(this)">' +
+            '<span class="qb-past-arrow">▶</span>' +
+            '<span class="qb-past-label">' + escapeHtml(fmtShortDate(x.a.scheduledDate)) + ' — ' + escapeHtml(x.a.title || "Randevu") + '</span>' +
+            '<span class="qb-past-count">' + x.qs.length + ' soru</span>' +
+          '</button>' +
+          '<div class="qb-past-body" id="' + id + '" hidden>' +
+            x.qs.map(q => questionCardHtml(q)).join("") +
+          '</div>' +
+        '</div>';
+      }).join("");
+  } else {
+    past.innerHTML = "";
+  }
+}
+
+function qbTogglePast(btn) {
+  const targetId = btn.getAttribute("aria-controls");
+  const body = document.getElementById(targetId);
+  if (!body) return;
+  const isOpen = !body.hidden;
+  body.hidden = isOpen;
+  btn.setAttribute("aria-expanded", String(!isOpen));
+  const arrow = btn.querySelector(".qb-past-arrow");
+  if (arrow) arrow.textContent = isOpen ? "▶" : "▼";
+}
+
+function weekQbValidate() {
+  const inp = document.getElementById("week-qb-input");
+  const btn = document.getElementById("week-qb-btn");
+  if (!inp || !btn) return;
+  btn.disabled = !inp.value.trim();
+}
+
+function weekQbAdd() {
+  const inp = document.getElementById("week-qb-input");
+  if (!inp) return;
+  const text = inp.value.trim();
+  if (!text) return;
+  const q = addQuestion(text);
+  inp.value = "";
+  weekQbValidate();
+  const fb = document.getElementById("week-qb-feedback");
+  if (!fb) return;
+  fb.hidden = false;
+  fb.innerHTML =
+    '<span class="qb-mini-ok">' + (q.appointmentId ? "✓ Bir sonraki randevuya eklendi" : "✓ Eklendi (atanmamış)") + '</span>' +
+    ' <a class="qb-mini-link" onclick="navigate(\'question-book\')">Soru Defteri\'ni aç →</a>';
+  clearTimeout(weekQbAdd._t);
+  weekQbAdd._t = setTimeout(() => {
+    if (fb) { fb.hidden = true; fb.innerHTML = ""; }
+  }, 4000);
+}
+
+function refreshQuestionBookEntryBadge() {
+  const sub = document.getElementById("qb-entry-sub");
+  const badge = document.getElementById("qb-entry-badge");
+  if (!sub || !badge) return;
+  ensureQuestions();
+  const nextId = getNextAppointmentId();
+  const upcomingCount = nextId ? questionsForAppointment(nextId).length : 0;
+  if (upcomingCount > 0) {
+    badge.textContent = upcomingCount + " yaklaşan";
+    badge.hidden = false;
+  } else {
+    badge.hidden = true;
+  }
+}
+
+function fmtShortDate(iso) {
+  if (!iso) return "";
+  try {
+    const d = (typeof iso === "string" && iso.length === 10) ? parseDate(iso) : new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    const months = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
+    return d.getDate() + " " + months[d.getMonth()];
+  } catch (e) { return ""; }
 }
 
 /* ---------- 6) ANA EKRAN ---------- */
@@ -5849,6 +6639,13 @@ function renderWeekDetail(params) {
       letterBox.style.display = "none";
     }
   }
+
+  // Mini soru ekleme alanını sıfırla
+  const wInp = document.getElementById("week-qb-input");
+  if (wInp) wInp.value = "";
+  weekQbValidate();
+  const wFb = document.getElementById("week-qb-feedback");
+  if (wFb) { wFb.hidden = true; wFb.innerHTML = ""; }
 }
 
 function renderReadMore(toggleId, contentId, sections) {
@@ -6882,6 +7679,8 @@ function renderAppointments() {
   document.getElementById("appointments-done").innerHTML = done.length === 0
     ? '<div class="small text-center" style="padding: 12px;">Henüz tamamlanan randevu yok</div>'
     : done.map(apptCardHtml).join("");
+
+  refreshQuestionBookEntryBadge();
 }
 
 function apptCardHtml(a) {
@@ -6992,7 +7791,7 @@ function renderApptDetail(params) {
   document.getElementById("appt-notes-input").value = apt.notes || "";
   document.getElementById("appt-result-input").value = apt.result || "";
   apptRenderStatus();
-  apptRenderQuestions();
+  apptRenderQuestionsSection();
 }
 
 function apptSetDone(done) {
@@ -7009,44 +7808,36 @@ function apptRenderStatus() {
   });
 }
 
-function apptAddQuestion() {
-  const inp = document.getElementById("appt-question-input");
+function apptInlineAddQuestion() {
+  if (!apptDraft) return;
+  const inp = document.getElementById("appt-q-inline-input");
   const text = (inp.value || "").trim();
   if (!text) return;
-  if (!apptDraft.questions) apptDraft.questions = [];
-  apptDraft.questions.push({ text: text, answered: false });
+  ensureQuestions();
+  const q = {
+    id: "q_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+    text: text,
+    answer: "",
+    askedBy: getMyAuthorKey(),
+    appointmentId: apptDraft.id,
+    createdAt: new Date().toISOString(),
+    answeredAt: null
+  };
+  state.questions.push(q);
+  saveState();
   inp.value = "";
-  apptRenderQuestions();
+  apptRenderQuestionsSection();
 }
 
-function apptToggleQuestion(idx) {
-  if (!apptDraft || !apptDraft.questions) return;
-  const q = apptDraft.questions[idx];
-  if (!q) return;
-  q.answered = !q.answered;
-  apptRenderQuestions();
-}
-
-function apptDelQuestion(idx) {
-  if (!apptDraft || !apptDraft.questions) return;
-  apptDraft.questions.splice(idx, 1);
-  apptRenderQuestions();
-}
-
-function apptRenderQuestions() {
-  const list = document.getElementById("appt-questions-list");
-  const qs = (apptDraft && apptDraft.questions) || [];
+function apptRenderQuestionsSection() {
+  const list = document.getElementById("appt-questions-section");
+  if (!list || !apptDraft) return;
+  const qs = questionsForAppointment(apptDraft.id);
   if (qs.length === 0) {
-    list.innerHTML = '<div class="small" style="padding: 8px 0;">Henüz soru yok. Aklına geldikçe ekle, randevu öncesi hazır olur.</div>';
+    list.innerHTML = '<div class="small qb-empty-inline">Bu randevu için henüz soru eklenmemiş. Aşağıdan ekle.</div>';
     return;
   }
-  list.innerHTML = qs.map((q, i) => {
-    return '<div class="question-item' + (q.answered ? ' checked' : '') + '">' +
-      '<button type="button" class="check' + (q.answered ? ' checked' : '') + '" onclick="apptToggleQuestion(' + i + ')" aria-label="İşaretle">✓</button>' +
-      '<div class="q-text">' + escapeHtml(q.text) + '</div>' +
-      '<button type="button" class="q-del" onclick="apptDelQuestion(' + i + ')" aria-label="Sil">×</button>' +
-    '</div>';
-  }).join("");
+  list.innerHTML = qs.map(q => questionCardHtml(q)).join("");
 }
 
 function apptOpenDatePicker() {
@@ -7084,7 +7875,8 @@ function apptSave() {
 function apptDelete() {
   if (!apptDraft) return;
   const id = apptDraft.id;
-  showConfirm("Bu randevuyu sil?", "Sonuç ve sorular dahil bütün bilgileri silinir.", () => {
+  showConfirm("Bu randevuyu sil?", "Randevu siliniyor. Bu randevuya bağlı soruların kaybolmaz — Soru Defteri'nde 'Atanmamış' bölümüne taşınır.", () => {
+    orphanQuestionsForAppointment(id);
     state.appointments = state.appointments.filter(a => a.id !== id);
     saveState();
     apptDraft = null;
