@@ -504,6 +504,56 @@
       font-style: italic;
     }
 
+    .btn-read-more {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      padding: 9px 16px;
+      background: var(--primary-soft);
+      color: var(--primary-deep);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      min-height: 40px;
+    }
+    .btn-read-more:hover,
+    .btn-read-more:active,
+    .btn-read-more[aria-expanded="true"] {
+      background: var(--primary);
+      color: #fff;
+    }
+    .read-more-content {
+      margin-top: 12px;
+      padding: 14px 16px;
+      background: var(--bg-soft);
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--primary);
+    }
+    .read-more-content h4 {
+      margin: 0 0 6px 0;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary-deep);
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .read-more-content h4:not(:first-child) {
+      margin-top: 14px;
+    }
+    .read-more-content p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--text);
+    }
+    .read-more-content[hidden] {
+      display: none !important;
+    }
+
     .appt-banner {
       background: linear-gradient(135deg, var(--warn) 0%, #F8D6B0 100%);
       border-radius: var(--radius);
@@ -3233,16 +3283,22 @@
   <div class="info-section" id="week-baby">
     <h3>👶 Bebekte neler oluyor?</h3>
     <ul></ul>
+    <button type="button" class="btn-read-more" id="week-baby-toggle" aria-expanded="false" aria-controls="week-baby-detail" hidden>📖 Daha fazla oku</button>
+    <div class="read-more-content" id="week-baby-detail" hidden></div>
   </div>
 
   <div class="info-section" id="week-mom">
     <h3>🤰 Annede neler olabilir?</h3>
     <ul></ul>
+    <button type="button" class="btn-read-more" id="week-mom-toggle" aria-expanded="false" aria-controls="week-mom-detail" hidden>📖 Daha fazla oku</button>
+    <div class="read-more-content" id="week-mom-detail" hidden></div>
   </div>
 
   <div class="tip-card" id="week-tip">
     <div class="tip-label">Bu hafta için ipucu</div>
     <div class="tip-text"></div>
+    <button type="button" class="btn-read-more" id="week-tip-toggle" aria-expanded="false" aria-controls="week-tip-detail" hidden>📖 Daha fazla oku</button>
+    <div class="read-more-content" id="week-tip-detail" hidden></div>
   </div>
 
   <div id="week-baby-letter"></div>
@@ -3869,7 +3925,17 @@ const WEEK_DATA = {
     ],
     tip: "Folik asit önemli — eğer doktor önerisiyle başlamadıysan, hemen başlat. Nöral tüp gelişimi için kritik dönem.",
     appt: "İlk doktor randevusunu al",
-    babyLetter: "Selam anne 🤍 Daha çok küçüğüm ama buradayım. Bu hafta seni hissetmeye başladım — kalbinin sesini."
+    babyLetter: "Selam anne 🤍 Daha çok küçüğüm ama buradayım. Bu hafta seni hissetmeye başladım — kalbinin sesini.",
+    babyDetail: {
+      gelisim: "Embriyo bu hafta rahim duvarına yerleşmiş, plasentanın temelleri kurulmaya başlıyor. Üç ana hücre tabakası şekilleniyor — ileride bunlardan beyin, omurilik, kalp ve sindirim sistemi gelişecek. Henüz mikroskopla bile zor görülecek kadar küçük bir varlık ama düzeni kurulu.",
+      duyular: "Duyu organları henüz yok; temel hücre tabakaları şekilleniyor, asıl duyu gelişimi 8. haftadan sonra hızlanacak. Şimdi en önemli iş hücrelerin doğru yere yerleşmesi."
+    },
+    momDetail: {
+      fiziksel: "Adet gecikmesi ilk işaret. Bazılarında hafif lekelenme (implantasyon kanaması) görülebilir, panik yapma — kahverengi ve kısa süreli olur. Memelerde dolgunluk, sabahları hafif bulantı, kokulara hassasiyet başlayabilir.",
+      duygusal: "Test pozitif çıktığında karışık duygular normal — mutluluk, şaşkınlık, biraz kaygı bir arada gelebilir. İkinci kez geçtiğin için bu yolun bazı kısımlarını tanıyorsun ama her gebelik kendi hikayesi, kıyaslamadan ilerlemek iyi gelir.",
+      dikkat: "Folik asit takviyesine başla — nöral tüp gelişimi şu haftalarda kritik, günlük 400-800 mcg standart öneri. Sigara, alkol, gereksiz ilaçlardan uzak dur; herhangi bir ilaç kullanıyorsan doktoruna sor. Çiğ et, az pişmiş yumurta ve pastörize edilmemiş süt ürünlerini bu süreçte kenara bırak."
+    },
+    tipDetail: "Folik asit gebelikten önce başlanmadıysa hemen başlamak gerekir; nöral tüp ilk haftalarda kapanır ve eksik folik asit ciddi gelişim sorunlarına yol açabilir. Eczanede reçetesiz alabilirsin, kahvaltıyla birlikte alman emilimini kolaylaştırır. İlk doktor randevunda kontrol edilecek konulardan biri de bu olacak — test sonucunu ve takviye dozunu birlikte gözden geçirebilirsin."
   },
   5: {
     fruit: "Susam tohumu", emoji: "🌾", size: "≈ 5 mm · <1 g",
@@ -3885,7 +3951,17 @@ const WEEK_DATA = {
     ],
     tip: "Sabah kalkmadan önce küçük bir kraker yemek mide bulantısını hafifletebilir.",
     appt: "",
-    babyLetter: "Anne, kalbim bu hafta ilk defa attı! Çok küçük ama atıyor. Sen de hissediyor musun bu sıcaklığı?"
+    babyLetter: "Anne, kalbim bu hafta ilk defa attı! Çok küçük ama atıyor. Sen de hissediyor musun bu sıcaklığı?",
+    babyDetail: {
+      gelisim: "Kalpten önceki tüp yapısı bu hafta kasılmaya başlıyor — gerçek 'kalp atışı' deneyimi 6. haftaya kadar görüntüde net belirmez ama temel ritim kuruluyor. Beyin ve omurilik için nöral tüp kapanma sürecinde, kollar-bacaklar minicik tomurcuk halinde.",
+      duyular: "Duyu organları için zemin hazırlanıyor; kulak ve göz çukurları belirmeye başladı. Bebek henüz hareket etmiyor, ama hücre seviyesinde her gün ciddi bir inşaat var."
+    },
+    momDetail: {
+      fiziksel: "Sabah bulantısı bu hafta açıkça başlayabilir — bazılarında öğleye kadar sürer, bazılarında bütün gün dalga dalga gelir. Memelerde sızı ve hassasiyet, sık idrara çıkma, derin yorgunluk bu dönemin imzası. Kabızlık başlamış olabilir.",
+      duygusal: "Hormon dalgası tam olarak çarpıyor — sebepsiz ağlama, ani sinirlenme, sonra büyük şefkat olağan. İlk gebelikte bunu yaşadıysan vücudun nasıl tepki verdiğini hatırlıyor olabilirsin; ama bu sefer farklı seyredebilir, kıyas iyi gelmez.",
+      dikkat: "Sabah bulantısı için yatağa kalkmadan önce kuru bir bisküvi/kraker dene, hızlı kalkma. Susuz kalmamak çok kritik — küçük yudumlarla gün boyu su iç. Ateş, yoğun karın ağrısı veya parlak kırmızı kanama olursa doktora hemen ulaş."
+    },
+    tipDetail: "Sabah bulantısı için yatağa daha kalkmadan ağzına bir şey atmak çok işe yarıyor; mide tamamen boşken bulantı şiddetlenir. Yastığının yanına bir kutu kraker, kuru kayısı veya badem koymak basit ama etkili bir alışkanlık. Bulantı çok yoğunsa B6 vitamini ya da hekimin önereceği desteklerle yumuşatmak mümkün — kendi başına ilaç deneme."
   },
   6: {
     fruit: "Mercimek", emoji: "🫘", size: "≈ 6 mm · 1 g",
@@ -3901,7 +3977,17 @@ const WEEK_DATA = {
     ],
     tip: "Bu hafta ilk muayene zamanı (6-8). Beta HCG ve gebelik teyidi yapılır.",
     appt: "İlk muayene + Beta HCG",
-    babyLetter: "Şu an mercimek kadarım ama her gün büyüyorum. Senden çok şey alıyorum, çok teşekkür ederim."
+    babyLetter: "Şu an mercimek kadarım ama her gün büyüyorum. Senden çok şey alıyorum, çok teşekkür ederim.",
+    babyDetail: {
+      gelisim: "Kalbin atışı bu hafta ultrasonda görülebilir hale geliyor — hızı dakikada 100-160 arasında, anneninkinden çok daha hızlı. Yüz hatları, göz çukurları, burun yerleri belirmeye başladı; iç organların ilk taslakları yerleşiyor.",
+      duyular: "Beyin gelişimi çok hızlı; kulak ve göz yapıları temellerini atıyor. Henüz duyma ya da ışık algılama söz konusu değil, ama beyin alanları ilerideki duyular için yer ayırıyor."
+    },
+    momDetail: {
+      fiziksel: "Bulantı doruğa yakın. Yorgunluk artık 'bir kahveyle geçer' boyutunu aştı — vücut yeni bir organ inşa ediyor ve bu inanılmaz enerji ister. Memeler büyümeye devam ediyor, alt karında hafif çekilmeler hissedilebilir.",
+      duygusal: "Bu haftalarda gizliliği koruma, eşinle ne zaman müjdeyi paylaşacağınızı düşünme, ablasına/ağabeyine ne zaman söyleyeceğinizi konuşma duyguları yoğun olabilir. İkinci gebelik olduğu için ilk çocuk fark edebilir — onu sürece dahil etme zamanlaması da düşündürür.",
+      dikkat: "İlk muayene zamanı (6-8 hafta arası). Doktor ultrasonla gebelik kesesini ve kalp atışını teyit edecek, beta hCG ve temel kan tahlilleri istenebilir. Bu randevuya Cem'in de gelmesi hem moral hem ileride sorularda hatırlatıcı olur."
+    },
+    tipDetail: "İlk muayene randevusunu erteleme — kalp atışını ilk gördüğünüz an kıymetli, beraber paylaşılması daha güzel. Doktora götüreceğin sorularını telefonuna not edersen orada heyecandan unutmazsın. Mevcut ilaçların listesi ve son adet tarihin (LMP) yanında olsun."
   },
   7: {
     fruit: "Yaban mersini", emoji: "🫐", size: "≈ 1 cm · 1 g",
@@ -3917,7 +4003,17 @@ const WEEK_DATA = {
     ],
     tip: "Bol su iç. Günde 2-2.5 litre hedefle — dehidrasyon mide bulantısını ve baş ağrısını artırır.",
     appt: "",
-    babyLetter: "Kollarım ve bacaklarım belirginleşmeye başladı. Yakında tekme atmaya başlayacağım, sabırlı ol 😊"
+    babyLetter: "Kollarım ve bacaklarım belirginleşmeye başladı. Yakında tekme atmaya başlayacağım, sabırlı ol 😊",
+    babyDetail: {
+      gelisim: "Kollar ve bacaklar hızla uzuyor, parmaklar henüz birbirine yapışık ama çoktan ayrışmaya başladı. Beyin iki yarımküreye ayrılırken, kalp dört odacığını şekillendiriyor — çok yoğun bir mühendislik haftası.",
+      duyular: "Göz pigmenti ve iç kulak yapıları belirginleşiyor. Bebek henüz hiçbir şey duymuyor, ama yapısal temel her gün biraz daha sağlamlaşıyor."
+    },
+    momDetail: {
+      fiziksel: "Tükürük artışı, ağız tadında değişiklik bazılarında belirgin. Bel ve karında hafif kramplar, hatta yer yer iğnelenme normal — uterus büyüyor ve etrafındaki bağlar geriliyor. İştah inişli çıkışlı.",
+      duygusal: "Bazı yiyecekleri görmek bile mide bulandırabilir; bu geçici, kendine kızma. İlk çocuk henüz haberdar değilse onun günlük rutinini sürdürmeye çalışırken yorgunluğu gizlemek zor — Cem'le iş bölümü konuşmak iyi gelir.",
+      dikkat: "Günde 2-2,5 litre su hedefi koy; dehidrasyon hem bulantıyı hem baş ağrısını ciddi azaltır. Kafeini günde tek fincana indir, alkol yok. Yoğun karın ağrısı, parlak kırmızı kanama, baş dönmesiyle bayılma hissi olursa zaman kaybetmeden doktoruna ulaş."
+    },
+    tipDetail: "Su içmenin önemini hafife alma — bulantı zaten az içmene yol açıyor, az su da bulantıyı artırıyor; kısır döngüyü kırmak gerek. Buzlu su, limonlu su, naneli su ya da seyreltilmiş soğuk meyve suyu dene; biri tutar. Telefona 1-2 saatte bir küçük hatırlatıcı koymak garip görünebilir ama gerçekten işe yarıyor."
   },
   8: {
     fruit: "Ahududu", emoji: SVG_FRUITS.ahududu, size: "≈ 1.6 cm · 1 g",
@@ -3933,7 +4029,17 @@ const WEEK_DATA = {
     ],
     tip: "Eşin yorgunsa onu zorlamayın — ev işlerini paylaşmanın iyi bir zamanı.",
     appt: "",
-    babyLetter: "Anne, bu hafta parmak izlerim oluştu — tıpkı seninkiler gibi eşsiz olacaklar."
+    babyLetter: "Anne, bu hafta parmak izlerim oluştu — tıpkı seninkiler gibi eşsiz olacaklar.",
+    babyDetail: {
+      gelisim: "Embriyo bu hafta belirgin biçimde 'bebek' formuna yaklaşıyor — kuyruk yapısı kayboluyor, omurga düzleşiyor. Parmak izleri için cilt katmanları oluşmaya başladı, kalp dakikada 150-170 atıyor.",
+      duyular: "Kulak yapısı dış ve iç bölgeleriyle yerleşmeye başladı, göz kapakları oluştu ama henüz kapalı. Bebek mikro hareketler yapıyor, ama anne hissetmek için daha haftalar var."
+    },
+    momDetail: {
+      fiziksel: "Karında hafif ağırlık ve gerilme hissi; pantolon belleri sıkmaya başladı. Yorgunluk, mide bulantısı, sık idrara çıkma sürüyor. Bazılarında baş ağrısı belirgin — su ve dinlenme öncelikli.",
+      duygusal: "Duygusal dalgalanmalar yoğun, ağlama nöbetleri hatta kahkaha krizleri olabilir; vücudun değişiyor, ruh hali de onunla. İkinci gebelikte fiziksel değişimi vücudun 'hatırlaması' daha hızlı olabiliyor, bu da bazen şaşırtıcı geliyor.",
+      dikkat: "Cem'le ev işi paylaşımını gözden geçirin — bu dönem ağır kaldırma, yorucu temizlik, geç saatlere kadar ayakta durma için iyi bir zaman değil. Çiğ/az pişmiş et, çiğ balık, pastörize edilmemiş peynir gibi listeyi tazele. Hâlâ folik asit dahil takviyelerini düzenli al."
+    },
+    tipDetail: "Yorgunluğun seviyesi seni şaşırtabilir — vücudun tam anlamıyla yeni bir hayat üretiyor ve bu görev hiç bitmiyor. 'Tembellik' değil, biyolojik bir ihtiyaç; kestirebileceğin her dakika kestir. Cem'in işleri devralma teklifini geri çevirme, bu gebelikte ona alan açmak ileride uzun vadeli iyi bir alışkanlık olur."
   },
   9: {
     fruit: "Kiraz", emoji: "🍒", size: "≈ 2.3 cm · 2 g",
@@ -3949,7 +4055,17 @@ const WEEK_DATA = {
     ],
     tip: "Eşin halsiz — bu çok normal. Hafif bir yürüyüş enerji verir; siz de eşlik edin.",
     appt: "",
-    babyLetter: "Resmen 'fetus' oldum bugün. Ama hâlâ senin küçük bebeğinim. Sevgilerimle."
+    babyLetter: "Resmen 'fetus' oldum bugün. Ama hâlâ senin küçük bebeğinim. Sevgilerimle.",
+    babyDetail: {
+      gelisim: "Embriyo dönemi sona erdi — bebek artık resmen 'fetüs' olarak adlandırılıyor. Tüm temel organ taslakları yerinde, küçük hareketler ultrasonda yakalanıyor; kuyruk artık tamamen kayboldu. Eklemler kıvrılmaya başladı.",
+      duyular: "İç kulağın denge bölümleri gelişiyor, gözler oluştu ama hâlâ kapalı. Bebek amniyotik sıvının içinde refleksif sıçramalar yapıyor; bunu görmek ultrasonun en sevimli anlarından biri."
+    },
+    momDetail: {
+      fiziksel: "Bazılarında bulantı yumuşamaya başlıyor, bazılarında 12-13. haftaya kadar sürebilir. Karın bazen hafif belirir, bazen sadece şişkinlik olur — gebelik göbeği henüz değil. Memeler büyük ve hassas.",
+      duygusal: "'Bu hafta da uyku istiyorum' hissi normal. Buse'nin ikinci gebeliği olduğu için ilk çocuğun enerjisine yetişmek bazı günler zor gelebilir — kendinden bekleneni biraz hafifletmek iyi olur. Cem'le hafta sonu küçük bir mola planlamak yorgunluğu hafifletir.",
+      dikkat: "Hafif yürüyüş enerji verir; oturarak/yatarak geçirilen uzun saatler kabızlığı kötüleştirir. Demir-folik asit içeren bir prenatal vitamin kullanmıyorsan doktorla bunu konuş. Bu ay içinde randevun yoksa ayarla."
+    },
+    tipDetail: "Hafif bir yürüyüş paradoksal şekilde yorgunluğa iyi geliyor — tam dinlenmek istediğinde tam tersi hareket etmek lazım. 15-20 dakika tempolu olmayan, parkta ya da düz bir caddede yürüyüş; Cem'le günü konuşmak için de doğal bir vakit. İlk çocuk varsa onu da bisikletle veya scooter'la dahil edin, üçünüze dokunan bir rutin oluşturun."
   },
   10: {
     fruit: "Çilek", emoji: "🍓", size: "≈ 3.1 cm · 4 g",
@@ -3965,7 +4081,17 @@ const WEEK_DATA = {
     ],
     tip: "İstersen NIPT (kromozom taraması) testini doktorla konuş — 10. haftadan itibaren yapılabilir.",
     appt: "NIPT (opsiyonel, 10+)",
-    babyLetter: "Tırnaklarım çıkmaya başladı! Daha tırnak makasıyla tanışmadım ama yakında 😄"
+    babyLetter: "Tırnaklarım çıkmaya başladı! Daha tırnak makasıyla tanışmadım ama yakında 😄",
+    babyDetail: {
+      gelisim: "Tırnaklar parmak uçlarında belirmeye başladı, kemikleşme süreci yumuşak kıkırdaktan başlıyor. İç organların tamamı yerli yerinde ve kendi işini yapmaya çalışıyor; karaciğer kan hücresi üretmekle meşgul. Kollar ve bacaklar yeterince hareket ediyor ama anne hâlâ hissetmiyor.",
+      duyular: "Diş tomurcukları şekilleniyor; yutkunma ve emme refleksleri prova aşamasında. Kulağın içi gelişmeye devam ediyor, ses iletimi için zemin oluşuyor."
+    },
+    momDetail: {
+      fiziksel: "Bel cinslerinde şişkinlik gözle görülür hale geldi. Cilt değişiklikleri başlayabilir — bazılarında hamilelik parlaması, bazılarında ergenlik tipi sivilce. Memelerde kabarma sürüyor, areola koyulaşmış olabilir.",
+      duygusal: "Müjdeyi kime ne zaman söyleyeceğinizi düşünme dönemi yoğunlaşır. İkili tarama yaklaştığı için 'her şey yolunda mı?' kaygısı yükselebilir, bu çok normal — istatistikler senin yanında, gebeliklerin büyük çoğunluğu sağlıklı seyreder.",
+      dikkat: "NIPT (anne kanından kromozom taraması) bu hafta itibariyle yapılabilir; opsiyoneldir, sigortan kapsamadıysa cebinden çıkar. Doktorunla NIPT'in mi yoksa standart ikili taramanın mı sizin için uygun olduğunu konuş. Diş eti kanamasına dikkat — gebelikte yaygındır, yumuşak fırça ve düzenli diş ipi yardımcı olur."
+    },
+    tipDetail: "NIPT kararını acelesiz ver — 10. haftadan sonra istediğin haftada yapılabilir, illa hemen değil. İkili taramanın klasik yolu da çoğu çift için yeterli bilgiyi veriyor, ek test gerek olup olmadığı doktorla beraber konuşulur. Maliyet, beklenti ve kişisel rahatlık üçünü birden tartmak kararı netleştirir."
   },
   11: {
     fruit: "İncir", emoji: SVG_FRUITS.incir, size: "≈ 4.1 cm · 7 g",
@@ -3981,7 +4107,17 @@ const WEEK_DATA = {
     ],
     tip: "11-14 hafta arası ikili tarama (Down sendromu taraması) zamanı. Randevu al.",
     appt: "İkili tarama + Ense kalınlığı (11-14)",
-    babyLetter: "Düşük riski azaldı bu hafta — birlikte daha güvendeyiz artık. Rahat nefes al anne."
+    babyLetter: "Düşük riski azaldı bu hafta — birlikte daha güvendeyiz artık. Rahat nefes al anne.",
+    babyDetail: {
+      gelisim: "Bebek esniyor, geriniyor, küçük el-ayak hareketleri yapıyor — net olarak 'minik insan'. Cinsel organlar farklılaşmaya başlıyor ama dışarıdan görmek için hâlâ erken; iç kulak yapısı tamamlanıyor. Diş tomurcukları yerine oturdu.",
+      duyular: "Beyin gelişimi son derece hızlı; sinirlerin ilk bağlantıları kuruluyor. Henüz tam duymuyor, ama sıvı içindeki titreşimleri yavaş yavaş alabilir."
+    },
+    momDetail: {
+      fiziksel: "Bulantı çoğu kadında geriliyor, enerji tek tük geri geliyor. Karın belirgin şişiyor — özellikle ikinci gebelikte karın kasları daha çabuk teslim olur. Cilt parlaması, saç gürlüğü artmış olabilir.",
+      duygusal: "Düşük riski belirgin biçimde azalıyor — zihnindeki yük hafifler, müjdeyi yakın çevreye söyleme isteğin artar. İlk çocuğa söyleme planını Cem'le birlikte düşünmek güzel bir hafta sonu sohbeti olur.",
+      dikkat: "11-14 hafta arası ikili tarama testi (NT ölçümü + PAPP-A + serbest β-hCG). Randevuyu mümkünse 12. haftaya yakın al, ölçüm tutarlılığı orada en iyi. Sonuçların yorumu doktorla yapılmalı, internetteki çevrimiçi hesaplayıcılar yanıltıcı olabilir."
+    },
+    tipDetail: "İkili tarama kromozomal anomaliler için bir tarama testi — kesin tanı değil, risk hesabı verir. Yüksek risk çıkması da bir şeyin 'var' demek değildir, sadece daha ileri test (örn. NIPT veya doğrudan tanısal test) önerilebilir. Sonuçları okurken doktorun yorumunu beklemek, panik yapmadan gerçekçi bir tablo çizer."
   },
   12: {
     fruit: "Misket limonu", emoji: SVG_FRUITS.lime, size: "≈ 5.4 cm · 14 g",
@@ -3997,7 +4133,17 @@ const WEEK_DATA = {
     ],
     tip: "İlk trimesteri tamamladığınız için tebrikler 🎉 — bu kritik dönemi geride bıraktınız.",
     appt: "",
-    babyLetter: "Kalbim doppler ile duyulabiliyor şimdi. Babamla beraber dinleyin, çok güzel ses çıkarıyorum."
+    babyLetter: "Kalbim doppler ile duyulabiliyor şimdi. Babamla beraber dinleyin, çok güzel ses çıkarıyorum.",
+    babyDetail: {
+      gelisim: "İlk trimesterin son haftası — bebek artık 'küçük bebek' formunda, kafa-vücut oranı dengeleniyor. Kalp atışı el doppleriyle dinlenebilir hale geldi; kulağa müzik gibi hızlı geliyor. Refleksler aktif: parmağı dudağa götürür, küçük yumruk yapar.",
+      duyular: "Yutma denemeleri başlamış, amniyotik sıvının içinden 'tat' alıyor olabilir. Beyin alanları her duyu için ayrı ayrı şekilleniyor."
+    },
+    momDetail: {
+      fiziksel: "Çoğu kadında bulantı belirgin biçimde geçti, enerji geri geliyor. Karın belirgin değişti, gebelik göbeği yavaş yavaş anlaşılır oldu. Memeler daha büyük ve dolgun.",
+      duygusal: "Birinci trimesteri tamamlamak içten gelen bir rahatlama getirir — riskin en yüksek olduğu dönemi geride bırakman büyük bir mihenk taşı. Ailenle, yakın arkadaşlarınla paylaşma vakti gelmiş olabilir.",
+      dikkat: "Doppler ile kalp sesini ilk duymak için randevuyu Cem'le birlikte planla — yaşanması güzel bir an. İlk trimester boyunca aldığın takviyelere devam et; kilo takibi için doktor sana hedef bir aralık verecektir."
+    },
+    tipDetail: "İlk trimesterin son sayfasındasın ve bu cesurca taşıdığın bir dönem oldu. Bulantı, yorgunluk ve gizli kalmak zorunda hissetmenin yorgunluğu gerçek; kendine bunu hatırlatmak iyi gelir. İkinci trimester çoğu kadın için 'altın dönem' — enerji, iştah ve genel iyilik hali geri geliyor, keyfini çıkar."
   },
   13: {
     fruit: "Bezelye", emoji: SVG_FRUITS.bezelye, size: "≈ 7.4 cm · 23 g",
@@ -4013,7 +4159,17 @@ const WEEK_DATA = {
     ],
     tip: "Bebek artık ses duyuyor — birlikte ona şarkı söyleyin, ad araştırın, kitap okuyun.",
     appt: "",
-    babyLetter: "İkinci trimester! Senin için en rahat dönem geliyor. Ben de seni dinliyorum, sesini tanıyorum."
+    babyLetter: "İkinci trimester! Senin için en rahat dönem geliyor. Ben de seni dinliyorum, sesini tanıyorum.",
+    babyDetail: {
+      gelisim: "Bağırsaklar göbek kordonundan bebeğin karın boşluğuna yerleşti; bu hafta önemli bir geçiş. Parmak izleri tamamen oluştu — eşsiz, kimseyle aynı değil. Vücut başına göre büyümeye başladı.",
+      duyular: "Sesleri belli belirsiz duymaya başlıyor, en çok da annenin kalp atışı, soluk alışı ve mide sesleri. Anneden gelen kahkaha, müzik, konuşma sıvının içinden buğulu da olsa geçer."
+    },
+    momDetail: {
+      fiziksel: "İkinci trimester resmi olarak başladı — enerji geri, iştah açık, cilt parlak. Cinsel istek bazılarında belirgin biçimde artar, bazılarında değişmez. Karın gözle görülür biçimde belirginleşiyor.",
+      duygusal: "Genel iyilik hissi hâkim. İlk çocuğun varlığı bu dönemde Buse için hem zenginlik hem yorucu — kardeş haberi muhtemelen yakında konuşulacak. Cem'in ev işlerine devam eden desteği fark edilir, dile getirmek ilişkiye iyi gelir.",
+      dikkat: "Bebek artık ses duyduğu için ona hitap etmeye başlayabilirsin — Cem ile birlikte konuşmak, kitap okumak ileride bağ kurmayı kolaylaştırır. Bu hafta kontrol randevu zamanı olabilir; kilo, tansiyon ve idrar kontrolü standarttır."
+    },
+    tipDetail: "Bebeğin sesleri duymaya başlaması bağ kurmanın somut bir parçası — ona 'merhaba' demek tuhaf değil, tam tersine sıcak. Cem'in karna seslenmesi de etkili; baba sesi bebek için en kalın frekansta gelir ve doğumdan sonra tanıdık hisseder. İlk çocuğunuzun da 'kardeşimle konuşur' hale gelmesi yaş aralığına göre güzel bir köprü olur."
   },
   14: {
     fruit: "Limon", emoji: "🍋", size: "≈ 8.7 cm · 43 g",
@@ -4029,7 +4185,17 @@ const WEEK_DATA = {
     ],
     tip: "Hamilelik özelinde nemlendirici (badem yağı, kakao yağı) karın cildinde çatlakları azaltır.",
     appt: "",
-    babyLetter: "Bu hafta gülümsemeyi öğrendim. Sen de gülümse, ikimiz birlikte gülelim."
+    babyLetter: "Bu hafta gülümsemeyi öğrendim. Sen de gülümse, ikimiz birlikte gülelim.",
+    babyDetail: {
+      gelisim: "Bebek baş aşağı baş yukarı dönebiliyor, henüz çok rahat alanı var. Yüz kasları çalışıyor — kaş çatma, dudak büzme, esneme prova ediliyor. Karaciğer safra üretmeye, dalak kan hücresi yapmaya başladı.",
+      duyular: "Sesleri daha net alıyor, ışığa kapalı göz kapaklarından zayıf tepki verebilir. Tat alma çok temel düzeyde başladı, anne neyi yiyorsa amniyotik sıvıdan sönük bir yansıması ona ulaşır."
+    },
+    momDetail: {
+      fiziksel: "Karın belirgin biçimde dışarı çıkmaya başladı, 'gebelik göbeği' net hale geldi. Saç ve tırnaklar daha hızlı uzar, cilt nemine ihtiyaç duyar. Bazılarında burun tıkanıklığı (gebeliğe bağlı rinit) başlar.",
+      duygusal: "Doğumla ilgili ilk somut hayaller bu haftalarda zihne sızabilir — isim, oda düzeni, ilk çocuğun adaptasyonu. Cem'le ev içinde kim ne yapacak konuşmalarına başlamak için erken sayılmaz.",
+      dikkat: "Karın cildine günlük nemlendirici uygula — badem yağı, kakao yağı veya gebelik için üretilmiş kremler işe yarar. Cilt çatlaklarının tamamen önlenemediğini bil, ama nemli cilt daha az iz bırakır. Yoğun ev işleri için Cem'i daha çok devreye al."
+    },
+    tipDetail: "Cilt çatlakları hızlı büyüyen karında sık görülür ve genetik yatkınlık büyük rol oynar. Yine de günde iki kez nemlendirme alışkanlığı cildi esnek tutar; kuru cilt kolay yırtılır. Cem'in akşam ritüelinin parçası yapması da güzel bir bağ — kremi onun karnına sürmesi bağ kurmanın bir başka yolu."
   },
   15: {
     fruit: "Elma", emoji: "🍎", size: "≈ 10 cm · 70 g",
@@ -4045,7 +4211,17 @@ const WEEK_DATA = {
     ],
     tip: "Yeterince protein (et, balık, baklagil) ve demir (kırmızı et, ıspanak) tüket — bebek hızla büyüyor.",
     appt: "Dörtlü tarama (eğer ikili yapılmadıysa, 15-18)",
-    babyLetter: "Işığı algılayabiliyorum bu hafta. Karnına ışık tutarsan, ben de yöneliyorum sana doğru."
+    babyLetter: "Işığı algılayabiliyorum bu hafta. Karnına ışık tutarsan, ben de yöneliyorum sana doğru.",
+    babyDetail: {
+      gelisim: "Bebek artık ışığı algılıyor — kapalı göz kapaklarından bile parlaklık geçer. Kemikler sertleşmeye devam ediyor; el-ayak küçük hareketler için yeterince güçlü. Cilt hâlâ saydam, damarlar görünür.",
+      duyular: "Tat alma duyusu gelişti; anne sarımsak yediğinde bebek de tadı sezer. Sesleri ayırt etmeye yakın, anne sesini tanımak için temel atılıyor."
+    },
+    momDetail: {
+      fiziksel: "Kilo artışı düzene girdi; haftada 0,4-0,5 kg sağlıklı bir tempo. Bel ağrısı başlayabilir, duruş bozukluğu da bunu kötüleştirir. Saç gür ve parlak, cilt parlaması belirgin.",
+      duygusal: "İkinci gebelikte duygusal rota daha sakin ilerleyebilir — vücudun tanıdığı bir süreç. İsim üzerine konuşmalar bu haftalarda alevlenebilir, Cem'le listeyi dolaştırmak keyifli bir akşam aktivitesi.",
+      dikkat: "Yeterli protein (et, balık, baklagil, yumurta, süt ürünleri) ve demir (kırmızı et, ıspanak, mercimek) tüket — bebek hızlı büyüyor. Doktorun ikili tarama yaptırılmadıysa 16-18 hafta arası dörtlü taramayı önerebilir. Tansiyon ve şekerin ön kontrolleri de bu kontrolde yapılır."
+    },
+    tipDetail: "Demir alımı bu dönem giderek önem kazanıyor — anne hem kendi kanını hem büyüyen plasentayı besliyor. Demirden zengin yiyecekleri C vitamini içeren bir şeyle (limon, biber, portakal) birlikte tüketmek emilimi artırır. Çay-kahve yemekten 1 saat önce/sonra emilimi düşürür, küçük bir ayar büyük fark yapar."
   },
   16: {
     fruit: "Avokado", emoji: "🥑", size: "≈ 11.6 cm · 100 g",
@@ -4061,7 +4237,17 @@ const WEEK_DATA = {
     ],
     tip: "Eşin ilk tekmeleri hissedince hemen sana söyleyecek — keyifli bir an, beraber heyecanlanın.",
     appt: "",
-    babyLetter: "Ses tellerimi kullanmaya başladım. Daha bağıramıyorum ama yakında 😉"
+    babyLetter: "Ses tellerimi kullanmaya başladım. Daha bağıramıyorum ama yakında 😉",
+    babyDetail: {
+      gelisim: "Saç ve kirpikler büyümeye başladı, bebeğin cildi hâlâ ince ama her gün biraz daha kalınlaşıyor. Kollar ve bacaklar koordineli hareket ediyor, eklemler tam çalışıyor. Yüz kasları belirginleşmiş ifadelerle prova yapıyor.",
+      duyular: "Bebek artık duyuyor — annenin sesini diğerlerinden ayırabilir, müzikle nabzı değişebilir. Cem'in sesi de bu hafta itibariyle ona tanıdık hâle gelmeye başlıyor."
+    },
+    momDetail: {
+      fiziksel: "Bazı anneler bu hafta ilk hareketleri 'çırpınma' gibi hisseder; ikinci gebelik olduğu için Buse'nin bunu daha erken yakalama ihtimali var. Pantolon belleri artık iş görmüyor, hamile pantolonları/lastikli kemerler hayatı kolaylaştırır.",
+      duygusal: "İlk hareketleri bekleyiş zihni meşgul eder — gaz mı bebek mi karıştırmak çok normal. Genel iyilik hissi yüksek, 'altın dönem' yaşanıyor. Cem'le doğum hayalleri ya da çocuğun ablası/ağabeyi olarak ilk reaksiyonu konuşulur.",
+      dikkat: "16-18 hafta arası dörtlü tarama testi önerilebilir (özellikle ikili tarama yapılmadıysa). Sırt ağrısı için duruşa dikkat — uzun süre tek pozisyonda durma, yastık desteğiyle otur. Banyoda kayma riski için kaymaz bir paspas iyi yatırım."
+    },
+    tipDetail: "İlk net tekmeyi hissettiğinde Cem'e haber ver — ilk paylaşılması güzel anlardan biridir. Karnın üzerine elini koyduğunda hareketleri o da hissetmek için biraz daha bekleyecek (genelde 18-22 hafta), o yüzden ilk başta sadece sen biliyorsun, ona anlatmak da kıymetli. İlk çocuğa söylemenin zamanı geldiyse onun da elini karna koyduğun anlar bağ için altın değerinde."
   },
   17: {
     fruit: "Soğan", emoji: "🧅", size: "≈ 13 cm · 140 g",
@@ -4077,7 +4263,17 @@ const WEEK_DATA = {
     ],
     tip: "Sol tarafa yatarak uyumak kan dolaşımı için en iyi pozisyon.",
     appt: "",
-    babyLetter: "Anne, hıçkırığa başladım! Karnında küçük titremeler hissedebilirsin — o benim."
+    babyLetter: "Anne, hıçkırığa başladım! Karnında küçük titremeler hissedebilirsin — o benim.",
+    babyDetail: {
+      gelisim: "Bebek hıçkırık tutmaya başladı; sen birkaç hafta sonra karnında düzenli 'pıt pıt'lar olarak hissedeceksin. Kalp dakikada 140-150 atıyor. Yağ depolamaya başladı, bu cildi yumuşatacak ve ileride sıcaklığını koruyacak.",
+      duyular: "Sesler artık net, anne içeriden ne konuşuyor, dışarıdan ne geliyor ayırt etmeye başlıyor. Müziğe verilen tepki ultrasonda görülebilir."
+    },
+    momDetail: {
+      fiziksel: "Karın gözle görülür biçimde yuvarlaklaştı. Sırt ve karın bağlarında gerilim normal — uterus büyürken etrafındaki bağlar geriliyor. Saç ve tırnaklar hızlı uzar, cilt nem ister.",
+      duygusal: "Hareketler hissedilmeye başladıkça 'gerçekten oluyor' duygusu somutlaşır. İkinci kez yaşamak ilk seferdeki şaşkınlığı azaltsa da, her bebek farklı hareket eder ve bu yeni başlangıç hissi sürer.",
+      dikkat: "Sol tarafına yatarak uyumayı alışkanlık yap — büyüyen uterusun ana toplardamarı sıkıştırmasını engeller, kan dolaşımı için en uygun pozisyon. İki bacak arasına yastık koymak hem kalçayı hem beli rahatlatır. Ayağı yüksek tutmak ödemi azaltır."
+    },
+    tipDetail: "Sol yan yatış başta tuhaf gelse de gebelikte gerçekten en iyi pozisyon — ana toplardamar (vena cava) sağ tarafta yer alır ve büyüyen uterusun bunu sıkıştırması kalbe dönen kanı azaltır. Yastıklarla destekli bir 'yan yatış yuvası' kurmak konfor için önemli; bacak arasına yastık beli düzleştirir, sırt arkasına yastık dönmeyi yavaşlatır. Kendini sırtüstü uyanmış bulursan kendini suçlama, dön devam et."
   },
   18: {
     fruit: "Dolmalık biber", emoji: "🫑", size: "≈ 14.2 cm · 190 g",
@@ -4093,7 +4289,17 @@ const WEEK_DATA = {
     ],
     tip: "18-22 hafta arası detaylı ultrason (anomali taraması) yaptırılmalı. Kritik bir test.",
     appt: "Detaylı (anomali) ultrason (18-22)",
-    babyLetter: "Detaylı ultrason zamanı yaklaşıyor. Beni iyice göreceksin, hazır mısın? Ben hazırım."
+    babyLetter: "Detaylı ultrason zamanı yaklaşıyor. Beni iyice göreceksin, hazır mısın? Ben hazırım.",
+    babyDetail: {
+      gelisim: "Kulaklar kafanın iki yanında tam yerleşti; bebek artık sesleri net duyuyor. Sinir sisteminin etrafındaki yağ kılıfı (miyelin) oluşmaya başladı — daha hızlı sinyal demek. Cinsiyet detaylı ultrasonda artık ayırt edilebilir.",
+      duyular: "Annenin sesi bebek için en tanıdık ses; doğumdan sonra hemen ayırt eder. Müzikle hareket etmek, sessiz konuşmak doğal bir bağ kurma yolu."
+    },
+    momDetail: {
+      fiziksel: "İlk net tekmeler bu haftalarda gelir — Buse'nin önceki gebeliği nedeniyle vücut bunu daha çabuk tanır. Kan basıncı düşebilir, ani kalkışta baş dönmesi olur; yavaş kalk. Çoğu kadın için en güzel haftalardan biri.",
+      duygusal: "Detaylı ultrason yaklaşırken hem heyecan hem hafif bir gerilim normal — bu test bebeğin organ yapılarına bakar ve onu görmek somut bir bağ getirir. İlk çocuğun ablası/ağabeyi olarak nasıl tepki vereceği yaş aralığına göre düşündürür.",
+      dikkat: "18-22 hafta arası detaylı (anomali) ultrason yaptırılmalı — gebelik takibinin en kapsamlı taraması. 30-45 dakika sürebilir, bebek dönmesi için yürüyüş gerekebilir; sabırlı git. Cem'in de yanında olması bu özel anı paylaşmak için anlamlı."
+    },
+    tipDetail: "Anomali ultrasonu uzun ve detaylı bir inceleme; bebeğin organlarına, kalbine, beynine, omurgasına ayrı ayrı bakılır. Sonuçların bir kısmı 'ölçüm normal sınırlarda' olarak gelir, bir kısmı 'takipte' olarak işaretlenebilir — paniklemeden doktorun yorumunu beklemek doğrusu. Cem'le birlikte gitmek hem moral hem ileride doktorun ne dediğini ikiniz birden hatırlayacak olmanız için iyi."
   },
   19: {
     fruit: "Domates", emoji: "🍅", size: "≈ 15.3 cm · 240 g",
@@ -4109,7 +4315,17 @@ const WEEK_DATA = {
     ],
     tip: "2025'ten beri Tdap aşısı ücretsiz; 18-24 hafta arası önerilir. Boğmacaya karşı bebeği korur.",
     appt: "Tdap aşısı (18-24, ücretsiz)",
-    babyLetter: "Vücudumu beyaz, koruyucu bir tabaka kapladı bu hafta. Cilt cildim hassas, dış dünyaya hazırlanıyorum."
+    babyLetter: "Vücudumu beyaz, koruyucu bir tabaka kapladı bu hafta. Cilt cildim hassas, dış dünyaya hazırlanıyorum.",
+    babyDetail: {
+      gelisim: "Cildi 'vernix caseosa' denilen beyaz koruyucu tabakayla kaplanıyor — sıvının içinde cildi koruyan doğal bir krem gibi. Beyinde 5 duyu için ayrı bölgeler şekilleniyor. Kız bebekte yumurtalıklar, erkekte testisler oluşmuş durumda.",
+      duyular: "Tat, koku, görme, dokunma ve işitme alanları beyin haritasında ayrılıyor. Sesler artık bir karmaşa değil, bebek hangi sesin ne olduğunu öğrenmeye başlıyor."
+    },
+    momDetail: {
+      fiziksel: "Bağ ağrıları normal — uterus bağlarının (yuvarlak bağ) gerilmesi yan kısımda kısa süreli keskin ağrı yapabilir. Hamilelik karnı net biçimde belirgin. Bazılarında yüzde 'melasma' (gebelik maskesi) koyulaşması başlar.",
+      duygusal: "Hareketler artık tutarlı hâle geliyor, bu çok rahatlatıcı bir his. Cem'le isim listesini netleştirmek, eski bebek eşyalarını gözden geçirmek (ikinci gebelikte güzel bir avantaj) ortak bir keyif olur.",
+      dikkat: "Tdap aşısı (boğmaca-tetanos-difteri) Türkiye'de 2025'ten beri ücretsiz; 18-24 hafta arası önerilir, 28. haftaya kadar yapılabilir. Boğmacanın yenidoğanda ciddi olduğunu düşünürsek bu aşı bebeği doğum sonrası ilk haftalarda korur. Doktorla zamanlamayı netleştir."
+    },
+    tipDetail: "Tdap aşısı sadece annenin değil bebeğin de korumasıdır — anneden plasenta yoluyla geçen antikorlar yenidoğanı kendi aşı dönemine kadar koruyor. İlk çocuk varsa onun aşılarının da güncel olması (özellikle Tdap rapeli) bebeği koruyan ek bir kalkan. Cem de Tdap rapelini son 5 yıl içinde yaptırmamışsa kendi aile hekimine sorabilir."
   },
   20: {
     fruit: "Muz", emoji: "🍌", size: "≈ 16.4 cm · 300 g",
@@ -4125,7 +4341,17 @@ const WEEK_DATA = {
     ],
     tip: "Bu özel anı kutlayın — bir anı fotoğrafı çekin, tarihe geçirin.",
     appt: "",
-    babyLetter: "Yarı yoldayız anne 🎉 Bu güzel yolculuğun ortasındayız. Birlikte ne kadar büyüdük!"
+    babyLetter: "Yarı yoldayız anne 🎉 Bu güzel yolculuğun ortasındayız. Birlikte ne kadar büyüdük!",
+    babyDetail: {
+      gelisim: "Yarı yol! Bebek artık avokado değil, muz boyutunda — bu özel bir kilometre taşı. Yutma ve emme refleksleri belirginleşti, vücut yağ depolamaya devam ediyor. Saç köklerinde pigment oluşmaya başladı.",
+      duyular: "Sesleri ayırt etme net hâlde — Cem'in sesini tanıyor, ablasının/ağabeyinin sesini de duyuyor. Tat tomurcukları olgun, anne yemekleri amniyotik sıvıya yansıyor."
+    },
+    momDetail: {
+      fiziksel: "Göbek deliği düz oldu ya da dışa çıktı. Bebek hareketleri günlük rutinin parçası, sabah-akşam aktif olduğu saatler oturmaya başladı. Karın bezelye kabuğu gibi gerilebilir, cilt nem ister.",
+      duygusal: "Yarı yol duygusal bir an — geriye dönüp baktığında ne kadar yol gittiğin, ileri baktığında ne kadar kaldığı eşit ağırlıkta. Ablasının/ağabeyinin de gebeliğin ortasını kendince fark etmesi, küçük bir kutlama (anı fotoğrafı, bir mektup) keyifli olur.",
+      dikkat: "Bu özel anı kayıt altına al — bir karın fotoğrafı, kısa bir video, Cem ile birlikte çekilen bir kare. Anomali ultrasonu daha yapılmadıysa ya da takipte bırakılan bir bulgu varsa randevuya bağlı kal."
+    },
+    tipDetail: "Yarı yol fotoğrafları sonradan çok değerli oluyor — gebelik hızlı ilerliyor ama ortasında hiç bitmeyecekmiş gibi gelir. Çok özel bir karelik düzenleme yapmana gerek yok, doğal bir gün, evdeki sıradan bir saat yetiyor. İlk çocuğunuz da karenin içinde olursa kardeşliğin başlangıç fotoğrafı oluyor — yıllarca paylaşılacak bir an."
   },
   21: {
     fruit: "Havuç", emoji: "🥕", size: "≈ 26.7 cm · 360 g (artık baş-topuk)",
@@ -4141,7 +4367,17 @@ const WEEK_DATA = {
     ],
     tip: "Akşam yemeği erken ve hafif olsun — yatakta mide yanması sıkıntı yaratır.",
     appt: "",
-    babyLetter: "Artık günü gecesi var benim de. Sen uyurken ben uyanık olabilirim — kusura bakma 😅"
+    babyLetter: "Artık günü gecesi var benim de. Sen uyurken ben uyanık olabilirim — kusura bakma 😅",
+    babyDetail: {
+      gelisim: "Bebek artık baş-topuk ölçülüyor (eskiden baş-popo idi); 26-27 cm civarı. Sindirim sistemi pratik yapıyor, amniyotik sıvıyı yutup mekonyum (bağırsak içeriği) oluşturuyor. Hareketler güçlendi, gece-gündüz farkı oturmaya başladı.",
+      duyular: "Anne aktif olduğunda bebek bazen sallanıp uyuyor, anne dinlenince bebek hareketleniyor — klasik 'ters program'. Sesler net, müzik tepkisi belirgin."
+    },
+    momDetail: {
+      fiziksel: "Geceleri bebeğin tekmeleri uyanmaya neden olabilir. Mide yanması başlayabilir; bebek mideyi yukarı itiyor, asit yukarı kaçıyor. Ayaklarda hafif ödem olabilir.",
+      duygusal: "Uykuda bebek tepiniyor, gündüz Cem'le iş bitiremiyorsun — bu yorgunluk gerçek, suçluluk duyma. İlk çocuğun da yavaş yavaş 'annenin karnında bebek var' gerçeğini içselleştirme süreci.",
+      dikkat: "Akşam yemeği erken (yatmadan en az 2-3 saat önce) ve hafif olsun — büyük porsiyon mide yanmasını kötüleştirir. Yatakta bir-iki yastıkla başını yükseltmek asit kaçışını azaltır. Ayaklarını gün içinde 10-15 dakika yüksekte tutmak ödemi düşürür."
+    },
+    tipDetail: "Mide yanması gebelikte hormonun (progesteron) mide kapağını gevşetmesi nedeniyle çok yaygın — utanılacak ya da paniklenecek bir şey değil. Küçük ve sık öğünler, baharatlı ve yağlı yiyecekleri akşam azaltma, akşam yemeğinden sonra dik durma alışkanlığı belirgin fark yaratır. Geçmiyorsa doktor güvenli antasit önerir, internetten ilaç deneme."
   },
   22: {
     fruit: "Spagetti kabağı", emoji: SVG_FRUITS.spagetti_kabagi, size: "≈ 27.8 cm · 430 g",
@@ -4157,7 +4393,17 @@ const WEEK_DATA = {
     ],
     tip: "Eşinin karnına elini koy — bebeğin tekmesini hissedebilirsin. Üçüncü kalp ortak başladı 🤍",
     appt: "",
-    babyLetter: "Babam karnına elini koyduğunda hissediyorum. Tekme atıp ona da merhaba deyim mi?"
+    babyLetter: "Babam karnına elini koyduğunda hissediyorum. Tekme atıp ona da merhaba deyim mi?",
+    babyDetail: {
+      gelisim: "Dudaklar belirgin, diş tomurcukları çene içinde yerli yerinde. Ses tellerinin yapısı tam, ama hâlâ sıvı içinde olduğu için ses çıkarmıyor. Beyin her gün milyarlarca yeni nöron ekliyor.",
+      duyular: "Annenin kalp atışı bebek için sürekli bir fon müziği — doğumdan sonra göğsüne yatırdığında neden hemen sakinleştiğini anlayacaksın. Cem'in sesi de tanıdık."
+    },
+    momDetail: {
+      fiziksel: "Karın orantılı büyüyor; karnın iki yanında bağ ağrıları olabilir. Göbek hassasiyeti normal — cilt geriliyor. Memelerde küçük yumrucuklar (Montgomery bezleri) belirginleşmiş olabilir.",
+      duygusal: "Cem'in karna elini koyup tekme hissetmesi bu haftalarda mümkün — büyük an. Üçünüzün arasındaki bağ somutlaşıyor, ilk çocuğun da elini koyması küçük bir aile ritüeli olabilir.",
+      dikkat: "Cilt çatlaklarına karşı düzenli nemlendirme; kuru cilt çatlamaya daha yatkın. Cinsel yaşam doktorunun aksini söylemediği müddetçe güvenli ve normal — gebelik bunu durdurmaz. Ağır nesne kaldırmamaya devam et."
+    },
+    tipDetail: "Cem'in karnına elini koyup tekme hissedebileceği günler bu haftalarda başlıyor — ama bebek tam o sırada hareket ediyor olmayabilir, sabırlı olun. Akşam yatağa girdiğinizde, anne sırtüstü değil yan yatarken Cem'in eli karında dakikalarca bekleyebilir. Ablasının/ağabeyinin de elini koymasının zamanı; ona 'kardeşin sana selam veriyor' demek hem onu sürece dahil eder hem güzel bir anı."
   },
   23: {
     fruit: "Greyfurt", emoji: "🍊", size: "≈ 28.9 cm · 500 g",
@@ -4173,7 +4419,17 @@ const WEEK_DATA = {
     ],
     tip: "Babanın sesi bebek için çok önemli — düzenli olarak konuş, oku, şarkı söyle.",
     appt: "",
-    babyLetter: "Babamın sesini tanıyorum şimdi. Ona söyle, daha çok konuşsun benimle."
+    babyLetter: "Babamın sesini tanıyorum şimdi. Ona söyle, daha çok konuşsun benimle.",
+    babyDetail: {
+      gelisim: "Bebek dış sesleri net duyuyor — kapı çalması, telefon çalması, yüksek müzik fark edilir. Akciğerler kan damarlarıyla doluyor, ama henüz nefes alacak olgunlukta değil. Cilt rengi pembeleşiyor, yağ tabakası kalınlaşıyor.",
+      duyular: "İşitme tam fonksiyonel; tanıdık sesler (anne, Cem, ablası/ağabeyi) ile yabancılar arasındaki fark beyninde işleniyor. Sürekli aynı şarkılar çalınırsa bebek doğumdan sonra onu tanır."
+    },
+    momDetail: {
+      fiziksel: "Memelerde kolostrum (bebeğin ilk besini, koyu sarımsı sıvı) sızıntısı olabilir — utanılacak değil, normal. Bel ağrısı belirginleşebilir, mide yanmaları artar. Ayak şişmesi günün sonunda fark edilir.",
+      duygusal: "Bağ kurma somutlaştıkça doğum sonrası hayalleri canlanır — odası, ilk fotoğraflar, ilk ziyaretçiler. Cem'in baba kimliğine ikinci kez bürünmesi de kendi içinde bir süreç, onunla bunu konuşmak iyidir.",
+      dikkat: "Cem'in düzenli olarak karna konuşması bağ kurmak için önemli; baba sesi kalın frekanstan rahatlıkla geçer. Sutyeni daha destekleyici ve esnek bir modelle değiştir. Banyoda kaymaz paspas, dik tutamaç gibi küçük güvenlik önlemleri büyük fark eder."
+    },
+    tipDetail: "Cem'in karna sesli kitap okuması, şarkı söylemesi ya da sadece günü anlatması — hangisi ona doğal geliyorsa o — bebekle ilişkisinin temelini doğumdan önce atar. Doğumdan sonra ağlayan bebeğin onun sesiyle sakinleşmesi tesadüf değil, prova edilmiş bir tanıdıklık. İlk çocuğun da bu rituale dahil olması (örneğin kendi seçtiği bir kitabı okuması) kardeşliğin köprüsüdür."
   },
   24: {
     fruit: "Mısır", emoji: "🌽", size: "≈ 30 cm · 600 g",
@@ -4189,7 +4445,17 @@ const WEEK_DATA = {
     ],
     tip: "Şeker yükleme testi (OGTT) yakında. 24-28 hafta arası yaptırılmalı.",
     appt: "Şeker yükleme testi — OGTT (24-28)",
-    babyLetter: "30 cm oldum, mısır kadarım. Akciğerlerim olgunlaşıyor, dış dünyaya hazırlanıyorum."
+    babyLetter: "30 cm oldum, mısır kadarım. Akciğerlerim olgunlaşıyor, dış dünyaya hazırlanıyorum.",
+    babyDetail: {
+      gelisim: "Akciğerler olgunlaşmaya başladı, ama hâlâ erken — şu anda doğsa yoğun bakım desteği gerekir. Tat alma duyusu gelişti, anne yemeklerini sıvıdan tadıyor. İç kulak gelişimi tamamlandı, denge başladı.",
+      duyular: "Bebek artık yer çekimini ve hareketi hissediyor, kendi başının dönüşünü algılıyor. Anne yürüdüğünde sallanıyor, durduğunda dengeleniyor."
+    },
+    momDetail: {
+      fiziksel: "Karın belirgin biçimde büyüdü, cilt geriliyor. Sırt ağrısı gerçek bir konu — büyüyen karın belden gücü çekiyor. İlk gerçek tekmeleri hissetmek için en güzel dönem, dışarıdan bile bazen görülebilir.",
+      duygusal: "İlk çocuğun da anne karnındaki kardeşine alışma süreci — bazen ilgi göstermesi, bazen kıskanması olabilir, ikisi de normal. Cem'le çocuğa nasıl alan açacağınızı planlamak iyi gelir.",
+      dikkat: "24-28 hafta arası şeker yükleme testi (OGTT, 75 gr glukoz) — gestasyonel diyabet taraması. Test 2 saat sürer, açlık-tokluk kanı alınır; aç gitmen ve sonra test sırasında oturman gerekir, vakit ayır. Sonuca göre diyet ya da takip planı netleşir."
+    },
+    tipDetail: "OGTT bazı annelerde bulantı yapar — şekerli sıvıyı içtikten sonra hareket etmeden, yavaş yavaş oturarak beklemek bunu hafifletir. Test günü için yanına su, sade kraker ve test sonrası yiyecek bir şey hazırla; çıkar çıkmaz tatlı bir şey değil, dengeli bir öğün iyi gelir. Sonuç sınırda çıkarsa diyet yönetimi çoğu zaman yeterli, panik gerek yok."
   },
   25: {
     fruit: "Karnabahar", emoji: SVG_FRUITS.karnabahar, size: "≈ 34.6 cm · 660 g",
@@ -4205,7 +4471,17 @@ const WEEK_DATA = {
     ],
     tip: "Ayaklarını yüksekte tutmaya çalış — ödemi azaltır.",
     appt: "",
-    babyLetter: "Anne, bugün el sıkmayı denedim — parmaklarım kapanıp açılıyor. Yakında senin parmağını sıkacağım."
+    babyLetter: "Anne, bugün el sıkmayı denedim — parmaklarım kapanıp açılıyor. Yakında senin parmağını sıkacağım.",
+    babyDetail: {
+      gelisim: "Cilt rengi pembeleşmeye başladı, altındaki damarlar daha az görünür. Saç renklenmeye başladı; bazı bebeklerde belirgin tutam, bazılarında ince tüy var. El kavrama gücü arttı, parmaklar yumuşakça açılıp kapanıyor.",
+      duyular: "İşitme keskinleşti, ışığa kapalı göz kapaklarından tepki belirgin. Tat ve dokunma duyuları aktif, bebek sıvının içinde ellerini yüzüne götürüyor."
+    },
+    momDetail: {
+      fiziksel: "Karın ölçüsü her hafta gözle görülür biçimde artıyor. Tansiyonu zaman zaman ölçtür — gebelik tansiyonu (preeklampsi) için tarama önemli. Uyku pozisyonu sol yan en konforlu hâle geldi.",
+      duygusal: "Kardeş için odanın hazırlanması, eski bebek eşyalarının çıkarılması — bunlar duygusal bir hatırlama da getirir. İlk çocuğun büyüdüğünü görmek hem mutluluk hem hafif bir hüzün taşır.",
+      dikkat: "Ayaklarını yüksekte tutmaya çalış, bilek hareketleri ödemi azaltır. Ani şiddetli baş ağrısı, görme bozukluğu, yüz/elde belirgin şişme olursa tansiyonunu ölçtür ve doktora başvur — preeklampsi belirtileri olabilir."
+    },
+    tipDetail: "Preeklampsi (gebelik tansiyonu) çoğunlukla 20. haftadan sonra ortaya çıkabilen bir durum; düzenli kontrolde tansiyon ve idrar testi ile takip edilir, paniklenecek bir şey değil ama görmezden de gelinmez. Ev tipi bir tansiyon aletin varsa haftada bir-iki kez ölçüm kayıt altına almak iyi fikir. Beklenmedik ani şikayetlerde (görmede karıncalanma, üst karın ağrısı, bir gecede 1-2 kg ödem artışı) doktoru ara — bekleme."
   },
   26: {
     fruit: "Marul", emoji: "🥬", size: "≈ 35.6 cm · 760 g",
@@ -4221,7 +4497,17 @@ const WEEK_DATA = {
     ],
     tip: "Tekme sayma alışkanlığı bu hafta başlatılabilir — günün belli saatinde 1 saatte 10 tekme normaldir.",
     appt: "",
-    babyLetter: "Gözlerimi açtım! Karanlıkta hâlâ ama ışığa tepki veriyorum. Senin sesin benim güneşim."
+    babyLetter: "Gözlerimi açtım! Karanlıkta hâlâ ama ışığa tepki veriyorum. Senin sesin benim güneşim.",
+    babyDetail: {
+      gelisim: "Gözler yavaş yavaş açılmaya başladı — ışığa belirgin tepki var. Beyin elektriksel olarak aktif, bebek rüya görüyor olabilir (REM uyku başladı). Akciğerlerde sürfaktan üretilmeye başlandı, bu nefes almak için kritik bir madde.",
+      duyular: "Görme alanı bilinçli olmasa da çalışıyor, parlak ışık yansır. İşitme keskin, anne uyandığında yastıkta dönerken bile ses olarak duyuyor."
+    },
+    momDetail: {
+      fiziksel: "Bebeğin tekmeleri çok belirgin, dışarıdan görülebiliyor. Karında 'Braxton-Hicks' denilen yalancı kasılmalar başlayabilir — düzenli değil, sancılı değil, dinlenince geçer. Uyku zorlaşıyor.",
+      duygusal: "Doğum gerçeğine yaklaşmak hem heyecan hem hafif endişe getirir; ikinci olduğu için ilk seferin hatıraları (iyi ve zor olanlar) zihne geri dönebilir. Cem'le ilk doğum deneyimini konuşmak, bu sefer ne istediğinizi netleştirmek değerli.",
+      dikkat: "Tekme sayma alışkanlığı bu hafta başlayabilir — günün belli saatinde 1 saatte 10 ayrı hareket normaldir. Hareketler azalırsa veya tamamen kesilirse hemen doktora başvur, beklemeden. Yan yatış + yastık desteğiyle uyku biraz daha iyi."
+    },
+    tipDetail: "Tekme sayımı bebeğin iyilik halini takip etmenin en basit yolu — pahalı bir cihaz değil, sadece dikkat. Akşam yemeğinden sonra rahat bir koltukta uzanıp 10 hareketi saatle ölç; çoğu bebek bunu çok daha kısa sürede tamamlar. Bebeğin 'uyku-uyanık' döngüsünü tanıdıkça, hareketin azalıp azalmadığını ayırt etmen kolaylaşır."
   },
   27: {
     fruit: "Kıvırcık marul", emoji: SVG_FRUITS.kivircik_marul, size: "≈ 36.6 cm · 875 g",
@@ -4237,7 +4523,17 @@ const WEEK_DATA = {
     ],
     tip: "Hastane çantası listesi yapmaya başlamak için iyi bir zaman — acele etmeden yavaş yavaş hazırla.",
     appt: "",
-    babyLetter: "Hıçkırığım çok belirgin. Karnında küçük 'pıt pıt'lar hissedersen ben şarap içiyor değilim, hıçkırıyorum 🤣"
+    babyLetter: "Hıçkırığım çok belirgin. Karnında küçük 'pıt pıt'lar hissedersen ben şarap içiyor değilim, hıçkırıyorum 🤣",
+    babyDetail: {
+      gelisim: "Hıçkırıklar artık karında düzenli 'pıt pıt' olarak hissediliyor; bebek nefes alma provası yapıyor (sıvının içinde, akciğer kasları için egzersiz). Beyin gelişimi hızla devam ediyor, ikinci trimesterin son haftası.",
+      duyular: "Sesler net, görme kapasitesi gelişiyor (henüz dış dünyaya bakmıyor ama). Tanıdık seslere belirgin tepki — anne kalbi, Cem'in sesi, ablasının/ağabeyinin sesi."
+    },
+    momDetail: {
+      fiziksel: "İkinci trimesterin sonu — üçüncü trimester yaklaşıyor. Bel ağrısı, kasık ağrıları yaygın; karın ağırlığı omurgayı zorluyor. Sırt için yastık yatakta artık vazgeçilmez.",
+      duygusal: "2. trimesterin 'altın dönem' rahatlığı yavaş yavaş yerini 3. trimesterin yorgunluğuna bırakacak. Hastane çantası listesi yapma fikri gündeme girer; Cem'le birlikte oturup beyin fırtınası yapmak iyi gelir.",
+      dikkat: "Rh negatifsen Anti-D iğnesi (Rho-GAM) genellikle 28. haftada yapılır; bu hafta randevu ayarlama zamanı. Bel ağrısı için duruşa, oturuşa dikkat — sırt destekli oturmayı alışkanlık yap."
+    },
+    tipDetail: "Hastane çantası listesini bu hafta sıfırdan yazmak yerine, ikinci kez geçtiğin için ilk seferden ne çok kullandın ne kullanmadın hatırlamak güzel başlangıç. Hastane gerekli temel listeyi doğuma yakın verecek; sen şimdiden anne için (kıyafet, ped, telefon şarjı, atıştırmalık), bebek için (çıkış kıyafeti, bezi, battaniye) ve Cem için (yedek kıyafet, atıştırmalık) ayrı poşetler düşün. Aceleci olma — birkaç haftaya yayarak yapmak en az unutmayı sağlar."
   },
   28: {
     fruit: "Patlıcan", emoji: "🍆", size: "≈ 37.6 cm · 1 kg",
@@ -4253,7 +4549,17 @@ const WEEK_DATA = {
     ],
     tip: "Rh negatifsen Anti-D iğnesi bu hafta yapılır. Doktorla teyit et.",
     appt: "Anti-D (Rh negatifse, 28)",
-    babyLetter: "Üçüncü trimester! Şu anda doğsam yaşarım — ama ben tam zamanında gelmek istiyorum, sabret."
+    babyLetter: "Üçüncü trimester! Şu anda doğsam yaşarım — ama ben tam zamanında gelmek istiyorum, sabret.",
+    babyDetail: {
+      gelisim: "Üçüncü trimester resmen başladı. Gözler tam açabiliyor, kirpikler tamamen oluştu. Beyin yüzeyi düzlükten çıkıp kıvrımlanmaya başlıyor — daha çok sinir bağlantısı, daha gelişmiş işlev demek. Şu anda doğsa yoğun bakım desteğiyle yaşayabilir.",
+      hareketler: "Hareketler daha güçlü ve düzenli. Bebek uyku-uyanık döngüsü kurdu, anne aktifken sallanıp uyuyor, anne dinlenince hareketleniyor. Tekme sayma alışkanlığını sürdür."
+    },
+    momDetail: {
+      fiziksel: "Karın hızla büyüyecek; haftada 0,4-0,5 kg artış normal. Yorgunluk geri geliyor, nefes biraz kısıldı çünkü bebek diyaframı yukarı itiyor. Mide yanması ve kabızlık sık.",
+      duygusal: "3. trimester duygusal olarak farklı — doğum somutlaşıyor, isim, oda, hastane planı düşündüğün konular. İkinci olmak bazı şeyleri rahatlatır, bazılarını 'doğru yapma' kaygısıyla yükler; ikisi de geçerli.",
+      dikkat: "Rh negatif anneler için Anti-D iğnesi bu hafta yapılır — Rh durumun belliyse doktorla teyit et, bilinmiyorsa kan grubun kontrol edilir. Tdap aşısı henüz yapılmadıysa 28+ aralığı uygundur. Doktor ziyaretleri 4 haftada birden 2 haftada bire çıkacak yakında."
+    },
+    tipDetail: "Anti-D iğnesi sadece Rh negatif annelerin Rh pozitif bebek taşıma durumunda gerekli; vücudun bebeğin kanına karşı antikor üretmesini engelliyor. Tek bir iğne, kol kasından yapılır, çoğu kez doğum sonrası bir doz daha yapılır. Korkutucu değil, rutin bir uygulama; doktor zamanlamayı senin Rh durumun ve bebeğin tahmini Rh durumuna göre ayarlar."
   },
   29: {
     fruit: "Kabacık", emoji: SVG_FRUITS.kabacik, size: "≈ 38.6 cm · 1.15 kg",
@@ -4269,7 +4575,17 @@ const WEEK_DATA = {
     ],
     tip: "Kalsiyum kaynaklarını artır: süt, yoğurt, peynir, susam, kuru meyveler. Doktor önerirse takviye al.",
     appt: "",
-    babyLetter: "Beynim çok hızlı gelişiyor. Anne, sen ne kadar dinleniyorsan ben o kadar daha akıllı oluyorum 😄"
+    babyLetter: "Beynim çok hızlı gelişiyor. Anne, sen ne kadar dinleniyorsan ben o kadar daha akıllı oluyorum 😄",
+    babyDetail: {
+      gelisim: "Akciğerler henüz tam olgun değil ama her hafta gelişiyor. Kemikler hızla sertleşiyor — kalsiyum tüketimi şimdi çok önemli; anne yetersiz alırsa vücut kendi kemiklerinden veriyor. Beyin sıcaklık kontrolünü öğrenmeye başladı.",
+      hareketler: "Hareketler 'tekme' değil 'zor sığan birinin pozisyon değiştirmesi' gibi hissediliyor. Bazen kaburgaya doğru bir tekme keskin olabilir; oturma pozisyonunu değiştirmek yardım eder."
+    },
+    momDetail: {
+      fiziksel: "Yorgunluk + nefes darlığı çift vuruyor; bebek diyaframı itiyor, kalp daha çok çalışıyor. Karında belirgin gerilim, alt karın ağrılığı. Nabız biraz yüksek olabilir, bu normal.",
+      duygusal: "Doğum yaklaştıkça 'hazır mıyım?' sorusu döngü gibi gelir; ilk çocukta da gelmişti, ikincide farklı sebeplerden. Cem'le doğum tercihlerini (normal/sezaryen, doğum koçu, ağrı yönetimi) konuşmak için iyi bir zaman.",
+      dikkat: "Kalsiyum kaynaklarını artır: süt, yoğurt, peynir, susam, badem, brokoli, kuru meyveler. D vitamini emilim için kritik — doktorun önerisiyle takviye gerekebilir. Ağır iş, uzun ayakta kalma, dik merdivenlerde dikkat."
+    },
+    tipDetail: "Kalsiyum bebeğin kemikleri için çok önemli ama anne için de — emzirme döneminde de yüksek tüketim sürecek. Süt sevmiyorsan yoğurt, peynir, susamlı çörek, koyu yeşil yapraklı sebzeler iyi alternatif; vejetaryen değilsen küçük balıklar (sardalya, hamsi) da önemli kaynak. Doktor kalsiyum-D vitamini takviyesi öneriyorsa düzenli al, atlama."
   },
   30: {
     fruit: "Lahana", emoji: SVG_FRUITS.lahana, size: "≈ 39.9 cm · 1.32 kg",
@@ -4285,7 +4601,17 @@ const WEEK_DATA = {
     ],
     tip: "Doğum dersi/hazırlık kursu kayıtlarını araştırın — birlikte hazırlanmak çok önemli.",
     appt: "",
-    babyLetter: "Anne, sen çok yorgunsun biliyorum. Ben de uyumayı çok seviyorum. Beraber dinlenelim."
+    babyLetter: "Anne, sen çok yorgunsun biliyorum. Ben de uyumayı çok seviyorum. Beraber dinlenelim.",
+    babyDetail: {
+      gelisim: "Saç ve cilt rengi artık belirgin — kimi koyu, kimi açık. Vücudu kaplayan ince tüy (lanugo) dökülmeye başladı. Bebek başını çevirebiliyor, nefes provasını sürdürüyor.",
+      hareketler: "Hareketlerin niteliği değişti — sert tekmeden çok yuvarlanma, gerinme. Karında belirgin 'şekil değişimi' görmek mümkün. Tekme sayımı düzenli sürdür."
+    },
+    momDetail: {
+      fiziksel: "Kan dolaşımı yavaşladı, uzun süre tek pozisyonda durmak ödemi kötüleştiriyor. Ayak/el ödemine dikkat. Ev içi 30 dakikada bir küçük yürüyüş bile dolaşıma iyi gelir.",
+      duygusal: "Doğuma 10 hafta — somut görünüyor ama hâlâ uzakta gibi. Hipnoz/breathwork sınıfları, doğum hazırlık kursları gündeme alabilirsin; ilk seferde almadıysan bu sefer keşfetmek iyi olabilir. Cem'in de 'doğum partneri' olarak kursa katılması bağ kurmanın yolu.",
+      dikkat: "Doğum dersi/hazırlık kursu kayıtları için araştırma yap — çevrimiçi seçenekler dahil pek çok kurs var. Hangi hastanede doğuracağını netleştir, oraya nasıl gideceğini düşün. Acil durumda 'kim alır, kim çocukla kalır' planı yap."
+    },
+    tipDetail: "Doğum hazırlık kursları sadece doğum tekniği değil, sonrasını da kapsar — ilk emzirme, lohusalık, yenidoğan bakımı. İkinci gebelikte de bunlar değer verir, çünkü her bebek farklı, her doğum farklı. Cem'le birlikte gitmen onun rolünü netleştirmesi için de yararlı; doğumda nasıl destek vereceğini somut bilince işi kolaylaşıyor."
   },
   31: {
     fruit: "Hindistan cevizi", emoji: "🥥", size: "≈ 41.1 cm · 1.5 kg",
@@ -4301,7 +4627,17 @@ const WEEK_DATA = {
     ],
     tip: "Balık (haftada 2 porsiyon, civa düşük olanlar) ya da omega-3 takviyesi al — beyin gelişimi için.",
     appt: "",
-    babyLetter: "Boy uzamasından çok yağ topluyorum şimdi — yumuşak ve yuvarlak olacağım."
+    babyLetter: "Boy uzamasından çok yağ topluyorum şimdi — yumuşak ve yuvarlak olacağım.",
+    babyDetail: {
+      gelisim: "Beyin hızla büyüyor, son trimester nöron bağlantıları için altın dönem. Bebek idrar üretiyor (saatte birkaç ml) ve amniyotik sıvıya bırakıyor — bu normal bir döngü. Akciğer alveolleri çoğalıyor.",
+      hareketler: "Bebek artık alanı dar buluyor, hareketler 'pozisyon değişimi' boyutunda. Hıçkırıklar düzenli görülebilir. Saatlik tekme sayımına devam et."
+    },
+    momDetail: {
+      fiziksel: "Memelerde belirgin değişim — emzirme hazırlığı, kolostrum sızıntısı yaygınlaştı. Bel ağrısı çoğunlukla sabittir; uyumak zorlaştı. Kontrol ultrason zamanı (32. hafta) yakınlaştı.",
+      duygusal: "'Bebek odası' hazır mı, ilk çocuğun bunu nasıl karşıladığı, hastane çantası, telefon-acil-numara gibi pratik konular zihni meşgul etmeye başlar. Listeler yardımcı olur, kafanın içindekini kâğıda çıkarmak.",
+      dikkat: "Omega-3 (özellikle DHA) bebeğin beyin gelişimi için bu dönem çok önemli. Civa düşük balıklar (somon, sardalya, hamsi) haftada 2 porsiyon ya da doktorun önerdiği takviye yararlı. Çiğ deniz ürünlerinden uzak dur."
+    },
+    tipDetail: "DHA beyin ve göz gelişimi için kritik bir omega-3 yağ asidi; vücut yeterince üretmediği için besinden almak gerek. Türk mutfağında hamsi mevsiminde bol bulunur, somon ve sardalya da iyi seçenek. Balık sevmiyorsan ya da uygun şekilde temin edemiyorsan, gebelik için üretilmiş omega-3 takviyeleri iyi alternatif — doktorla doz konuşulur, kendi başına seçme."
   },
   32: {
     fruit: "Mini karpuz", emoji: SVG_FRUITS.mini_karpuz, size: "≈ 42.4 cm · 1.7 kg",
@@ -4317,7 +4653,17 @@ const WEEK_DATA = {
     ],
     tip: "Doğum çantası listesini hazırla; isim listesini de bitirmek için son haftalar.",
     appt: "Kontrol ultrason (32)",
-    babyLetter: "32. hafta kontrol! Doktor amca beni ölçecek, ne kadar büyüdüm görecek. Heyecanlıyım."
+    babyLetter: "32. hafta kontrol! Doktor amca beni ölçecek, ne kadar büyüdüm görecek. Heyecanlıyım.",
+    babyDetail: {
+      gelisim: "Tırnaklar parmak uçlarına ulaştı, ileride doğumdan sonra ilk işlerinden biri olacaklar. Akciğerlerde olgunlaşma hızlanıyor. Bebek genelde baş aşağı pozisyon almaya başlıyor; hâlâ değiştirebilir.",
+      hareketler: "Bebek artık alanı çok dar buluyor; hareketler büyük ama daha az sıçrama, daha çok yuvarlanma şeklinde. Tekme sayımı bu dönem en kritik dönemlerinden biri."
+    },
+    momDetail: {
+      fiziksel: "32. hafta kontrol ultrasonu — bebeğin büyümesi, plasenta durumu, sıvı miktarı kontrol edilir. Nefes alıp vermek zorlaşmış olabilir, bebek diyaframı yüksek itiyor. Beyaz akıntı artabilir, sıvı kaçağıyla karıştırma — şüphede doktoru ara.",
+      duygusal: "Doğuma 8 hafta — hâlâ kafanda zaman var ama bebek herhangi bir gün gelmeye karar verebilir (özellikle ikinci gebelikte erken doğum hikayeleri eskisinden hızlı seyredebilir). Çantanın temelini hazırlamış olmak rahatlatır.",
+      dikkat: "Hastane çantası listesini bu hafta tamamla. İsim listesi varsa nihai karar zamanı yaklaştı; doğum sonrasında karar vermek isteyenlere de saygı, ama erkenden kısa liste keyifli. Bebeğin pozisyonu baş aşağı değilse panik yapma, hâlâ dönebilir."
+    },
+    tipDetail: "32. hafta kontrolü doğuma kadar olan rotanın sağlamasıdır — bebek beklenen tempoda büyüyor mu, plasenta ve sıvı uygun, anne tansiyonu/şekeri yerinde mi. Sonuçlar genelde rahatlatıcıdır, sınırda bir şey çıkarsa doktor takip planını ayarlar. Ultrason sonrası fotoğrafları al, ileride çok kıymetli oluyor."
   },
   33: {
     fruit: "Ananas", emoji: "🍍", size: "≈ 43.7 cm · 1.9 kg",
@@ -4333,7 +4679,17 @@ const WEEK_DATA = {
     ],
     tip: "Pelvik tabanı güçlendiren Kegel egzersizlerini günde birkaç kez yap — doğuma yardımcı olur.",
     appt: "",
-    babyLetter: "Bağışıklığını alıyorum senden — beni hastalıklardan koruyacak antikorlar geliyor. Teşekkür ederim anne."
+    babyLetter: "Bağışıklığını alıyorum senden — beni hastalıklardan koruyacak antikorlar geliyor. Teşekkür ederim anne.",
+    babyDetail: {
+      gelisim: "Kafatası kemikleri henüz birleşmedi — bilinçli olarak öyle, doğum kanalından geçerken esneme yetenekleri bunu gerektiriyor. Bağışıklık sistemi anneden antikor topluyor, doğumdan sonra ilk haftalarda koruyacak. Vücut yağ oranı artıyor, cilt daha az kırışık.",
+      hareketler: "Hareketler düzenli ama daha az 'büyük' hareket. Bir saatte 10 ayrı hareket normal — sayım sürdür. Hareketin niteliğindeki birden değişim doktora söylenir."
+    },
+    momDetail: {
+      fiziksel: "Kasık baskısı arttı, sık tuvalete kalkma normalleşti. Bebek aşağı doğru yöneldikçe mesane üzerine baskı yapıyor. Doğum sancısı/yalancı sancı farkını araştırmak için iyi bir zaman.",
+      duygusal: "Yalancı sancılarla gerçek sancıyı ayırt etmek başlangıçta zor, 'geldi mi yoksa yanlış alarm mı?' döngüsü olabilir. İlk gebeliğinde bu duyguyu yaşadığını hatırlıyorsundur, ama her doğum farklıdır.",
+      dikkat: "Pelvik tabanı güçlendiren Kegel egzersizlerini günde birkaç kez 10'arlı setler halinde yap — doğuma yardım eder, doğum sonrası iyileşmeyi hızlandırır. Düzenli kasılmalar, kanama, sıvı kaçağı durumunda doğum başlamış olabilir; doktor numarası elinin altında olsun."
+    },
+    tipDetail: "Kegel egzersizleri 'idrar tutma' hareketi gibi — pelvik tabanı 5 saniye kasıp 5 saniye gevşetmek bir tekrar; günde 3 set 10 tekrar yeterli. Trafik ışığında, dişini fırçalarken, bilgisayarda otururken yapılabilir, kimse fark etmez. Doğum sonrası iyileşme sürecini ciddi anlamda hızlandırıyor — şu an alışkanlık edinmek o dönemi kolaylaştırır."
   },
   34: {
     fruit: "Kavun", emoji: "🍈", size: "≈ 45 cm · 2.15 kg",
@@ -4349,7 +4705,17 @@ const WEEK_DATA = {
     ],
     tip: "Hastane çantasını birlikte gözden geçirin; eksikleri bu hafta tamamla.",
     appt: "",
-    babyLetter: "Akciğerlerim neredeyse tamam. Birkaç hafta daha sabret, sonra dış dünyada birlikteyiz."
+    babyLetter: "Akciğerlerim neredeyse tamam. Birkaç hafta daha sabret, sonra dış dünyada birlikteyiz.",
+    babyDetail: {
+      gelisim: "Akciğerler neredeyse tam olgun — şu anda doğsa çoğu zaman kendi nefesini alabilir, bazen küçük destek gerekebilir. Merkezi sinir sistemi olgunlaşmaya devam ediyor, refleksler güçleniyor. Tırnaklar küçük insanlardakinin aynısı.",
+      hareketler: "Hareketler büyük yer kaplıyor, bebeğin pozisyonunu bazen dışarıdan görmek bile mümkün — burası baş, burası popo. Bebeğin gece-gündüz programı oturmuş durumda."
+    },
+    momDetail: {
+      fiziksel: "Bel ve kasık ağrıları yoğunlaştı; karın ağırlığı pelvis bağlarını yumuşatıyor. Uyku zorlaştı — yastık + yan yatış + kafayı hafif yükseltmek üçü birlikte etkili. Yorgunluk büyüdü.",
+      duygusal: "Hastane çantası tamamlanmalı, son detaylar — telefon şarj kabloları, kart-cüzdan, hastane evrakları, anne kıyafeti. İkinci kez olduğu için 'ne almıştım, ne işime yaramamıştı' hatırlamak yardımcı.",
+      dikkat: "Çantayı bu hafta tamamla, kapıya yakın bir yere koy. Cem'in de çantayla ilgili bilgili olması önemli — acil çıkışta nereye uzanacak biliyor olmalı. Ablasının/ağabeyinin 'anne hastanedeyken kim, nerede' planı netleşsin."
+    },
+    tipDetail: "Çantayı kapı yakınında tutmak hem panik anında hayat kurtarıyor hem de 'her şey hazır' hissi vererek son haftaların stresini azaltıyor. İçinde sade bir liste — neyin nereye konduğunu yazılı tutmak — özellikle ikinci kişi (Cem) için iş kolaylaştırıyor. Anne için en az iki gece kalacak şekilde, bebek için doğum sonrası ilk 2 günü ve çıkış için yeterli düşün."
   },
   35: {
     fruit: "Bal kabağı", emoji: SVG_FRUITS.bal_kabagi, size: "≈ 46.2 cm · 2.4 kg",
@@ -4365,7 +4731,17 @@ const WEEK_DATA = {
     ],
     tip: "Hastaneye nasıl gideceğinizi konuşun — saat, yol, kim arabaya binecek, kim çağrılacak.",
     appt: "GBS taraması (35-37)",
-    babyLetter: "Daracık oldu burası! Tekme atmak zorlaşıyor ama hâlâ her gün sana selam veriyorum."
+    babyLetter: "Daracık oldu burası! Tekme atmak zorlaşıyor ama hâlâ her gün sana selam veriyorum.",
+    babyDetail: {
+      gelisim: "Bebek yerleşik durumda, hareket alanı kalmadı. Yağ tabakası vücudu yuvarlaklaştırdı, cildi pembe ve dolu. Böbrekler tam çalışıyor, akciğerler son rötuşları atıyor.",
+      hareketler: "Sert tekme yerine çevrilmeler, gerinmeler. Hareket sayısı düşmemeli; saatlik 10 hareket kuralı geçerli, azalma olursa doktora başvur."
+    },
+    momDetail: {
+      fiziksel: "Yorgunluk doruk noktada, kısa adım atmak bile bazen zor. Sancı belirtilerine dikkat — gerçek doğum sancısı düzenli, dengeli, artan ritimde olur, dinlenmeyle geçmez. Yalancı sancı düzensiz ve dinlenmeyle geçer.",
+      duygusal: "Hastaneye nasıl gidileceği, kim arabaya binecek, ablası/ağabeyi kimle kalacak — bu pratik konuların kafada netleşmesi rahatlık verir. Birden fazla planı (B planı, C planı) düşünmek panikten korur.",
+      dikkat: "35-37 hafta arası GBS (B grubu streptokok) taraması yaptırılır; vajinal ve rektal bölgeden yapılan basit bir sürüntü. Pozitif çıkarsa doğum sırasında damardan antibiyotik verilir, basit bir önlem. NST (non-stres test) bu haftalardan itibaren düzenli yapılabilir."
+    },
+    tipDetail: "GBS taraması bebeğin doğum sırasında bu bakteriyle karşılaşmaması için bir önlem; pozitif sonuç bir hastalık değil, bir 'taşıyıcılık' durumu ve birçok kadın doğal taşıyıcı. Pozitifsen doğumda damardan antibiyotik alacaksın, bebek sağlıklı doğacak. Sonucu mutlaka karta/uygulamaya yaz, doğum hastanesine bilgisini ulaştır — değişik hastaneye gitsen bile elinde olsun."
   },
   36: {
     fruit: "Marul başı", emoji: SVG_FRUITS.marul_basi, size: "≈ 47.4 cm · 2.6 kg",
@@ -4381,7 +4757,17 @@ const WEEK_DATA = {
     ],
     tip: "Doğum sırasında ne yapacağınızı planlayın: kim ne yapar, eşin yanında kalacak mı, doula var mı?",
     appt: "Haftalık NST (36+)",
-    babyLetter: "Tam-dönem yaklaşıyor. Hastane çantasını hazırla anne, her an kapına gelebilirim 😊"
+    babyLetter: "Tam-dönem yaklaşıyor. Hastane çantasını hazırla anne, her an kapına gelebilirim 😊",
+    babyDetail: {
+      gelisim: "Bebek 'tam dönem'e (37. hafta) yaklaşıyor. Vücut tüyleri (lanugo) neredeyse tamamen döküldü; doğumda çok az kalır. Bağışıklık ve sindirim sistemleri hazır, ilk emziği almaya hazırlanıyor.",
+      hareketler: "Çok dar alan — büyük hareketler yerine yumuşak yer değiştirmeler. Saatte 10 hareket kuralı her gün takip edilmeli. Belirgin azalma doktora söylenir."
+    },
+    momDetail: {
+      fiziksel: "Doktor bu haftadan itibaren haftalık görmek isteyebilir. NST (kalp atış takibi) düzenli başlar; bebeğin iyilik halini kontrol eder. Hastane çantası tamamen kapıda hazır olmalı.",
+      duygusal: "Doğum sırasında ne yapacağınızın planı — kim ne yapar, Cem yanında kalacak mı (genellikle evet), doula varsa rolü, ablasının/ağabeyinin hastane ziyaretinin zamanlaması. Açık konuşma kararsızlığı azaltır.",
+      dikkat: "Telefonun sürekli şarjda; Cem'in telefonu da. Hastane numarasını telefon kısayolu yap. Belirti listen olsun: düzenli kasılmalar, su gelmesi, kanama → hemen doktoru ara, 'biraz bekleyeyim' deme."
+    },
+    tipDetail: "Doğum planı (kim neyi yapacak, hangi tercihler hastanede iletilecek) ikinci kez gebe için lüks değil — ilk seferin deneyimi varsa o seferin neyini sevmediğin somut olarak bilinir. Ağrı yönetimi (epidural, doğal yöntemler), bebeğin doğumdan hemen sonra göğsüne konulması (skin-to-skin), göbek kordonunun ne zaman kesileceği gibi tercihleri kısaca yaz. Doktorla ya da ebeyle bunu paylaşmak işleri kolaylaştırır; her şey planlandığı gibi gitmese de ne istediğini bilmen değerli."
   },
   37: {
     fruit: "Pazı", emoji: SVG_FRUITS.pazi, size: "≈ 48.6 cm · 2.86 kg",
@@ -4397,7 +4783,17 @@ const WEEK_DATA = {
     ],
     tip: "5-1-1 kuralı: 5 dakikada bir, 1 dakika süren, 1 saattir devam eden kasılmalar varsa hastaneye.",
     appt: "",
-    babyLetter: "Pelvise indim! Nefesin biraz rahatladı mı? Ben aşağı doğru pozisyon alıyorum."
+    babyLetter: "Pelvise indim! Nefesin biraz rahatladı mı? Ben aşağı doğru pozisyon alıyorum.",
+    babyDetail: {
+      gelisim: "Erken-zamanında ('early term') doğum sayılır artık; akciğerler doğuma hazır. El kavrama gücü gelişti, yutma ve emme refleksleri tam koordineli. Doğumdan sonra hemen meme arayabilir.",
+      hareketler: "Bebek pelvise iniyor (lightening) — başı aşağı, doğum kanalına yerleşiyor. Hareketler yerine basınç hissi belirgin. Saatlik sayım sürdürülür."
+    },
+    momDetail: {
+      fiziksel: "Bebek pelvise indikçe nefes biraz rahatlayabilir, ama kasık baskısı artar. Yürüme garip gelebilir — 'kabukla yürüme' hissi normal. Yalancı kasılmalar daha sık, daha fark edilir.",
+      duygusal: "5-1-1 kuralı kafanda olsun; her kasılmayı saniyeyle takip etmek tuhaf gelse de gerçek başlangıçta ayırt etmeyi sağlar. Bekleme hâli yorucu olabilir; küçük rutinler (yürüyüş, banyo, hafif iş) zaman geçirmenin yolu.",
+      dikkat: "5-1-1 kuralı: kasılmalar 5 dakikada bir, her biri 1 dakika sürüyor ve bu durum 1 saattir devam ediyorsa hastaneye git. Su gelmesi (kese yırtılması) olduğunda durum acelelidir — saati not et, doktoru ara, hastaneye yönel. Kanama da bekleme."
+    },
+    tipDetail: "5-1-1 kuralı yaygın bir referans ama her kadın için tam aynı çalışmaz — ikinci doğum genellikle daha hızlı seyreder, '5-1-1'i bekleyelim' diyerek geç kalmamak gerek. Ağrının niteliği (alttan başlayıp sırta vuran, dinlenmeyle geçmeyen, giderek şiddetlenen) gerçek sancının imzası. Kararsızsan doktoru ya da hastane çağrı hattını ara — 'boş yere arıyorum' kaygısı boş yere; sağlık çalışanları bu telefonları her gün alıyor."
   },
   38: {
     fruit: "Pırasa", emoji: "🌿", size: "≈ 49.8 cm · 3.08 kg",
@@ -4413,7 +4809,17 @@ const WEEK_DATA = {
     ],
     tip: "Eşinin yanında olabilmek için programını esnet; her an arama gelebilir.",
     appt: "",
-    babyLetter: "Her an gelebilirim artık. Yorulma anne, dinlen — son düzlükteyiz birlikte."
+    babyLetter: "Her an gelebilirim artık. Yorulma anne, dinlen — son düzlükteyiz birlikte.",
+    babyDetail: {
+      gelisim: "Saç tutamı oluşmuş olabilir ya da hiç yok — ikisi de normal, ileride saç gelir gider. Vücut yağı yaklaşık %15. Bebek herhangi bir gün doğmaya hazır; bekleyiş anne tarafından.",
+      hareketler: "Çok az alan, hareketler yumuşak yer değiştirme. Kalitesi azaldıysa hemen doktor — özellikle son haftalarda hareket azalması ihmal edilmez. 10/saat kuralı hâlâ geçerli."
+    },
+    momDetail: {
+      fiziksel: "Yalancı kasılmalar daha sık, gerçek sancıdan ayırt etmek zorlaşabilir. Bel ve kasık ağrısı doruk noktada. Sabırlı olmak en zor kısmı, ama bebek kendi zamanını biliyor.",
+      duygusal: "Telefonun her çaldığında 'geldi mi?' sorusu; günler uzun. Cem'le küçük ritüeller (akşam yürüyüşü, dizi izleme) zamanı keyifli geçirme yolu. İlk çocukla ekstra zaman geçirmek de ona ileride büyük abla/ağabey rolüne yumuşak geçişi sağlıyor.",
+      dikkat: "Cem'in işyeri programını 'her an arama gelebilir' diye esnetmesi, ya da en azından ulaşılabilir olması önemli. Yorulma, dinlen — doğum boyu uyanıkken enerji isteyecek. Su, sade gıdalar, bağırsak rahatlığı son hafta iyi gider."
+    },
+    tipDetail: "Sabır son haftaların gerçek sınavı — doğum istediğin günde değil bebeğin hazır olduğu günde gelecek. Yürüyüş, akupunktur, baharatlı yemek gibi 'doğumu tetikleyen' anlatılan yöntemlerin bilimsel kanıtı zayıf, zarar vermeyenleri keyif için yapılabilir, beklenti yüklemek hayal kırıklığı getirir. Beklerken küçük hayallerle vakit geçirmek (oda düzenlemesi, ilk kıyafet seçimi) hem keyifli hem hazırlıklı kılar."
   },
   39: {
     fruit: "Kavun (büyük)", emoji: SVG_FRUITS.kavun, size: "≈ 50.7 cm · 3.3 kg",
@@ -4429,7 +4835,17 @@ const WEEK_DATA = {
     ],
     tip: "Telefonun şarjını sürekli dolu tut; eşinin telefonu da. Hastane çantası kapıda.",
     appt: "",
-    babyLetter: "Çıkmaya hazırım. Beni nasıl karşılayacaksın? Ben seni nasıl tanıyacağım? Sabırsızlanıyorum."
+    babyLetter: "Çıkmaya hazırım. Beni nasıl karşılayacaksın? Ben seni nasıl tanıyacağım? Sabırsızlanıyorum.",
+    babyDetail: {
+      gelisim: "Beyin gelişimi son hafta dahil devam ediyor — son güne kadar nöron eklenir. Sürfaktan tam, akciğerler bağımsız nefese hazır. Tüm sistemler doğum için tamam, dış dünyaya geçiş için bekliyor.",
+      hareketler: "Hareketler azalmış gibi görünebilir çünkü alan çok dar; ama sayım yine de 10/saat. Dikkatle dinle — bu hafta hareket yokluğu kesinlikle göz ardı edilmez."
+    },
+    momDetail: {
+      fiziksel: "Sancılar gerçek olabilir — düzenli, artan, dinlenmeyle geçmeyen. Kese yırtılması (suyun gelmesi) için işaret: birden gelen yoğun ya da damla damla devam eden sıvı. Hastane numarası telefonun kısayolunda olsun.",
+      duygusal: "Son düzlük duygusu güçlü — yorgunluk, heyecan, sabırsızlık üçü birden. Cem'le birbirinize sıkı sarılmak, ablası/ağabeyi varsa onunla 'kardeşin yakında geliyor' sohbeti zamanı kıymetli.",
+      dikkat: "Telefon şarjı sürekli dolu; Cem'in telefonu da. Yedek pil ya da power bank her zaman çantada olsun. Hastane çantası kapıda. Acil aile listesi (kim çocukla kalır, kim hastaneye götürür) her ihtimale karşı net olsun."
+    },
+    tipDetail: "Son düzlük duygusal olarak yorucu — bedenin 'artık doğursan iyi olur' diyor, zihnin ise 'her şey gerçekten oluyor mu?' arası dolaşıyor. Cem ile küçük bir akşam ritmi — sıcak duş, yastıkla rahat oturma, sessiz konuşma — ikinizin de gelen güne hazırlanmasının nazik yolu. Bu son geceleri birlikte geçirme fikri sıradan görünse de yıllar sonra hatırladığında çok değerli olur."
   },
   40: {
     fruit: "Karpuz", emoji: "🍉", size: "≈ 51.2 cm · 3.5 kg",
@@ -4445,7 +4861,17 @@ const WEEK_DATA = {
     ],
     tip: "Tebrikler — bu özel anı yaşamaya hazır olun. Birbirinize sıkı sarılın 🤍",
     appt: "",
-    babyLetter: "Anne, yolum açık. Seninle yüz yüze görüşeceğimiz an çok yakın. Seni tanımak için sabırsızım 🤍"
+    babyLetter: "Anne, yolum açık. Seninle yüz yüze görüşeceğimiz an çok yakın. Seni tanımak için sabırsızım 🤍",
+    babyDetail: {
+      gelisim: "Tahmini doğum tarihi (TDT) — bebek herhangi bir gün gelebilir, hatta bazıları 41. haftaya kadar bekler. Tüm gelişim tamamlandı, organ olgunluğu tam. Sadece dünyaya hoş geldin denmesini bekliyor.",
+      hareketler: "Hareket azalmadı — alan dar olsa da gün içinde hâlâ saatlik sayımı sürdür. Belirgin azalma doktoru ara sebebi."
+    },
+    momDetail: {
+      fiziksel: "Yorgunluk + bekleme stresi birlikte. Bel ve kasık ağrısı sürüyor. Bedenin işaret verecek — düzenli sancılar, su gelmesi, kanama. Bedenine güven, bedenin biliyor.",
+      duygusal: "40 haftalık yolculuk son sayfada. Geriye dönüp ne kadar yol gittiğini görmek değerli; ileri bakınca kucaklayacağın anın yaklaşması. Cem'le birbirinize sarılmak en doğal hareket.",
+      dikkat: "40. haftayı geçtiyseniz doktor 41. hafta civarında ek takip ya da indüksiyon (doğumun başlatılması) konuşacaktır — bebek aşırı kalmasın diye. NST ve sıvı miktarı kontrol edilir, plansız bir adım yok. Hastane çantası kapıda, telefonlar açık."
+    },
+    tipDetail: "40. hafta resmi tarih ama bebek bu kararı kendi veriyor; %5 kadarı tam 40. haftada doğar, çoğu birkaç gün önce ya da sonra. Bekleyiş yorucu olsa da doğum başladığı an her şey çok hızlı ilerleyebilir, özellikle ikinci doğumda — Cem'le birbirinize sıkı sıkıya kalın, hastane yolu ve plan net olsun. Bu özel anı yaşamaya hazırsın; bedenin de bebek de bu görevi biliyor."
   }
 };
 
@@ -4918,9 +5344,9 @@ async function onbRoleContinue() {
       console.warn("Rol cloud'a yazılamadı (sonra retry edilecek):", err);
     }
   }
-  // Eski sürümden upgrade: LMP zaten varsa direkt home'a
+  // Eski sürümden upgrade: LMP zaten varsa direkt hafta detayına
   if (state.setupComplete && state.lmpDate) {
-    navigate("home");
+    navigate("week-detail");
     return;
   }
   onbGoTo("lmp-choice");
@@ -5043,7 +5469,7 @@ function onbFinish() {
   state.setupComplete = true;
   maybeGenerateAppointments();
   saveState();
-  navigate("home");
+  navigate("week-detail");
 }
 
 /* ---------- DOKTOR RANDEVU AUTO-GEN ---------- */
@@ -5386,6 +5812,28 @@ function renderWeekDetail(params) {
     data.mom.map(b => "<li>" + escapeHtml(b) + "</li>").join("");
   document.getElementById("week-tip").querySelector(".tip-text").textContent = data.tip;
 
+  // "Daha fazla oku" akordion içerikleri (her hafta yeniden kapalı başlar)
+  renderReadMore(
+    "week-baby-toggle", "week-baby-detail",
+    data.babyDetail && [
+      ["Gelişim", data.babyDetail.gelisim],
+      ["Duyular ve Hareket", data.babyDetail.duyular],
+      ["Hareketler", data.babyDetail.hareketler]
+    ]
+  );
+  renderReadMore(
+    "week-mom-toggle", "week-mom-detail",
+    data.momDetail && [
+      ["Fiziksel", data.momDetail.fiziksel],
+      ["Duygusal", data.momDetail.duygusal],
+      ["Dikkat Edilecekler", data.momDetail.dikkat]
+    ]
+  );
+  renderReadMore(
+    "week-tip-toggle", "week-tip-detail",
+    data.tipDetail ? [["", data.tipDetail]] : null
+  );
+
   // Bebekten mektup
   const letterBox = document.getElementById("week-baby-letter");
   if (letterBox) {
@@ -5402,6 +5850,45 @@ function renderWeekDetail(params) {
     }
   }
 }
+
+function renderReadMore(toggleId, contentId, sections) {
+  const btn = document.getElementById(toggleId);
+  const box = document.getElementById(contentId);
+  if (!btn || !box) return;
+  const valid = (sections || []).filter(s => s && s[1]);
+  if (valid.length === 0) {
+    btn.hidden = true;
+    box.hidden = true;
+    box.innerHTML = "";
+    return;
+  }
+  btn.hidden = false;
+  box.hidden = true;
+  btn.setAttribute("aria-expanded", "false");
+  btn.textContent = "📖 Daha fazla oku";
+  box.innerHTML = valid.map(s => {
+    const heading = s[0] ? "<h4>" + escapeHtml(s[0]) + "</h4>" : "";
+    return heading + "<p>" + escapeHtml(s[1]) + "</p>";
+  }).join("");
+}
+
+function toggleReadMore(toggleId, contentId) {
+  const btn = document.getElementById(toggleId);
+  const box = document.getElementById(contentId);
+  if (!btn || !box) return;
+  const isOpen = !box.hidden;
+  box.hidden = isOpen;
+  btn.setAttribute("aria-expanded", String(!isOpen));
+  btn.textContent = isOpen ? "📖 Daha fazla oku" : "📕 Kapat";
+}
+
+document.addEventListener("click", (e) => {
+  const t = e.target.closest && e.target.closest(".btn-read-more");
+  if (!t) return;
+  const ctrl = t.getAttribute("aria-controls");
+  if (!ctrl) return;
+  toggleReadMore(t.id, ctrl);
+});
 
 function weekChange(delta) {
   if (viewingWeek === null) return;
@@ -8560,7 +9047,7 @@ function navigateToHomeOrOnboarding() {
       maybeGenerateAppointments();
       saveState();
     }
-    navigate("home");
+    navigate("week-detail");
   } else {
     navigate("onboarding");
     onbGoTo("welcome");
