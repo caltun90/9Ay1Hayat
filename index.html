@@ -3256,6 +3256,71 @@
       font-size: 13px;
       padding: 10px 0 calc(14px + var(--safe-bottom));
     }
+
+    /* ============ YOL HARİTASI ============ */
+    .journey-intro {
+      background: var(--secondary-soft);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.55;
+      margin-bottom: 14px;
+    }
+    .journey-intro b { color: var(--primary-deep); font-weight: 600; }
+
+    .journey-svg-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 12px 8px 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+    .journey-svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .journey-svg .j-milestone {
+      cursor: pointer;
+      -webkit-tap-highlight-color: rgba(0,0,0,0);
+    }
+    .journey-svg .j-milestone:active { opacity: 0.7; }
+    .journey-svg .j-label-name { font-size: 11px; font-weight: 600; }
+    .journey-svg .j-label-week { font-size: 9.5px; }
+    .journey-svg .j-num { font-size: 11px; font-weight: 600; }
+    .journey-svg .j-crit {
+      stroke-dasharray: 2 3;
+      opacity: 0.55;
+    }
+
+    .journey-legend {
+      background: var(--bg-soft);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+    .journey-legend-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 3px 0;
+    }
+    .journey-legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .journey-legend-note {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 12px;
+    }
   </style>
 </head>
 <body>
@@ -3838,7 +3903,7 @@
     <h3>Hakkında</h3>
     <div class="settings-row">
       <span class="label">Sürüm</span>
-      <span class="value">v0.2.5.1 — 2026-04-30 · Aile yönetimi</span>
+      <span class="value">v0.2.6 — 2026-05-22 · Yol haritası</span>
     </div>
     <div class="settings-row">
       <span class="label">Yapım</span>
@@ -4236,6 +4301,11 @@
       <div class="lbl">İsim listesi</div>
       <div class="sub">İkili oylama</div>
     </button>
+    <button class="more-item" onclick="navigate('journey')">
+      <span class="ico">🗺️</span>
+      <div class="lbl">Yol Haritası</div>
+      <div class="sub">12 milestone · görsel akış</div>
+    </button>
     <button class="more-item" onclick="navigate('question-book')">
       <span class="ico">📓</span>
       <div class="lbl">Soru Defteri</div>
@@ -4247,6 +4317,49 @@
       <div class="sub">Hesap · veri · sürüm</div>
     </button>
   </div>
+</div>
+
+<!-- ============ YOL HARİTASI ============ -->
+<div id="screen-journey" class="screen">
+  <div class="screen-header">
+    <button onclick="navigate('more')" aria-label="Geri">←</button>
+    <h1>Yol Haritası</h1>
+    <span style="width: 40px;"></span>
+  </div>
+
+  <div class="journey-intro" id="journey-intro">
+    <!-- JS doldurur -->
+  </div>
+
+  <div class="journey-svg-card">
+    <svg class="journey-svg" id="journey-svg" viewBox="0 0 380 730" xmlns="http://www.w3.org/2000/svg">
+      <!-- JS doldurur -->
+    </svg>
+  </div>
+
+  <div class="journey-legend">
+    <div class="journey-legend-row">
+      <span class="journey-legend-dot" style="background: #B0B0B8;"></span>
+      <span><b>Gri</b> — geçtiğin testler</span>
+    </div>
+    <div class="journey-legend-row">
+      <span class="journey-legend-dot" style="background: #D85A30;"></span>
+      <span><b>Coral</b> — 1. trimester (hf 1-13)</span>
+    </div>
+    <div class="journey-legend-row">
+      <span class="journey-legend-dot" style="background: #639922;"></span>
+      <span><b>Yeşil</b> — 2. trimester (hf 14-27)</span>
+    </div>
+    <div class="journey-legend-row">
+      <span class="journey-legend-dot" style="background: #378ADD;"></span>
+      <span><b>Mavi</b> — 3. trimester (hf 28-40)</span>
+    </div>
+    <div class="journey-legend-note">
+      Kesik halkalı milestone'lar atlanmaması gereken kritik testlerdir. Pulsing nokta şu anki haftanı gösterir. Bir milestone'a dokunduğunda o haftanın detay sayfasına gidersin.
+    </div>
+  </div>
+
+  <div class="spacer-24"></div>
 </div>
 
 <!-- ============ ALT NAVİGASYON (5 sekme — mockup'taki gibi) ============ -->
@@ -5610,7 +5723,7 @@ function weekToLmp(weekNum) {
 
 /* ---------- 4) NAVİGASYON ---------- */
 
-const SCREENS = ["auth", "family-setup", "onboarding", "home", "week-detail", "notes", "note-editor", "settings", "appointments", "appointment-detail", "question-book", "daily-log", "mood-calendar", "measurements", "kicks", "hospital-bag", "names", "more"];
+const SCREENS = ["auth", "family-setup", "onboarding", "home", "week-detail", "notes", "note-editor", "settings", "appointments", "appointment-detail", "question-book", "daily-log", "mood-calendar", "measurements", "kicks", "hospital-bag", "names", "more", "journey"];
 
 function navigate(name, params) {
   // Auth & family-setup ekranları her zaman erişilebilir (bypass setup checks)
@@ -5660,6 +5773,7 @@ function navigate(name, params) {
     case "hospital-bag": renderHospitalBag(); break;
     case "names": renderNames(); break;
     case "more": renderMore(); break;
+    case "journey": renderJourney(); break;
   }
 
   window.scrollTo(0, 0);
@@ -10085,6 +10199,188 @@ function openDatePicker(opts) {
 
 function hideSplash() {
   document.body.classList.add("splash-hidden");
+}
+
+/* ---------- 14b) YOL HARİTASI ---------- */
+
+const JOURNEY_COLORS = {
+  coral: "#D85A30",
+  green: "#639922",
+  blue:  "#378ADD",
+  gray:  "#B0B0B8"
+};
+
+// 12 milestone — APPT_TEMPLATES'le aynı anahtar haftaları kullanır.
+// x,y koordinatları 380×730 viewBox içindir; SVG ekrana otomatik ölçeklenir.
+const JOURNEY_MILESTONES = [
+  // 1. trimester (coral)
+  { week: 7,  name: "İlk muayene",        range: "hf 6-8",   x: 295, y: 75,  color: "coral", side: "left" },
+  { week: 11, name: "NIPT",               range: "hf 10-13", x: 268, y: 130, color: "coral", side: "left" },
+  { week: 12, name: "İkili tarama + NT",  range: "hf 11-14", x: 220, y: 180, color: "coral", side: "left", critical: true },
+  // 2. trimester (green)
+  { week: 16, name: "Dörtlü tarama",      range: "hf 15-18", x: 138, y: 250, color: "green", side: "right" },
+  { week: 20, name: "Anomali USG",        range: "hf 18-22", x: 165, y: 320, color: "green", side: "right", critical: true },
+  { week: 22, name: "Tdap aşısı",         range: "hf 18-24", x: 230, y: 380, color: "green", side: "right" },
+  { week: 26, name: "OGTT",               range: "hf 24-28", x: 295, y: 430, color: "green", side: "left", critical: true },
+  // 3. trimester (blue)
+  { week: 28, name: "Anti-D",             range: "hf 28",    x: 305, y: 485, color: "blue",  side: "left" },
+  { week: 32, name: "Kontrol USG",        range: "hf 32",    x: 272, y: 538, color: "blue",  side: "left", critical: true },
+  { week: 36, name: "GBS taraması",       range: "hf 35-37", x: 195, y: 585, color: "blue",  side: "right", critical: true },
+  { week: 38, name: "NST kontrol",        range: "hf 37-40", x: 130, y: 630, color: "blue",  side: "right" },
+  { week: 40, name: "Doğum",              range: "hf 37-42", x: 95,  y: 685, color: "blue",  side: "right" }
+];
+
+// Catmull-Rom → Cubic Bezier yumuşak yol oluşturur.
+function journeySmoothPath(pts) {
+  if (pts.length < 2) return "";
+  const d = ["M " + pts[0].x + " " + pts[0].y];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(0, i - 1)];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[Math.min(pts.length - 1, i + 2)];
+    const c1x = p1.x + (p2.x - p0.x) / 6;
+    const c1y = p1.y + (p2.y - p0.y) / 6;
+    const c2x = p2.x - (p3.x - p1.x) / 6;
+    const c2y = p2.y - (p3.y - p1.y) / 6;
+    d.push("C " + c1x.toFixed(1) + " " + c1y.toFixed(1) + ", " + c2x.toFixed(1) + " " + c2y.toFixed(1) + ", " + p2.x + " " + p2.y);
+  }
+  return d.join(" ");
+}
+
+// Milestone'lar arası kümülatif yay uzunluğu (kiriş × 1.05 yaklaşımı).
+function journeyArcLengths(pts) {
+  const lens = [0];
+  let total = 0;
+  for (let i = 1; i < pts.length; i++) {
+    const dx = pts[i].x - pts[i - 1].x;
+    const dy = pts[i].y - pts[i - 1].y;
+    total += Math.sqrt(dx * dx + dy * dy) * 1.05;
+    lens.push(total);
+  }
+  return lens;
+}
+
+// Verilen haftaya karşılık gelen arc length.
+function journeyArcAtWeek(week, arcLens) {
+  const first = JOURNEY_MILESTONES[0];
+  const last = JOURNEY_MILESTONES[JOURNEY_MILESTONES.length - 1];
+  if (week <= first.week) return 0;
+  if (week >= last.week) return arcLens[arcLens.length - 1];
+  for (let i = 0; i < JOURNEY_MILESTONES.length - 1; i++) {
+    if (week >= JOURNEY_MILESTONES[i].week && week <= JOURNEY_MILESTONES[i + 1].week) {
+      const f = (week - JOURNEY_MILESTONES[i].week) / (JOURNEY_MILESTONES[i + 1].week - JOURNEY_MILESTONES[i].week);
+      return arcLens[i] + f * (arcLens[i + 1] - arcLens[i]);
+    }
+  }
+  return arcLens[arcLens.length - 1];
+}
+
+// Yay uzunluğuna karşılık gelen x,y pozisyonu (milestone'lar arası lineer interp).
+function journeyPositionAtArc(targetLen, pts, arcLens) {
+  if (targetLen <= 0) return { x: pts[0].x, y: pts[0].y };
+  const total = arcLens[arcLens.length - 1];
+  if (targetLen >= total) return { x: pts[pts.length - 1].x, y: pts[pts.length - 1].y };
+  for (let i = 0; i < pts.length - 1; i++) {
+    if (targetLen >= arcLens[i] && targetLen <= arcLens[i + 1]) {
+      const f = (targetLen - arcLens[i]) / (arcLens[i + 1] - arcLens[i]);
+      return {
+        x: pts[i].x + f * (pts[i + 1].x - pts[i].x),
+        y: pts[i].y + f * (pts[i + 1].y - pts[i].y)
+      };
+    }
+  }
+  return { x: pts[0].x, y: pts[0].y };
+}
+
+function renderJourney() {
+  const info = getPregnancyInfo();
+  if (!info) { navigate("home"); return; }
+  const currentWeek = info.currentWeek;
+
+  // Üstte bilgi şeridi
+  const intro = document.getElementById("journey-intro");
+  if (intro) {
+    intro.innerHTML =
+      'Şu an <b>' + currentWeek + '. hafta</b> · ' + getTrimesterLabel(currentWeek) +
+      '. Geçtiğin testler griye dönüştü, gelecek olanlar trimester rengiyle parlak. ' +
+      'Bir noktaya dokun → o haftanın detayı açılır.';
+  }
+
+  const svg = document.getElementById("journey-svg");
+  if (!svg) return;
+
+  const pts = JOURNEY_MILESTONES.map(m => ({ x: m.x, y: m.y }));
+  const pathD = journeySmoothPath(pts);
+  const arcLens = journeyArcLengths(pts);
+  const totalLen = arcLens[arcLens.length - 1];
+  const currentArc = journeyArcAtWeek(currentWeek, arcLens);
+
+  // Trimester segment bitiş noktaları (milestone indexlerine göre)
+  // coral: 0-2 (hf 7-12), green: 3-6 (hf 16-26), blue: 7-11 (hf 28-40)
+  const coralEnd = arcLens[2];
+  const greenEnd = arcLens[6];
+
+  let out = "";
+
+  // 1) Trimester renkli yollar (her zaman görünür arkaplan)
+  out += '<path d="' + pathD + '" stroke="' + JOURNEY_COLORS.coral + '" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="' + coralEnd + ' ' + (totalLen * 2) + '"/>';
+  out += '<path d="' + pathD + '" stroke="' + JOURNEY_COLORS.green + '" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="0 ' + coralEnd + ' ' + (greenEnd - coralEnd) + ' ' + (totalLen * 2) + '"/>';
+  out += '<path d="' + pathD + '" stroke="' + JOURNEY_COLORS.blue + '" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="0 ' + greenEnd + ' ' + (totalLen - greenEnd + 5) + ' ' + (totalLen * 2) + '"/>';
+
+  // 2) Gri overlay — geçen bölüm
+  out += '<path d="' + pathD + '" stroke="' + JOURNEY_COLORS.gray + '" stroke-width="5.5" fill="none" stroke-linecap="round" stroke-dasharray="' + currentArc + ' ' + (totalLen * 2) + '"/>';
+
+  // 3) Kritik milestone kesik halkaları
+  JOURNEY_MILESTONES.forEach(m => {
+    if (m.critical) {
+      const isPast = m.week < currentWeek;
+      const c = isPast ? JOURNEY_COLORS.gray : JOURNEY_COLORS[m.color];
+      out += '<circle cx="' + m.x + '" cy="' + m.y + '" r="19" fill="none" stroke="' + c + '" stroke-width="1" class="j-crit"/>';
+    }
+  });
+
+  // 4) Pulse marker — şu anki konum
+  const pulsePos = journeyPositionAtArc(currentArc, pts, arcLens);
+  const trim = getTrimester(currentWeek);
+  const trimColor = JOURNEY_COLORS[trim === 1 ? "coral" : trim === 2 ? "green" : "blue"];
+  out += '<circle cx="' + pulsePos.x + '" cy="' + pulsePos.y + '" r="8" fill="' + trimColor + '" opacity="0.5">';
+  out += '<animate attributeName="r" values="8;22" dur="1.8s" repeatCount="indefinite"/>';
+  out += '<animate attributeName="opacity" values="0.55;0" dur="1.8s" repeatCount="indefinite"/>';
+  out += '</circle>';
+  out += '<circle cx="' + pulsePos.x + '" cy="' + pulsePos.y + '" r="7" fill="' + trimColor + '" stroke="white" stroke-width="2.5"/>';
+
+  // 5) Milestone halkaları + etiketleri
+  JOURNEY_MILESTONES.forEach(m => {
+    const isPast = m.week < currentWeek;
+    const isCurrent = m.week === currentWeek;
+    const baseColor = JOURNEY_COLORS[m.color];
+    const fillColor = isPast ? JOURNEY_COLORS.gray : (isCurrent ? baseColor : "#FFFFFF");
+    const strokeColor = isPast ? JOURNEY_COLORS.gray : baseColor;
+    const numColor = (isPast || isCurrent) ? "#FFFFFF" : baseColor;
+    const r = isCurrent ? 15 : (isPast ? 12 : 13);
+
+    out += '<g class="j-milestone" onclick="journeyOpenWeek(' + m.week + ')">';
+    // Geniş tıklama alanı
+    out += '<circle cx="' + m.x + '" cy="' + m.y + '" r="22" fill="transparent"/>';
+    out += '<circle cx="' + m.x + '" cy="' + m.y + '" r="' + r + '" fill="' + fillColor + '" stroke="' + strokeColor + '" stroke-width="2"/>';
+    out += '<text x="' + m.x + '" y="' + (m.y + 4) + '" class="j-num" fill="' + numColor + '" text-anchor="middle">' + m.week + '</text>';
+
+    const labelX = m.side === "left" ? m.x - 20 : m.x + 20;
+    const labelAnchor = m.side === "left" ? "end" : "start";
+    const nameColor = isPast ? JOURNEY_COLORS.gray : "#2A2D34";
+    const rangeColor = isPast ? JOURNEY_COLORS.gray : "#7A7A85";
+    out += '<text x="' + labelX + '" y="' + (m.y - 2) + '" class="j-label-name" fill="' + nameColor + '" text-anchor="' + labelAnchor + '">' + escapeHtml(m.name) + '</text>';
+    out += '<text x="' + labelX + '" y="' + (m.y + 12) + '" class="j-label-week" fill="' + rangeColor + '" text-anchor="' + labelAnchor + '">' + escapeHtml(m.range) + '</text>';
+    out += '</g>';
+  });
+
+  svg.innerHTML = out;
+}
+
+function journeyOpenWeek(week) {
+  viewingWeek = week;
+  navigate("week-detail", { week: week });
 }
 
 let __authListenerAttached = false;
